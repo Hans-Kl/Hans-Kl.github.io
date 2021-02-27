@@ -183,7 +183,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-02-27 15:17:34 / Modified: 16:06:55" itemprop="dateCreated datePublished" datetime="2021-02-27T15:17:34+08:00">2021-02-27</time>
+              <time title="Created: 2021-02-27 15:17:34 / Modified: 17:13:47" itemprop="dateCreated datePublished" datetime="2021-02-27T15:17:34+08:00">2021-02-27</time>
             </span>
 
           <br>
@@ -252,7 +252,7 @@
 </li>
 </ol>
 <p>另外在~/.bash_profile文件中写了逻辑会主动读取~/.bashrc中的变量，所以~/.bashrc中的变量也会生效，总流程图如下：</p>
-<p><img src="/Users/hans/work_/md%E7%AC%94%E8%AE%B0/pic/linux%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/image-20210225155211078-4410464.png" alt="image-20210225155211078"></p>
+<p><a target="_blank" rel="noopener" href="https://imgtu.com/i/6pla36"><img src="/Users/hans/work_/md%E7%AC%94%E8%AE%B0/pic/linux%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/6pla36.md.png" alt="6pla36.md.png"></a></p>
 <h3 id="non-login-shell"><a href="#non-login-shell" class="headerlink" title="non-login shell"></a>non-login shell</h3><p>non-login shell 只会读取~/.bashrc一个配置文件</p>
 <h2 id="source或-命令-使配置文件立即生效"><a href="#source或-命令-使配置文件立即生效" class="headerlink" title="source或.命令 使配置文件立即生效"></a>source或.命令 使配置文件立即生效</h2><p>由于变量配置文件只会在shell启动的时候读取一次，所以如果不想退出当前shell的话，要用source或.命令主动读取配置文件并生效。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source ~/.bash_profile;</span><br><span class="line">. ~/.bash_profile;</span><br></pre></td></tr></table></figure>
