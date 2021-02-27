@@ -20,28 +20,35 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="孔令翰-个人博客">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="变量相关的linux命令查询变量值12echo $PATH;echo $&amp;#123;PATH&amp;#125;;  设置变量值1foo&#x3D;bianliang;  等号两边不能有空格，比如下面这样会报错 12foo &#x3D; bianliang;foo&#x3D;bian liang;  如果变量值中有空格，用单引号或双引号括起来 1foo &#x3D; &amp;#x27;bian liang&amp;#x27;;  取消变量1unset foo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux设置环境变量">
+<meta property="og:url" content="http://example.com/2021/02/27/linux%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/index.html">
 <meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="变量相关的linux命令查询变量值12echo $PATH;echo $&amp;#123;PATH&amp;#125;;  设置变量值1foo&#x3D;bianliang;  等号两边不能有空格，比如下面这样会报错 12foo &#x3D; bianliang;foo&#x3D;bian liang;  如果变量值中有空格，用单引号或双引号括起来 1foo &#x3D; &amp;#x27;bian liang&amp;#x27;;  取消变量1unset foo">
 <meta property="og:locale">
+<meta property="og:image" content="http://example.com/Users/hans/work_/md%E7%AC%94%E8%AE%B0/pic/linux%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/image-20210225155211078-4410464.png">
+<meta property="article:published_time" content="2021-02-27T07:17:34.000Z">
+<meta property="article:modified_time" content="2021-02-27T08:06:55.995Z">
 <meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/Users/hans/work_/md%E7%AC%94%E8%AE%B0/pic/linux%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/image-20210225155211078-4410464.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2021/02/27/linux%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>孔令翰-个人博客</title>
+  <title>linux设置环境变量 | 孔令翰-个人博客</title>
   
 
 
@@ -150,9 +157,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
@@ -168,10 +176,9 @@
       <meta itemprop="name" content="孔令翰-个人博客">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/27/linux%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/" class="post-title-link" itemprop="url">linux设置环境变量</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          linux设置环境变量
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -209,7 +216,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="变量相关的linux命令"><a href="#变量相关的linux命令" class="headerlink" title="变量相关的linux命令"></a>变量相关的linux命令</h1><h2 id="查询变量值"><a href="#查询变量值" class="headerlink" title="查询变量值"></a>查询变量值</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo $PATH;</span><br><span class="line">echo $&#123;PATH&#125;;</span><br></pre></td></tr></table></figure>
+        <h1 id="变量相关的linux命令"><a href="#变量相关的linux命令" class="headerlink" title="变量相关的linux命令"></a>变量相关的linux命令</h1><h2 id="查询变量值"><a href="#查询变量值" class="headerlink" title="查询变量值"></a>查询变量值</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo $PATH;</span><br><span class="line">echo $&#123;PATH&#125;;</span><br></pre></td></tr></table></figure>
 
 <h2 id="设置变量值"><a href="#设置变量值" class="headerlink" title="设置变量值"></a>设置变量值</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">foo=bianliang;</span><br></pre></td></tr></table></figure>
 
@@ -259,21 +266,26 @@
 <p><a href="**http://linux.vbird.org/linux_basic/**">《<strong>鳥哥的 Linux 私房菜</strong>》</a></p>
 </blockquote>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+
+        
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -326,6 +338,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%9B%B8%E5%85%B3%E7%9A%84linux%E5%91%BD%E4%BB%A4"><span class="nav-number">1.</span> <span class="nav-text">变量相关的linux命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E5%8F%98%E9%87%8F%E5%80%BC"><span class="nav-number">1.1.</span> <span class="nav-text">查询变量值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%8F%98%E9%87%8F%E5%80%BC"><span class="nav-number">1.2.</span> <span class="nav-text">设置变量值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%96%E6%B6%88%E5%8F%98%E9%87%8F"><span class="nav-number">1.3.</span> <span class="nav-text">取消变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#export%E5%B0%86%E5%8F%98%E9%87%8F%E5%8D%87%E7%BA%A7%E4%B8%BA%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">1.4.</span> <span class="nav-text">export将变量升级为环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#env%E6%9F%A5%E7%9C%8B%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">1.5.</span> <span class="nav-text">env查看环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%AF%E5%8A%A0-%E8%A1%A5%E5%85%85%E5%8F%98%E9%87%8F"><span class="nav-number">1.6.</span> <span class="nav-text">累加&#x2F;补充变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%9B%BF%E6%8D%A2"><span class="nav-number">1.7.</span> <span class="nav-text">$()命令替换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%8C%81%E4%B9%85%E5%8C%96%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">2.</span> <span class="nav-text">通过配置文件持久化环境变量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">配置文件读取流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#login-shell"><span class="nav-number">2.1.1.</span> <span class="nav-text">login shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#non-login-shell"><span class="nav-number">2.1.2.</span> <span class="nav-text">non-login shell</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#source%E6%88%96-%E5%91%BD%E4%BB%A4-%E4%BD%BF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%AB%8B%E5%8D%B3%E7%94%9F%E6%95%88"><span class="nav-number">2.2.</span> <span class="nav-text">source或.命令 使配置文件立即生效</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
