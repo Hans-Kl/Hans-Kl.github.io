@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文探讨SpringBoot应用中的序列化和反序列化过程，包括SpringBoot默认的Jackson库的注解使用和代码演示。 另外SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。 基础知识序列化序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，与之对应，反序列化就是存储或传输形式转为对象状态信息的过程 序列化有多种方式，常用的有Java原生提供的字节格式和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot系列之Jackson">
+<meta property="og:url" content="http://klhans.com/springboot-jackson.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="本文探讨SpringBoot应用中的序列化和反序列化过程，包括SpringBoot默认的Jackson库的注解使用和代码演示。 另外SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。 基础知识序列化序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，与之对应，反序列化就是存储或传输形式转为对象状态信息的过程 序列化有多种方式，常用的有Java原生提供的字节格式和">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-05T11:40:27.000Z">
+<meta property="article:modified_time" content="2021-03-04T11:55:38.833Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="springboot">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://klhans.com/springboot-jackson.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>SpringBoot系列之Jackson | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">2</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot-jackson.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot系列之Jackson
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-05 19:40:27" itemprop="dateCreated datePublished" datetime="2021-01-05T19:40:27+08:00">2021-01-05</time>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>17k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>15 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文探讨SpringBoot应用中的序列化和反序列化过程，包括SpringBoot默认的Jackson库的注解使用和代码演示。</p>
+<p>另外SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。</p>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，<br>与之对应，反序列化就是存储或传输形式转为对象状态信息的过程</p>
+<p>序列化有多种方式，常用的有Java原生提供的字节格式和json格式。现在REST应用主要使用json格式传输数据。</p>
+<h3 id="Jackson序列化规则"><a href="#Jackson序列化规则" class="headerlink" title="Jackson序列化规则"></a>Jackson序列化规则</h3><p>public修饰的字段序列化时会直接读取字段值，不需要有get方法。如果有get方法的话，以get方法返回的字段值优先。</p>
+<p>默认情况下其他访问权限的属性没有get方法的话不会参与序列化。</p>
+<p>序列化的字段名命名规则是类中的 <code>get方法</code>去掉get后首字母小写，与之类似，反序列化对应的是<code>set方法</code>。比如<code>getUser</code>序列化之后就是<code>user</code>，所以一些不标准的命名方式会出现意料之外的问题，比如``getCtime`。</p>
+<h2 id="双向注解"><a href="#双向注解" class="headerlink" title="双向注解"></a>双向注解</h2><blockquote>
+<p>即序列化与反序列化过程中都有作用的注解，jackson官方没有对这种注解起名字，是我自己造的词</p>
+</blockquote>
+<h3 id="JsonIgnoreProperties"><a href="#JsonIgnoreProperties" class="headerlink" title="@JsonIgnoreProperties"></a>@JsonIgnoreProperties</h3><p>类级别注解，两个主要作用</p>
+<ol>
+<li><p>在序列化过程中标识忽略一个或多个属性；</p>
+</li>
+<li><p>反序列化过程中，表明忽略json中多余的属性，否则会报错。</p>
+</li>
+</ol>
+<p>第一个作用的代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@JsonIgnoreProperties(value = &#123;&quot;gender&quot;, &quot;age&quot;&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String name = <span class="string">&quot;亚当&quot;</span>;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String gender = <span class="string">&quot;male&quot;</span>;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> <span class="keyword">int</span> age = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeJsonIgnoreProperties&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> User <span class="title">serializeJsonIgnoreProperties</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> User();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里因为使用了注解忽略了属性，所以只会返回name一个属性，去掉注解的话会返回全部三个属性：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//加上@JsonIgnoreProperties(value = &#123;&quot;gender&quot;, &quot;age&quot;&#125;)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;亚当&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//去掉注解以后：</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;亚当&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;gender&quot;</span>: <span class="string">&quot;male&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;age&quot;</span>: <span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们看第二个作用，即忽略json中多余的属性，先不使用注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String name = <span class="string">&quot;夏娃&quot;</span>;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String gender = <span class="string">&quot;female&quot;</span>;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> <span class="keyword">int</span> age = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@PostMapping(&quot;deserializeJsonIgnoreProperties&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Person <span class="title">deserializeJsonIgnoreProperties</span><span class="params">(<span class="meta">@RequestBody</span> Person person)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> person;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//传入</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;demoData&quot;</span>,</span><br><span class="line">  <span class="string">&quot;gender&quot;</span>: <span class="string">&quot;demoData&quot;</span>,</span><br><span class="line">  <span class="string">&quot;age&quot;</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="string">&quot;action&quot;</span>:<span class="string">&quot;eatApple&quot;</span><span class="comment">//多余属性</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果我们发现即使有多余属性，也没有报错，不符合预期，难道jackson的注解失效了？我们再试一下使用<code>ObjectMapper</code>手动序列化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">  <span class="meta">@GetMapping(&quot;deserializeJsonIgnorePropertiesWithOM&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Person <span class="title">deserializeJsonIgnorePropertiesWithOM</span><span class="params">()</span> <span class="keyword">throws</span> JsonProcessingException </span>&#123;</span><br><span class="line">    String json =</span><br><span class="line">        <span class="string">&quot;&#123;\&quot;name\&quot;: \&quot;demoData\&quot;,\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;\&quot;gender\&quot;: \&quot;demoData\&quot;,\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;\&quot;age\&quot;: 1,\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;\&quot;action\&quot;:\&quot;eatApple\&quot;\n &#125;&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ObjectMapper().readValue(json, Person.class);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//报错</span></span><br><span class="line">com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field &quot;action&quot; (class com.hans.jackson.vo.jsonignoreproperties.Person), not marked as ignorable (3 known properties: &quot;gender&quot;, &quot;name&quot;, &quot;age&quot;])</span><br><span class="line">  </span><br><span class="line"><span class="comment">//加上注解，不再报错</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@JsonIgnoreProperties(ignoreUnknown = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String name = <span class="string">&quot;夏娃&quot;</span>;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String gender = <span class="string">&quot;female&quot;</span>;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> <span class="keyword">int</span> age = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此我们得出结论，<code>@JsonIgnoreProperties(ignoreUnknown = true)</code>是有效的，在SpringBoot中无效是因为SpringBoot对<code>ObjectMapper</code>进行了定制化配置。具体参见<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/spring-boot-features.html#boot-features-json">SpringBoot官方文档</a></p>
+<h3 id="JsonProperty-JsonGetter-JsonSetter"><a href="#JsonProperty-JsonGetter-JsonSetter" class="headerlink" title="@JsonProperty,@JsonGetter,@JsonSetter"></a>@JsonProperty,@JsonGetter,@JsonSetter</h3><p>用在不标准的get或set方法上，对序列化和反序列化的字段名进行重命名。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String name;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> <span class="keyword">double</span> score;</span><br><span class="line">  <span class="keyword">private</span> String grade = <span class="string">&quot;三年级&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getMessGrade</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> grade;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeJsonProperty&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Student <span class="title">serializeJsonProperty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Student();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接口返回</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="keyword">null</span>,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;score&quot;</span>: <span class="number">0.0</span>,</span><br><span class="line">    <span class="string">&quot;messGrade&quot;</span>: <span class="string">&quot;三年级&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改实体，加上@JsonProperty注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String name;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> <span class="keyword">double</span> score;</span><br><span class="line">  <span class="keyword">private</span> String grade = <span class="string">&quot;三年级&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@JsonProperty(&quot;grade&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getMessGrade</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> grade;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接口返回</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="keyword">null</span>,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;score&quot;</span>: <span class="number">0.0</span>,</span><br><span class="line">    <span class="string">&quot;grade&quot;</span>: <span class="string">&quot;三年级&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到我们重新定义了返回json的字段名，同理在set方法上使用<code>@JsonProperty</code>可以自定义入参json的字段名。</p>
+<p>与之类似的还有用在get方法上的<code>@JsonGetter</code>和用在set方法上的<code>@JsonSetter</code>，这两个注解是<code>@JsonProperty</code>的特例，一般使用不到，官网是这样描述他们的关系的:</p>
+<blockquote>
+<p>The <strong>@JsonGetter</strong> annotation is an alternative to the <strong>@JsonProperty</strong> annotation</p>
+</blockquote>
+<p>值得注意的是，<code>@JsonProperty</code>也可以用在属性上，会将字段名重命名的同时强制使该字段可见，在字段名符合<em>首字母小写，第二个字母大写</em>这种情况时，序列化会多返回一个字段，所以尽量不要在字段上直接使用<code>@JsonProperty</code>。</p>
+<p>这里有一段网上找到的原理说明：</p>
+<blockquote>
+<p>jackson2对pojo类型序列化的处理。</p>
+<p>Jackson2在初始化序列器时，对pojo类型对象会收集其属性信息，属性包括成员变量及方法，然后属性名称和处理过后的方法名称做为key保存到一个LinkedHashMap中。收集过程中会调用com.fasterxml.jackson.databind.util.BeanUtil中的legacyManglePropertyName方法用来处理方法名称，它会将get/set方法前缀，即get或set去掉，<strong>并将其后面的连续大写字符转换成小写字符</strong>返回。例如: getNEWString会转变成newstring返回。你的属性名称如果有这样的”nSmallSellCount”,lombok自动生成的get方法就会是这样的”getNSmallSellCount”，处理过后就是这样的”nsmallSellCount”,这与属性nSmallSellCount并不冲突，可以同时存在于HashMap中。收集完属性信息后，下面的步骤中会删除掉非可见的属性，一般指的是私有成员变量，这时，名称为”nSmallSellCount”的成员变量属性会被删除掉，这样的序列化结果是不会有问题的，但，如果加了@JsonProperty注释，Jackson2会认为这个属性是可见的，不必会删除，这时这两个表示同一个值得属性就会被一同序列化。</p>
+</blockquote>
+<h3 id="JsonUnwrapped"><a href="#JsonUnwrapped" class="headerlink" title="@JsonUnwrapped"></a>@JsonUnwrapped</h3><p>使用在嵌套类上，用来将嵌套类的属性“扁平化”，官网称其为<strong>unwrapped/flattened</strong>。同时用在序列化和反序列化过程中。</p>
+<p>需要注意的是用了注解之后反序列时，之前的结构失效。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> String name = <span class="string">&quot;奔驰&quot;</span>;</span><br><span class="line">  <span class="meta">@JsonUnwrapped</span> <span class="keyword">private</span> Wheel wheel = <span class="keyword">new</span> Wheel();</span><br><span class="line"></span><br><span class="line">  <span class="meta">@NoArgsConstructor</span></span><br><span class="line">  <span class="meta">@Getter</span></span><br><span class="line">  <span class="meta">@Setter</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Wheel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String brand = <span class="string">&quot;米其林&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> price = <span class="number">10.1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**序列化**/</span></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeJsonUnwrapped&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Car <span class="title">serializeJsonUnwrapped</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Car();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接口返回</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;奔驰&quot;</span>,</span><br><span class="line">  <span class="string">&quot;brand&quot;</span>: <span class="string">&quot;米其林&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">10.1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**反序列化**/</span></span><br><span class="line">  <span class="meta">@PostMapping(&quot;deserializeJsonUnwrapped&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Car <span class="title">deserializeJsonUnwrapped</span><span class="params">(<span class="meta">@RequestBody</span> Car car)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> car;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//入参</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;法拉利&quot;</span>,</span><br><span class="line">  <span class="string">&quot;brand&quot;</span>: <span class="string">&quot;黑马&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">10.222</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//返回值</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;法拉利&quot;</span>,</span><br><span class="line">  <span class="string">&quot;brand&quot;</span>: <span class="string">&quot;黑马&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">10.222</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//入参</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>:<span class="string">&quot;法拉利&quot;</span>,</span><br><span class="line">    <span class="string">&quot;wheel&quot;</span>:&#123;</span><br><span class="line">        <span class="string">&quot;brand&quot;</span>:<span class="string">&quot;黑马&quot;</span>,</span><br><span class="line">        <span class="string">&quot;price&quot;</span>:<span class="number">10.222</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//brand和price属性反序列化失败，返回值：</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;法拉利&quot;</span>,</span><br><span class="line">  <span class="string">&quot;brand&quot;</span>: <span class="string">&quot;米其林&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">10.1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="JsonAnyGetter-JsonAnySetter"><a href="#JsonAnyGetter-JsonAnySetter" class="headerlink" title="@JsonAnyGetter,@JsonAnySetter"></a>@JsonAnyGetter,@JsonAnySetter</h3><p>用在实体中的Map类型属性的get/set方法上，来使序列化/反序列化过程中的json<code>扁平化</code>，与<code>@JsonUnwrapped</code>作用类似。</p>
+<p>值得注意的是：这两个注解只能用在返回值为Map类型的方法上。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnytterBean</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> String name;</span><br><span class="line">  <span class="keyword">private</span> Map&lt;String, String&gt; properties;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@JsonAnyGetter</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Map&lt;String, String&gt; <span class="title">getProperties</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> properties;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeAnytterBean&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> AnytterBean <span class="title">serializeAnytterBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    HashMap&lt;String, String&gt; propertiesMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    propertiesMap.put(<span class="string">&quot;game&quot;</span>, <span class="string">&quot;合金装备&quot;</span>);</span><br><span class="line">    propertiesMap.put(<span class="string">&quot;gender&quot;</span>, <span class="string">&quot;女&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> AnytterBean(<span class="string">&quot;静静&quot;</span>, propertiesMap);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;静静&quot;</span>,</span><br><span class="line">  <span class="string">&quot;game&quot;</span>: <span class="string">&quot;合金装备&quot;</span>,</span><br><span class="line">  <span class="string">&quot;gender&quot;</span>: <span class="string">&quot;女&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//不使用注解返回值</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;静静&quot;</span>,</span><br><span class="line">  <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;game&quot;</span>: <span class="string">&quot;合金装备&quot;</span>,</span><br><span class="line">    <span class="string">&quot;gender&quot;</span>: <span class="string">&quot;女&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="JsonSerialize-JsonDeserialize"><a href="#JsonSerialize-JsonDeserialize" class="headerlink" title="@JsonSerialize,@JsonDeserialize"></a>@JsonSerialize,@JsonDeserialize</h3><p>通过实现<code>StdSerializer</code>或<code>StdDeSerializer</code>抽象类方法，以自定义序列化和反序列化规则。然后在字段上表明注解使用这个自定义规则。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomDateSerializer</span> <span class="keyword">extends</span> <span class="title">StdSerializer</span>&lt;<span class="title">Date</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> SimpleDateFormat formatter </span><br><span class="line">      = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;dd-MM-yyyy hh:mm:ss&quot;</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">      Date value, JsonGenerator gen, SerializerProvider arg2)</span> </span></span><br><span class="line"><span class="function">      <span class="keyword">throws</span> IOException, JsonProcessingException </span>&#123;</span><br><span class="line">        gen.writeString(formatter.format(value));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EventWithSerializer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@JsonSerialize(using = CustomDateSerializer.class)</span></span><br><span class="line">    <span class="keyword">public</span> Date eventDate;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="JsonView"><a href="#JsonView" class="headerlink" title="@JsonView"></a>@JsonView</h3><p>一个很有用的注解，用在序列化和反序列化过程中，可以根据不同情况定制化不同的视图，视图中选择参与序列化和反序列化的具体字段，并且支持继承。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewBean</span> </span>&#123;</span><br><span class="line">  <span class="comment">//声明两个视图，子类视图会继承父类的字段</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BaseView</span> </span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DetailView</span> <span class="keyword">extends</span> <span class="title">BaseView</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView(BaseView.class)</span></span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="meta">@JsonView(BaseView.class)</span></span><br><span class="line">    <span class="keyword">public</span> String color;</span><br><span class="line">    <span class="meta">@JsonView(DetailView.class)</span></span><br><span class="line">    <span class="keyword">public</span> String detail;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeViewBean&quot;)</span></span><br><span class="line">  <span class="meta">@JsonView(ViewBean.BaseView.class)</span><span class="comment">//指定父类视图</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ViewBean <span class="title">serializeViewBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ViewBean viewBean = <span class="keyword">new</span> ViewBean();</span><br><span class="line">    viewBean.name = <span class="string">&quot;名字&quot;</span>;</span><br><span class="line">    viewBean.color = <span class="string">&quot;blue&quot;</span>;</span><br><span class="line">    viewBean.detail = <span class="string">&quot;view&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> viewBean;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//返回值，没有包含detail字段</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;名字&quot;</span>,</span><br><span class="line">    <span class="string">&quot;color&quot;</span>: <span class="string">&quot;blue&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeViewBean&quot;)</span></span><br><span class="line">  <span class="meta">@JsonView(ViewBean.DetailView.class)</span><span class="comment">//指定父类视图</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ViewBean <span class="title">serializeViewBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ViewBean viewBean = <span class="keyword">new</span> ViewBean();</span><br><span class="line">    viewBean.name = <span class="string">&quot;名字&quot;</span>;</span><br><span class="line">    viewBean.color = <span class="string">&quot;blue&quot;</span>;</span><br><span class="line">    viewBean.detail = <span class="string">&quot;view&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> viewBean;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//返回值，包含了全部字段</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;名字&quot;</span>,</span><br><span class="line">    <span class="string">&quot;color&quot;</span>: <span class="string">&quot;blue&quot;</span>,</span><br><span class="line">    <span class="string">&quot;detail&quot;</span>: <span class="string">&quot;view&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是：</p>
+<ol>
+<li>如果方法上指定了具体视图，则实体中未被@JsonView修饰的属性在任何视图中都不会生效。</li>
+<li>如果方法上没有指定任何视图，则实体中所有属性都会返回，就像实体上没有使用<code>@JsonView</code>注解一样。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewBean</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BaseView</span> </span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DetailView</span> <span class="keyword">extends</span> <span class="title">BaseView</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//没有@JsonView注解</span></span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="meta">@JsonView(BaseView.class)</span></span><br><span class="line">    <span class="keyword">public</span> String color;</span><br><span class="line">    <span class="meta">@JsonView(DetailView.class)</span></span><br><span class="line">    <span class="keyword">public</span> String detail;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeViewBean&quot;)</span></span><br><span class="line">  <span class="meta">@JsonView(ViewBean.DetailView.class)</span><span class="comment">//指定视图</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ViewBean <span class="title">serializeViewBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ViewBean viewBean = <span class="keyword">new</span> ViewBean();</span><br><span class="line">    viewBean.name = <span class="string">&quot;名字&quot;</span>;</span><br><span class="line">    viewBean.color = <span class="string">&quot;blue&quot;</span>;</span><br><span class="line">    viewBean.detail = <span class="string">&quot;view&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> viewBean;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值,没有注解的字段不返回</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;color&quot;</span>: <span class="string">&quot;blue&quot;</span>,</span><br><span class="line">    <span class="string">&quot;detail&quot;</span>: <span class="string">&quot;view&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**方法上没有指定视图**/</span></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeViewBean&quot;)</span></span><br><span class="line">  <span class="meta">@JsonView(ViewBean.DetailView.class)</span><span class="comment">//指定视图</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ViewBean <span class="title">serializeViewBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ViewBean viewBean = <span class="keyword">new</span> ViewBean();</span><br><span class="line">    viewBean.name = <span class="string">&quot;名字&quot;</span>;</span><br><span class="line">    viewBean.color = <span class="string">&quot;blue&quot;</span>;</span><br><span class="line">    viewBean.detail = <span class="string">&quot;view&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> viewBean;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值，相当于实体上的注解无效。</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;名字&quot;</span>,</span><br><span class="line">    <span class="string">&quot;color&quot;</span>: <span class="string">&quot;blue&quot;</span>,</span><br><span class="line">    <span class="string">&quot;detail&quot;</span>: <span class="string">&quot;view&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>与之对应，反序列化过程中<code>@JsonView</code>也是类似作用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewBean</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BaseView</span> </span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DetailView</span> <span class="keyword">extends</span> <span class="title">BaseView</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView(BaseView.class)</span></span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="meta">@JsonView(BaseView.class)</span></span><br><span class="line">    <span class="keyword">public</span> String color;</span><br><span class="line">    <span class="meta">@JsonView(DetailView.class)</span></span><br><span class="line">    <span class="keyword">public</span> String detail;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@PostMapping(&quot;deserializeViewBean&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ViewBean <span class="title">deserializeViewBean</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="meta">@RequestBody</span> <span class="meta">@JsonView(ViewBean.BaseView.class)</span> ViewBean viewBean)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> viewBean;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//入参json</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;名字&quot;</span>,</span><br><span class="line">    <span class="string">&quot;color&quot;</span>: <span class="string">&quot;blue&quot;</span>,</span><br><span class="line">    <span class="string">&quot;detail&quot;</span>: <span class="string">&quot;view&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//返回值，没有序列化子类字段</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;名字&quot;</span>,</span><br><span class="line">    <span class="string">&quot;color&quot;</span>: <span class="string">&quot;blue&quot;</span>,</span><br><span class="line">    <span class="string">&quot;detail&quot;</span>: <span class="keyword">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="序列化注解"><a href="#序列化注解" class="headerlink" title="序列化注解"></a>序列化注解</h2><h3 id="JsonFormat"><a href="#JsonFormat" class="headerlink" title="@JsonFormat"></a>@JsonFormat</h3><p>序列化Date/Time类型的字段时，格式化为指定格式。并且字段不需要有get方法。但不能用于反序列化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Calendar</span> </span>&#123;</span><br><span class="line">  <span class="meta">@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;dd-MM-yyyy hh:mm:ss&quot;)</span></span><br><span class="line">  <span class="keyword">private</span> LocalDateTime localDateTime = LocalDateTime.now();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接口返回</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;localDateTime&quot;</span>: <span class="string">&quot;25-03-2020 06:26:24&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="JsonIgnore"><a href="#JsonIgnore" class="headerlink" title="@JsonIgnore"></a>@JsonIgnore</h3><p>用在属性上，表明序列化时，忽略被注解的属性</p>
+<h3 id="JsonIgnoreType"><a href="#JsonIgnoreType" class="headerlink" title="@JsonIgnoreType"></a>@JsonIgnoreType</h3><p>用在类上，表明序列化时，包含这个类作为属性的对象会忽略该属性。也就是说<code>@JsonIgnore</code>是标注在忽略的属性上，<code>@JsonIgnoreType</code>是标注在忽略的属性的类声明上。</p>
+<h3 id="JsonInclude"><a href="#JsonInclude" class="headerlink" title="@JsonInclude"></a>@JsonInclude</h3><p>用在属性上，在序列化过程中，指定哪些字段参与序列化。</p>
+<p><code>JsonJsonInclude.Include.ALWAYS </code>默认策略，任何情况下都序列化该字段<br><code>JsonJsonInclude.Include.NON_NULL</code>这个最常用，如果字段值为null,那么就不序列化这个字段了。</p>
+<p><code>JsonJsonInclude.Include.NON_EMPTY</code>表明字段为空时，也不参与序列化。</p>
+<p><code>JsonJsonInclude.Include.NON_DEFAULT</code>表明子段是默认值的话，就不参与序列化。</p>
+<h3 id="JsonAutoDetect"><a href="#JsonAutoDetect" class="headerlink" title="@JsonAutoDetect"></a>@JsonAutoDetect</h3><p>指定自动识别的级别，不指定的话默认只能识别public字段和get/set方法。</p>
+<h3 id="JsonPropertyOrder"><a href="#JsonPropertyOrder" class="headerlink" title="@JsonPropertyOrder"></a>@JsonPropertyOrder</h3><p>用在类上，在序列化过程中指定字段顺序.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonPropertyOrder(&#123; &quot;name&quot;, &quot;id&quot; &#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBean</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="JsonRawValue"><a href="#JsonRawValue" class="headerlink" title="@JsonRawValue"></a>@JsonRawValue</h3><p>用在<code>String</code>类型的属性上，在序列化过程中，<code>强制</code>将String转换为对象（即使字符串不能转换成合法对象，也会强制转换引发错误，不推荐使用）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**不使用<span class="doctag">@JsonRawValue</span>修饰字段的实体类**/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RawBean</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> String name;</span><br><span class="line">  <span class="keyword">public</span> String json;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeJsonRawValue&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> RawBean <span class="title">serializeJsonRawValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    RawBean rawBean = <span class="keyword">new</span> RawBean();</span><br><span class="line">    rawBean.name = <span class="string">&quot;raw&quot;</span>;</span><br><span class="line">    rawBean.json = <span class="string">&quot;&#123;\n&quot;</span> + <span class="string">&quot;  \&quot;name\&quot;: \&quot;法拉利\&quot;,\n&quot;</span> + <span class="string">&quot;  \&quot;brand\&quot;: \&quot;米其林\&quot;,\n&quot;</span> + <span class="string">&quot;  \&quot;price\&quot;: 10.1\n&quot;</span> + <span class="string">&quot;&#125;&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> rawBean;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//返回值</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;raw&quot;</span>,</span><br><span class="line">  <span class="string">&quot;json&quot;</span>: <span class="string">&quot;&#123;\n  \&quot;name\&quot;: \&quot;法拉利\&quot;,\n  \&quot;brand\&quot;: \&quot;米其林\&quot;,\n  \&quot;price\&quot;: 10.1\n&#125;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**使用<span class="doctag">@JsonRawValue</span>修饰**/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RawBean</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> String name;</span><br><span class="line">  <span class="meta">@JsonRawValue</span> <span class="keyword">public</span> String json;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//返回值</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;raw&quot;</span>,</span><br><span class="line">  <span class="string">&quot;json&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;法拉利&quot;</span>,</span><br><span class="line">    <span class="string">&quot;brand&quot;</span>: <span class="string">&quot;米其林&quot;</span>,</span><br><span class="line">    <span class="string">&quot;price&quot;</span>: <span class="number">10.1</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**如果字符串不能从json转化成对象**/</span></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeJsonRawValue&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> RawBean <span class="title">serializeJsonRawValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    RawBean rawBean = <span class="keyword">new</span> RawBean();</span><br><span class="line">    rawBean.name = <span class="string">&quot;raw&quot;</span>;</span><br><span class="line">    rawBean.json = <span class="string">&quot;messString&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> rawBean;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//返回值是不合法的json</span></span><br><span class="line">&#123;<span class="string">&quot;name&quot;</span>:<span class="string">&quot;raw&quot;</span>,<span class="string">&quot;json&quot;</span>:messString&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="JsonValue"><a href="#JsonValue" class="headerlink" title="@JsonValue"></a>@JsonValue</h3><p>用在属性或get方法上，一个类只能使用一次，作用是序列化的结果只返回这一个字段值。</p>
+<p>值得注意的是，这个注解用在属性上时对反序列化过程也有作用，但是作用有些奇怪：==不会为被注解的字段进行反序列化==。所以这个注解最好是用在get方法上。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValueBean</span> </span>&#123;</span><br><span class="line">  <span class="meta">@JsonValue</span> <span class="keyword">public</span> String name = <span class="string">&quot;dove&quot;</span>;</span><br><span class="line">  <span class="keyword">public</span> String color = <span class="string">&quot;yellow&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeJsonValue&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ValueBean <span class="title">serializeJsonValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ValueBean();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值</span></span><br><span class="line"><span class="string">&quot;dove&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**反序列化**/</span></span><br><span class="line">  <span class="meta">@PostMapping(&quot;deserializeJsonValue&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ValueBean <span class="title">deserializeJsonValue</span><span class="params">(<span class="meta">@RequestBody</span> ValueBean valueBean)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> valueBean;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//入参json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;Robert&quot;</span>,</span><br><span class="line">  <span class="string">&quot;color&quot;</span>: <span class="string">&quot;oh&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//返回值</span></span><br><span class="line"><span class="string">&quot;dove&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="JsonRootValue"><a href="#JsonRootValue" class="headerlink" title="@JsonRootValue"></a>@JsonRootValue</h3><p>用在最外部的类上，在序列化和反序列化过程中生效，为json添加一个根节点值，用在嵌套类上没有作用。并且要设置ObjectMapper的相关属性才能激活这个注解，而SpringBoot默认没有设置属性，所以这个注解在SpringBoot应用中默认是无效的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="meta">@JsonRootName(&quot;root&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RootBean</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> String name = <span class="string">&quot;根&quot;</span>;</span><br><span class="line">  <span class="keyword">private</span> Wheel wheel = <span class="keyword">new</span> Wheel();</span><br><span class="line"></span><br><span class="line">  <span class="meta">@NoArgsConstructor</span></span><br><span class="line">  <span class="meta">@Getter</span></span><br><span class="line">  <span class="meta">@Setter</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Wheel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String brand = <span class="string">&quot;团藏&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> price = <span class="number">10.1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**序列化**/</span></span><br><span class="line">  <span class="meta">@GetMapping(&quot;serializeJsonRootNameWithOM&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">serializeJsonRootNameWithOM</span><span class="params">()</span> <span class="keyword">throws</span> JsonProcessingException </span>&#123;</span><br><span class="line">    ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper().enable(SerializationFeature.WRAP_ROOT_VALUE);</span><br><span class="line">    <span class="keyword">return</span> objectMapper.writeValueAsString(<span class="keyword">new</span> RootBean());</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//返回值</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;RootBean&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;根&quot;</span>,</span><br><span class="line">    <span class="string">&quot;wheel&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;brand&quot;</span>: <span class="string">&quot;团藏&quot;</span>,</span><br><span class="line">      <span class="string">&quot;price&quot;</span>: <span class="number">10.1</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**反序列化**/</span></span><br><span class="line">  <span class="meta">@PostMapping(&quot;deserializeJsonRootName&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> RootBean <span class="title">deserializeJsonRootName</span><span class="params">()</span> <span class="keyword">throws</span> JsonProcessingException </span>&#123;</span><br><span class="line">    ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper().enable(DeserializationFeature.UNWRAP_ROOT_VALUE);</span><br><span class="line">    String json =</span><br><span class="line">        <span class="string">&quot;&#123;\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;  \&quot;RootBean\&quot;: &#123;\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;    \&quot;name\&quot;: \&quot;根\&quot;,\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;    \&quot;wheel\&quot;: &#123;\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;      \&quot;brand\&quot;: \&quot;团藏\&quot;,\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;      \&quot;price\&quot;: 10.1\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;    &#125;\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;  &#125;\n&quot;</span></span><br><span class="line">            + <span class="string">&quot;&#125;&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> objectMapper.readValue(json, RootBean.class);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="反序列化注解"><a href="#反序列化注解" class="headerlink" title="反序列化注解"></a>反序列化注解</h2><h3 id="JsonAlias"><a href="#JsonAlias" class="headerlink" title="@JsonAlias"></a>@JsonAlias</h3><p>用在属性上，在反序列化过程中，为属性定义一个别名，在序列化中不起作用。一个字段上可以定义多个别名，在客户端传参不统一的情况下很有用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AliasBean</span> </span>&#123;</span><br><span class="line">  <span class="meta">@JsonAlias(&#123;&quot;name&quot;, &quot;desc&quot;&#125;)</span></span><br><span class="line">  <span class="keyword">private</span> String theName;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">double</span> price;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@PostMapping(&quot;deserializeAliasBean&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> AliasBean <span class="title">deserializeAliasBean</span><span class="params">(<span class="meta">@RequestBody</span> AliasBean aliasBean)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> aliasBean;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//入参json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;name&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">1.0</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//返回值，返回字段名不变</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;theName&quot;</span>: <span class="string">&quot;desc&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">1.0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//入参json，尝试同时传两个别名</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;name&quot;</span>,</span><br><span class="line">  <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;desc&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">1.0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值，第二个别名的值会覆盖第一个</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;theName&quot;</span>: <span class="string">&quot;desc&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">1.0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上就是Jackson常用注解在SpringBoot中的使用实践。</p>
+<blockquote>
+<p>参考资料：</p>
+<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/spring-boot-features.html#boot-features-json">https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/spring-boot-features.html#boot-features-json</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/howto.html#howto-customize-the-jackson-objectmapper">https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/howto.html#howto-customize-the-jackson-objectmapper</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.baeldung.com/jackson-annotations">https://www.baeldung.com/jackson-annotations</a></p>
+<p><a target="_blank" rel="noopener" href="http://fasterxml.github.io/jackson-annotations/javadoc/2.10/">http://fasterxml.github.io/jackson-annotations/javadoc/2.10/</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.51cto.com/luhaiyou/2369886">https://blog.51cto.com/luhaiyou/2369886</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/springboot/" rel="tag"># springboot</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/linux-profile.html" rel="prev" title="linux设置环境变量">
+      <i class="fa fa-chevron-left"></i> linux设置环境变量
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">序列化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jackson%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%84%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">Jackson序列化规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E6%B3%A8%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">双向注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnoreProperties"><span class="nav-number">2.1.</span> <span class="nav-text">@JsonIgnoreProperties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonProperty-JsonGetter-JsonSetter"><span class="nav-number">2.2.</span> <span class="nav-text">@JsonProperty,@JsonGetter,@JsonSetter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonUnwrapped"><span class="nav-number">2.3.</span> <span class="nav-text">@JsonUnwrapped</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAnyGetter-JsonAnySetter"><span class="nav-number">2.4.</span> <span class="nav-text">@JsonAnyGetter,@JsonAnySetter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonSerialize-JsonDeserialize"><span class="nav-number">2.5.</span> <span class="nav-text">@JsonSerialize,@JsonDeserialize</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonView"><span class="nav-number">2.6.</span> <span class="nav-text">@JsonView</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">序列化注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonFormat"><span class="nav-number">3.1.</span> <span class="nav-text">@JsonFormat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnore"><span class="nav-number">3.2.</span> <span class="nav-text">@JsonIgnore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnoreType"><span class="nav-number">3.3.</span> <span class="nav-text">@JsonIgnoreType</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonInclude"><span class="nav-number">3.4.</span> <span class="nav-text">@JsonInclude</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAutoDetect"><span class="nav-number">3.5.</span> <span class="nav-text">@JsonAutoDetect</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonPropertyOrder"><span class="nav-number">3.6.</span> <span class="nav-text">@JsonPropertyOrder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonRawValue"><span class="nav-number">3.7.</span> <span class="nav-text">@JsonRawValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonValue"><span class="nav-number">3.8.</span> <span class="nav-text">@JsonValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonRootValue"><span class="nav-number">3.9.</span> <span class="nav-text">@JsonRootValue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%A8%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">反序列化注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAlias"><span class="nav-number">4.1.</span> <span class="nav-text">@JsonAlias</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/konglinghan@klhans.com" title="E-Mail → konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
