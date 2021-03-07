@@ -1826,7 +1826,8 @@ pre .javascript .function {
 }
 .posts-expand .post-title-link {
   border-bottom: none;
-  color: var(--link-color);
+  color: #ff3333;/* 首页标题改成红色了*/
+  /* color: var(--link-color); */
   display: inline-block;
   position: relative;
   vertical-align: top;

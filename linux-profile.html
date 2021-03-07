@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/03/06/r2TmbGPpoucjCqH.png">
 <meta property="og:image" content="https://i.loli.net/2021/03/06/zB97IHxUcjDotKO.png">
 <meta property="article:published_time" content="2020-12-24T07:17:34.000Z">
-<meta property="article:modified_time" content="2021-03-06T08:48:01.400Z">
+<meta property="article:modified_time" content="2021-03-07T07:02:10.115Z">
 <meta property="article:author" content="孔令翰">
 <meta property="article:tag" content="linux">
 <meta property="article:tag" content="原创">
@@ -309,7 +309,7 @@
 <li><p>~/.profile</p>
 </li>
 </ol>
-<p>另外<del>/.bash_profile中os预写了逻辑，会去主动读取</del>/.bashrc中的变量，所以~/.bashrc中的变量也会生效，总流程图如下：</p>
+<p>另外~/.bash_profile中os预写了逻辑，会去主动读取~/.bashrc中的变量，所以~/.bashrc中的变量也会生效，总流程图如下：</p>
 <p><img src="https://i.loli.net/2021/03/06/zB97IHxUcjDotKO.png"></p>
 <h4 id="non-login-shell"><a href="#non-login-shell" class="headerlink" title="non-login shell"></a>non-login shell</h4><p>non-login shell 只会读取~/.bashrc一个配置文件</p>
 <h3 id="source或-使配置文件立即生效"><a href="#source或-使配置文件立即生效" class="headerlink" title="source或.使配置文件立即生效"></a>source或.使配置文件立即生效</h3><p>由于变量配置文件只会在shell启动的时候读取一次，所以如果不想退出当前shell的话，要用source或.命令主动读取配置文件并生效。</p>
@@ -351,6 +351,11 @@
           </div>
 
         
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
 
 
         
@@ -550,6 +555,26 @@
 
 
 
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
 
 
 
