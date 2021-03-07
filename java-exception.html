@@ -20,30 +20,40 @@
     var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="learner|developer|blogger|traveler">
-<meta property="og:type" content="website">
-<meta property="og:title" content="孔令翰-个人博客">
-<meta property="og:url" content="http://klhans.com/index.html">
+  <meta name="description" content="区区砂砾 不及我半分    ——宇智波斑 《火影忍者》  为什么会有异常远古时期的编程语言中是没有”异常”这个概念存在的，大家对于非正常的情况会约定一个错误标识，由下层方法返回给上层调用方法，类似ErrorCode &#x3D; 400这样，但是这样做有几个明显的缺点：  调用方需要额外编写大量检查错误标识的代码，并且这些代码与调用方本身的业务代码紧耦合在一起 调用方不一定有能力处理这些异常，如果没有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谈谈 Java 的异常机制">
+<meta property="og:url" content="http://klhans.com/java-exception.html">
 <meta property="og:site_name" content="孔令翰-个人博客">
-<meta property="og:description" content="learner|developer|blogger|traveler">
+<meta property="og:description" content="区区砂砾 不及我半分    ——宇智波斑 《火影忍者》  为什么会有异常远古时期的编程语言中是没有”异常”这个概念存在的，大家对于非正常的情况会约定一个错误标识，由下层方法返回给上层调用方法，类似ErrorCode &#x3D; 400这样，但是这样做有几个明显的缺点：  调用方需要额外编写大量检查错误标识的代码，并且这些代码与调用方本身的业务代码紧耦合在一起 调用方不一定有能力处理这些异常，如果没有">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/03/06/yWibGCBxu3XQUme.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/03/05/JynQBmbuGHjKEgS.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/07/4wSCoQrOPtpKB7k.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/07/MBrsZY8ioEUtuOK.png">
+<meta property="article:published_time" content="2020-03-07T06:22:34.000Z">
+<meta property="article:modified_time" content="2021-03-07T06:25:23.175Z">
 <meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="原创">
+<meta property="article:tag" content="技术">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/03/06/yWibGCBxu3XQUme.jpg">
 
-<link rel="canonical" href="http://klhans.com/">
+<link rel="canonical" href="http://klhans.com/java-exception.html">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>孔令翰-个人博客</title>
+  <title>谈谈 Java 的异常机制 | 孔令翰-个人博客</title>
   
 
 
@@ -157,233 +167,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/linux-profile.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/linux-profile.html" class="post-title-link" itemprop="url">linux设置环境变量</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-24 15:17:34" itemprop="dateCreated datePublished" datetime="2020-12-24T15:17:34+08:00">2020-12-24</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-                </span>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/linux-profile.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/linux-profile.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>1.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="https://i.loli.net/2021/03/06/28ykBcl3IezKZRf.png"></p>
-<blockquote>
-<p>我今日就要带佢走，我睇下边个够胆拦我。    ——伍六七 《刺客伍六七》</p>
-</blockquote>
-<hr>
-<p>本文介绍Linux/Unix操作系统下，如何设置变量，以及如何将变量升级为环境变量。</p>
-<h2 id="操作变量的命令"><a href="#操作变量的命令" class="headerlink" title="操作变量的命令"></a>操作变量的命令</h2><h3 id="查询变量值"><a href="#查询变量值" class="headerlink" title="查询变量值"></a>查询变量值</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo $PATH ;</span><br><span class="line">echo $&#123;PATH&#125;;</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置变量值"><a href="#设置变量值" class="headerlink" title="设置变量值"></a>设置变量值</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">foo=bianliang;</span><br></pre></td></tr></table></figure>
-
-<h4 id="等号两边不能有空格，比如下面这样会报错："><a href="#等号两边不能有空格，比如下面这样会报错：" class="headerlink" title="等号两边不能有空格，比如下面这样会报错："></a>等号两边不能有空格，比如下面这样会报错：</h4>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/linux-profile.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot-jackson.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/springboot-jackson.html" class="post-title-link" itemprop="url">SpringBoot系列之Jackson</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-07 19:40:27" itemprop="dateCreated datePublished" datetime="2020-03-07T19:40:27+08:00">2020-03-07</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a>
-                </span>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/springboot-jackson.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot-jackson.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>17k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>15 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <img src="https://i.loli.net/2021/03/06/ULnx3lSv1fkXayM.jpg" style="zoom:50%;">
-
-<blockquote>
-<p>上帝知道自己不是无所不能，所以才创造了妈妈。    ——《请回答1988》</p>
-</blockquote>
-<hr>
-<p>本文探讨SpringBoot应用中的序列化和反序列化过程，主要介绍SpringBoot默认的Jackson库的注解使用和代码演示。</p>
-<p>SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。</p>
-<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，<br>与之对应，反序列化就是存储或传输形式转为对象状态信息的过程</p>
-<p>序列化有多种方式，常用的有Java原生提供的字节格式和json格式。现在REST应用主要使用json格式传输数据。</p>
-<h3 id="Jackson序列化规则"><a href="#Jackson序列化规则" class="headerlink" title="Jackson序列化规则"></a>Jackson序列化规则</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/springboot-jackson.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -399,10 +186,9 @@
       <meta itemprop="name" content="孔令翰-个人博客">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/java-exception.html" class="post-title-link" itemprop="url">谈谈 Java 的异常机制</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          谈谈 Java 的异常机制
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -426,6 +212,13 @@
           
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
   <span class="post-meta-item">
     
@@ -462,7 +255,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <img src="https://i.loli.net/2021/03/06/yWibGCBxu3XQUme.jpg" style="zoom:50%;">
+        <img src="https://i.loli.net/2021/03/06/yWibGCBxu3XQUme.jpg" style="zoom:50%;" />
 
 <blockquote>
 <p>区区砂砾 不及我半分    ——宇智波斑 《火影忍者》</p>
@@ -477,35 +270,103 @@
 <p>现代的异常允许底层抛出的异常，跨越数个调用方法，一直到最顶层的方法，这样耦合性就降低了，没有能力异常的调用方不需要非得对异常进行处理，可以简单的向上抛出。</p>
 <h2 id="Java异常体系"><a href="#Java异常体系" class="headerlink" title="Java异常体系"></a>Java异常体系</h2><p>Java所有的异常都继承自<code>Exception</code>对象，<code>Exception</code>继承自<code>Throwable</code>类，同时继承自<code>Throwable</code>类的还有用于表示错误的<code>Error</code>类，他们的类图如下：</p>
 <p><img src="https://i.loli.net/2021/03/05/JynQBmbuGHjKEgS.png" alt="image-20210305221611195"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/java-exception.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
+<p>其中<code>Error</code>类表示严重的错误，我们👨‍💻‍大部分是与<code>Exception</code>打交道，本文不对<code>Error</code>做讨论。</p>
+<h3 id="异常的两种模型"><a href="#异常的两种模型" class="headerlink" title="异常的两种模型"></a>异常的两种模型</h3><p>调用方接到下层方法抛出的异常时，一般有两种解决方案：</p>
+<ol>
+<li><p>调用方可能有能力处理的异常，或者至少应该关心的异常，比如<code>IOException</code></p>
+</li>
+<li><p>调用方不关心的异常，不关心可能是因为没有能力处理，比如<code>IllegalArgumentException</code>；</p>
+<p>也可能是因为这种异常是可以通过编码避免的，比如<code>NullPointerException</code>或<code>IndexOutOfBoundsException</code></p>
+</li>
+</ol>
+<p>第一种异常称为**受检异常(checked exception)**，继承自<code>Exception</code>的除了<code>RuntimeException</code>及其子类，都属于这类异常，特点是调用方必须立即处理或继续向上抛出这种异常，不能坐视不管。</p>
+<p>这种异常一般用于强提醒调用方：嘿哥们，你应该注意这种异常，我觉得你可能有办法解决！</p>
+<p><strong>这种异常模型称为恢复模型。</strong></p>
+<p>第二种异常称为<strong>非受检异常(checked exception)，或运行时异常</strong>，只有继承自<code>RuntimeException</code>的子类，才属于此类异常。对于这种异常，调用方不需要主动处理（并非不能处理，也可以通过try catch显式捕获），如果整体调用链上都没人捕获非受检异常的话，将一路向上抛至main方法。</p>
+<p><strong>这种异常模型称为终止模型</strong></p>
+<h3 id="受检异常的困境"><a href="#受检异常的困境" class="headerlink" title="受检异常的困境"></a>受检异常的困境</h3><p>虽然受检异常的初衷是好的，它希望大家能对可能出现的问题进行处理，但是大部分时候，我们都没有能力和精力对可能出现的异常编写处理代码，所以平常我们都是直接向上抛，虽然这种直接向上抛的做法不太负责但是强行处理自己解决不了的异常是更加恐怖的行为，因为这样可能会掩盖潜在的问题！</p>
+<p>甚至为了避免调用方在方法签名反复声明<code>throws xxxExeption</code>的繁琐，出现了将受检异常包装为非受检异常的看起来本末倒置的编程模式，典型的实现像 ：</p>
+<p>Spring Data将<code>java.sql.SQLException extends java.lang.Exception</code>异常全部包装为非受检异常。</p>
+<p>这种编程模式的出现让我们重新思考Java语言中受检异常存在的必要性，在我看来恢复模型似乎有些刻板和理想化了。</p>
+<h2 id="异常的基础用法"><a href="#异常的基础用法" class="headerlink" title="异常的基础用法"></a>异常的基础用法</h2><h3 id="构造异常"><a href="#构造异常" class="headerlink" title="构造异常"></a>构造异常</h3><p>异常和其他对象一样，也可以有属性、构造方法等，比如我司的统一异常类如下：</p>
+<p><img src="https://i.loli.net/2021/03/07/4wSCoQrOPtpKB7k.png" alt="image-20210307132808529"></p>
+<h3 id="抛出异常"><a href="#抛出异常" class="headerlink" title="抛出异常"></a>抛出异常</h3><p>下层方法可以在方法签名上声明可能抛出的受检异常，（为什么强调是受检异常，因为都方法上声明非受检异常没有意义，调用方不会被编译器提示要处理这个异常，除非他来看你的源代码）</p>
+<p>这样做的目的是为了提示上层方法：</p>
+<p>hey，我有可能会抛出这些异常，你能处理的话就要 catch，不能处理的话也要像我一样 throw 喔。</p>
+<h3 id="捕获异常"><a href="#捕获异常" class="headerlink" title="捕获异常"></a>捕获异常</h3><p>我们通常会把可能抛出异常的方法封装在 try catch finally 语句中，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">//something</span></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> SQLException();</span><br><span class="line">&#125;<span class="keyword">catch</span> (SQLException e0 )&#123;</span><br><span class="line">    </span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以声明多个 catch 语句，以捕获不同的异常。</p>
+<p>值得注意的，<strong>多 catch 语句时，一旦命中其中一个，就不会再执行下面声明的其他 catch 语句了。</strong></p>
+<p>这一点和 switch case 语句不同，switch命中某个 case 时，默认会继续执行代码，看看接下来的其他 case 是否匹配，我们一般用 break 来跳过其他的匹配。</p>
+<p>另外在 catch 语句中还可以选择继续抛出异常，抛出的异常上层方法可以捕获并处理。</p>
+<h2 id="异常的最佳实践"><a href="#异常的最佳实践" class="headerlink" title="异常的最佳实践"></a>异常的最佳实践</h2><h3 id="异常处理原则"><a href="#异常处理原则" class="headerlink" title="异常处理原则"></a>异常处理原则</h3><ul>
+<li>只处理自己有能力处理的异常，不要掩盖异常</li>
+<li>不要把正常逻辑作为异常，只在真正异常的时候使用“异常”</li>
+</ul>
+<h3 id="SneakyThrows"><a href="#SneakyThrows" class="headerlink" title="@SneakyThrows"></a>@SneakyThrows</h3><p>Lombok 提供了一个注解，可以让我们不在方法声明上显式声明要抛出的异常。</p>
+<p>使用非常简单，只要在方法上面加上<code>@SneakyThrows</code>注解，就可以省掉在方法声明上显式声明的麻烦了。</p>
+<p>其原理是通过泛型，巧妙的骗过了编译器。</p>
+<p>源码如下：</p>
+<p><img src="https://i.loli.net/2021/03/07/MBrsZY8ioEUtuOK.png" alt="image-20210307140154024"></p>
+<p>Java 的泛型只在编译期有效，当编译完成之后，sneakyThrow0方法是不认识 T的，JVM 认为返回值T就是 Throwable，所以强转不会报错。</p>
+<p>而方法声明上的 throws T 编译完则变成了 throws RunTimeException，上层方法不需要强制处理。</p>
+<p>使用这个注解和自己手动在方法声明上抛出受检异常的效果完全相同。</p>
+
     </div>
 
     
     
     
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://klhans.com/java-exception.html" title="谈谈 Java 的异常机制">http://klhans.com/java-exception.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%8E%9F%E5%88%9B/" rel="tag"><i class="fa fa-tag"></i> 原创</a>
+              <a href="/tags/%E6%8A%80%E6%9C%AF/" rel="tag"><i class="fa fa-tag"></i> 技术</a>
+              <a href="/tags/java/" rel="tag"><i class="fa fa-tag"></i> java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/springboot-jackson.html" rel="next" title="SpringBoot系列之Jackson">
+      SpringBoot系列之Jackson <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
       </footer>
+    
   </article>
   
   
   
 
 
-  
-
-
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -552,6 +413,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89%E5%BC%82%E5%B8%B8"><span class="nav-number">1.</span> <span class="nav-text">为什么会有异常</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB"><span class="nav-number">2.</span> <span class="nav-text">Java异常体系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">异常的两种模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%97%E6%A3%80%E5%BC%82%E5%B8%B8%E7%9A%84%E5%9B%B0%E5%A2%83"><span class="nav-number">2.2.</span> <span class="nav-text">受检异常的困境</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">异常的基础用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%BC%82%E5%B8%B8"><span class="nav-number">3.1.</span> <span class="nav-text">构造异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%9B%E5%87%BA%E5%BC%82%E5%B8%B8"><span class="nav-number">3.2.</span> <span class="nav-text">抛出异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%95%E8%8E%B7%E5%BC%82%E5%B8%B8"><span class="nav-number">3.3.</span> <span class="nav-text">捕获异常</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">4.</span> <span class="nav-text">异常的最佳实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%8E%9F%E5%88%99"><span class="nav-number">4.1.</span> <span class="nav-text">异常处理原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SneakyThrows"><span class="nav-number">4.2.</span> <span class="nav-text">@SneakyThrows</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -17,21 +17,25 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="本文探讨SpringBoot应用中的序列化和反序列化过程，包括SpringBoot默认的Jackson库的注解使用和代码演示。 另外SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。 基础知识序列化序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，与之对应，反序列化就是存储或传输形式转为对象状态信息的过程 序列化有多种方式，常用的有Java原生提供的字节格式和">
+  <meta name="description" content="上帝知道自己不是无所不能，所以才创造了妈妈。    ——《请回答1988》   本文探讨SpringBoot应用中的序列化和反序列化过程，主要介绍SpringBoot默认的Jackson库的注解使用和代码演示。 SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。 基础知识序列化序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，与之对应，反序列化就是存储或">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringBoot系列之Jackson">
 <meta property="og:url" content="http://klhans.com/springboot-jackson.html">
 <meta property="og:site_name" content="孔令翰-个人博客">
-<meta property="og:description" content="本文探讨SpringBoot应用中的序列化和反序列化过程，包括SpringBoot默认的Jackson库的注解使用和代码演示。 另外SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。 基础知识序列化序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，与之对应，反序列化就是存储或传输形式转为对象状态信息的过程 序列化有多种方式，常用的有Java原生提供的字节格式和">
-<meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-01-05T11:40:27.000Z">
-<meta property="article:modified_time" content="2021-03-04T11:55:38.833Z">
+<meta property="og:description" content="上帝知道自己不是无所不能，所以才创造了妈妈。    ——《请回答1988》   本文探讨SpringBoot应用中的序列化和反序列化过程，主要介绍SpringBoot默认的Jackson库的注解使用和代码演示。 SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。 基础知识序列化序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，与之对应，反序列化就是存储或">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/03/06/ULnx3lSv1fkXayM.jpg">
+<meta property="article:published_time" content="2020-03-07T11:40:27.000Z">
+<meta property="article:modified_time" content="2021-03-06T08:50:27.443Z">
 <meta property="article:author" content="孔令翰">
 <meta property="article:tag" content="springboot">
+<meta property="article:tag" content="原创">
+<meta property="article:tag" content="技术">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/03/06/ULnx3lSv1fkXayM.jpg">
 
 <link rel="canonical" href="http://klhans.com/springboot-jackson.html">
 
@@ -42,7 +46,7 @@
     sidebar: "",
     isHome : false,
     isPost : true,
-    lang   : 'en'
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -86,7 +90,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
+    <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -116,22 +120,27 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
         <li class="menu-item menu-item-about">
 
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">2</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">2</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
   </ul>
@@ -161,7 +170,7 @@
     
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot-jackson.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -183,19 +192,28 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
 
-              <time title="Created: 2021-01-05 19:40:27" itemprop="dateCreated datePublished" datetime="2021-01-05T19:40:27+08:00">2021-01-05</time>
+              <time title="创建时间：2020-03-07 19:40:27" itemprop="dateCreated datePublished" datetime="2020-03-07T19:40:27+08:00">2020-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a>
+                </span>
             </span>
 
           
 
           
-            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
-              <span class="post-meta-item-text">Views: </span>
+              <span class="post-meta-item-text">阅读次数：</span>
               <span id="busuanzi_value_page_pv"></span>
             </span>
   
@@ -204,7 +222,7 @@
       <span class="post-meta-item-icon">
         <i class="far fa-comment"></i>
       </span>
-      <span class="post-meta-item-text">Valine: </span>
+      <span class="post-meta-item-text">Valine：</span>
     
     <a title="valine" href="/springboot-jackson.html#valine-comments" itemprop="discussionUrl">
       <span class="post-comments-count valine-comment-count" data-xid="/springboot-jackson.html" itemprop="commentCount"></span>
@@ -212,17 +230,17 @@
   </span>
   
   
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
               <span>17k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-              <span>15 mins.</span>
+              <span>15 分钟</span>
             </span>
 
         </div>
@@ -234,13 +252,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文探讨SpringBoot应用中的序列化和反序列化过程，包括SpringBoot默认的Jackson库的注解使用和代码演示。</p>
-<p>另外SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。</p>
+        <img src="https://i.loli.net/2021/03/06/ULnx3lSv1fkXayM.jpg" style="zoom:50%;" />
+
+<blockquote>
+<p>上帝知道自己不是无所不能，所以才创造了妈妈。    ——《请回答1988》</p>
+</blockquote>
+<hr>
+<p>本文探讨SpringBoot应用中的序列化和反序列化过程，主要介绍SpringBoot默认的Jackson库的注解使用和代码演示。</p>
+<p>SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。</p>
 <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，<br>与之对应，反序列化就是存储或传输形式转为对象状态信息的过程</p>
 <p>序列化有多种方式，常用的有Java原生提供的字节格式和json格式。现在REST应用主要使用json格式传输数据。</p>
 <h3 id="Jackson序列化规则"><a href="#Jackson序列化规则" class="headerlink" title="Jackson序列化规则"></a>Jackson序列化规则</h3><p>public修饰的字段序列化时会直接读取字段值，不需要有get方法。如果有get方法的话，以get方法返回的字段值优先。</p>
 <p>默认情况下其他访问权限的属性没有get方法的话不会参与序列化。</p>
-<p>序列化的字段名命名规则是类中的 <code>get方法</code>去掉get后首字母小写，与之类似，反序列化对应的是<code>set方法</code>。比如<code>getUser</code>序列化之后就是<code>user</code>，所以一些不标准的命名方式会出现意料之外的问题，比如``getCtime`。</p>
+<p>序列化的字段名命名规则是类中的 <code>get方法</code>去掉get后首字母小写，与之类似，反序列化对应的是<code>set方法</code>。比如<code>getUser</code>序列化之后就是<code>user</code>，所以一些不标准的命名方式会出现意料之外的问题，比如<code>getCtime</code>。</p>
 <h2 id="双向注解"><a href="#双向注解" class="headerlink" title="双向注解"></a>双向注解</h2><blockquote>
 <p>即序列化与反序列化过程中都有作用的注解，jackson官方没有对这种注解起名字，是我自己造的词</p>
 </blockquote>
@@ -334,7 +358,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AliasBean</span> </span>&#123;</span><br><span class="line">  <span class="meta">@JsonAlias(&#123;&quot;name&quot;, &quot;desc&quot;&#125;)</span></span><br><span class="line">  <span class="keyword">private</span> String theName;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">double</span> price;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@PostMapping(&quot;deserializeAliasBean&quot;)</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> AliasBean <span class="title">deserializeAliasBean</span><span class="params">(<span class="meta">@RequestBody</span> AliasBean aliasBean)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> aliasBean;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//入参json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;name&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">1.0</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//返回值，返回字段名不变</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;theName&quot;</span>: <span class="string">&quot;desc&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">1.0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//入参json，尝试同时传两个别名</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;name&quot;</span>,</span><br><span class="line">  <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;desc&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">1.0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回值，第二个别名的值会覆盖第一个</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;theName&quot;</span>: <span class="string">&quot;desc&quot;</span>,</span><br><span class="line">  <span class="string">&quot;price&quot;</span>: <span class="number">1.0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>以上就是Jackson常用注解在SpringBoot中的使用实践。</p>
-<blockquote>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><blockquote>
 <p>参考资料：</p>
 <p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/spring-boot-features.html#boot-features-json">https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/spring-boot-features.html#boot-features-json</a></p>
 <p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/howto.html#howto-customize-the-jackson-objectmapper">https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/html/howto.html#howto-customize-the-jackson-objectmapper</a></p>
@@ -348,10 +372,30 @@
     
     
     
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://klhans.com/springboot-jackson.html" title="SpringBoot系列之Jackson">http://klhans.com/springboot-jackson.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
 
       <footer class="post-footer">
+          
           <div class="post-tags">
-              <a href="/tags/springboot/" rel="tag"># springboot</a>
+              <a href="/tags/springboot/" rel="tag"><i class="fa fa-tag"></i> springboot</a>
+              <a href="/tags/%E5%8E%9F%E5%88%9B/" rel="tag"><i class="fa fa-tag"></i> 原创</a>
+              <a href="/tags/%E6%8A%80%E6%9C%AF/" rel="tag"><i class="fa fa-tag"></i> 技术</a>
           </div>
 
         
@@ -360,10 +404,13 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/linux-profile.html" rel="prev" title="linux设置环境变量">
-      <i class="fa fa-chevron-left"></i> linux设置环境变量
+    <a href="/java-exception.html" rel="prev" title="谈谈 Java 的异常机制">
+      <i class="fa fa-chevron-left"></i> 谈谈 Java 的异常机制
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/linux-profile.html" rel="next" title="linux设置环境变量">
+      linux设置环境变量 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -414,16 +461,16 @@
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          Table of Contents
+          文章目录
         </li>
         <li class="sidebar-nav-overview">
-          Overview
+          站点概览
         </li>
       </ul>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">序列化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jackson%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%84%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">Jackson序列化规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E6%B3%A8%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">双向注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnoreProperties"><span class="nav-number">2.1.</span> <span class="nav-text">@JsonIgnoreProperties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonProperty-JsonGetter-JsonSetter"><span class="nav-number">2.2.</span> <span class="nav-text">@JsonProperty,@JsonGetter,@JsonSetter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonUnwrapped"><span class="nav-number">2.3.</span> <span class="nav-text">@JsonUnwrapped</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAnyGetter-JsonAnySetter"><span class="nav-number">2.4.</span> <span class="nav-text">@JsonAnyGetter,@JsonAnySetter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonSerialize-JsonDeserialize"><span class="nav-number">2.5.</span> <span class="nav-text">@JsonSerialize,@JsonDeserialize</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonView"><span class="nav-number">2.6.</span> <span class="nav-text">@JsonView</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">序列化注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonFormat"><span class="nav-number">3.1.</span> <span class="nav-text">@JsonFormat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnore"><span class="nav-number">3.2.</span> <span class="nav-text">@JsonIgnore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnoreType"><span class="nav-number">3.3.</span> <span class="nav-text">@JsonIgnoreType</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonInclude"><span class="nav-number">3.4.</span> <span class="nav-text">@JsonInclude</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAutoDetect"><span class="nav-number">3.5.</span> <span class="nav-text">@JsonAutoDetect</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonPropertyOrder"><span class="nav-number">3.6.</span> <span class="nav-text">@JsonPropertyOrder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonRawValue"><span class="nav-number">3.7.</span> <span class="nav-text">@JsonRawValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonValue"><span class="nav-number">3.8.</span> <span class="nav-text">@JsonValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonRootValue"><span class="nav-number">3.9.</span> <span class="nav-text">@JsonRootValue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%A8%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">反序列化注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAlias"><span class="nav-number">4.1.</span> <span class="nav-text">@JsonAlias</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">序列化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jackson%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%84%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">Jackson序列化规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E6%B3%A8%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">双向注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnoreProperties"><span class="nav-number">2.1.</span> <span class="nav-text">@JsonIgnoreProperties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonProperty-JsonGetter-JsonSetter"><span class="nav-number">2.2.</span> <span class="nav-text">@JsonProperty,@JsonGetter,@JsonSetter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonUnwrapped"><span class="nav-number">2.3.</span> <span class="nav-text">@JsonUnwrapped</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAnyGetter-JsonAnySetter"><span class="nav-number">2.4.</span> <span class="nav-text">@JsonAnyGetter,@JsonAnySetter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonSerialize-JsonDeserialize"><span class="nav-number">2.5.</span> <span class="nav-text">@JsonSerialize,@JsonDeserialize</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonView"><span class="nav-number">2.6.</span> <span class="nav-text">@JsonView</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">序列化注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonFormat"><span class="nav-number">3.1.</span> <span class="nav-text">@JsonFormat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnore"><span class="nav-number">3.2.</span> <span class="nav-text">@JsonIgnore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonIgnoreType"><span class="nav-number">3.3.</span> <span class="nav-text">@JsonIgnoreType</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonInclude"><span class="nav-number">3.4.</span> <span class="nav-text">@JsonInclude</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAutoDetect"><span class="nav-number">3.5.</span> <span class="nav-text">@JsonAutoDetect</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonPropertyOrder"><span class="nav-number">3.6.</span> <span class="nav-text">@JsonPropertyOrder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonRawValue"><span class="nav-number">3.7.</span> <span class="nav-text">@JsonRawValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonValue"><span class="nav-number">3.8.</span> <span class="nav-text">@JsonValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonRootValue"><span class="nav-number">3.9.</span> <span class="nav-text">@JsonRootValue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%A8%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">反序列化注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonAlias"><span class="nav-number">4.1.</span> <span class="nav-text">@JsonAlias</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -439,15 +486,21 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
-          <span class="site-state-item-name">posts</span>
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
-        <span class="site-state-item-name">tags</span></a>
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
@@ -458,6 +511,9 @@
       <span class="links-of-author-item">
         <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -496,7 +552,7 @@
         <i class="fa fa-user"></i>
       </span>
       欢迎你，第
-      <span class="site-uv" title="Total Visitors">
+      <span class="site-uv" title="总访客量">
         <span id="busuanzi_value_site_uv"></span>
       </span>
       位童鞋
@@ -506,7 +562,7 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-eye"></i>
       </span>
-      <span class="site-pv" title="Total Views">
+      <span class="site-pv" title="总访问量">
         <span id="busuanzi_value_site_pv"></span>
       </span>
     </span>
