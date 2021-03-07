@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="I wish I could, but I don’t want to.    ——Phoebe 《Friends》   前言在 Java 中，我们经常使用常量来表示一些不可变的值，他们通常写作这样 1public static final String FOO &#x3D; &quot;i am a constant&quot;;  变量使用 static 和 final 关键字来修饰，那具体为什么要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常量为什么要用 static final 修饰?">
+<meta property="og:url" content="http://klhans.com/static-final-constant.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="I wish I could, but I don’t want to.    ——Phoebe 《Friends》   前言在 Java 中，我们经常使用常量来表示一些不可变的值，他们通常写作这样 1public static final String FOO &#x3D; &quot;i am a constant&quot;;  变量使用 static 和 final 关键字来修饰，那具体为什么要">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/03/07/A9QNksghw6erdqO.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/07/c9WCiTQGX2JAbP3.png">
+<meta property="article:published_time" content="2020-05-22T09:11:57.000Z">
+<meta property="article:modified_time" content="2021-03-07T11:27:16.183Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/03/07/A9QNksghw6erdqO.png">
+
+<link rel="canonical" href="http://klhans.com/static-final-constant.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>常量为什么要用 static final 修饰? | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/static-final-constant.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          常量为什么要用 static final 修饰?
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-22 17:11:57" itemprop="dateCreated datePublished" datetime="2020-05-22T17:11:57+08:00">2020-05-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/static-final-constant.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/static-final-constant.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="https://i.loli.net/2021/03/07/A9QNksghw6erdqO.png"></p>
+<blockquote>
+<p>I wish I could, but I don’t want to.    ——Phoebe 《Friends》</p>
+</blockquote>
+<hr>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Java 中，我们经常使用常量来表示一些不可变的值，他们通常写作这样</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FOO = <span class="string">&quot;i am a constant&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>变量使用 <code>static</code> 和 <code>final</code> 关键字来修饰，那具体为什么要用这两个关键字呢，本文我们将来探讨这个话题。</p>
+<h2 id="类的初始化"><a href="#类的初始化" class="headerlink" title="类的初始化"></a>类的初始化</h2><p>static 关键字与类的初始化过程密切相关，要理解static关键字，首先要了解类的加载流程。</p>
+<p>简单介绍一下：</p>
+<p>当程序主动使用某个类时，如果该类还未加载到jvm内存中，则系统会通过加载、连接、初始化三个步骤对该类进行初始化。这三个步骤有时也统一泛指为<em>类加载</em>或<em>类初始化</em>。具体过程如下：</p>
+<h3 id="类的加载"><a href="#类的加载" class="headerlink" title="类的加载"></a>类的加载</h3><p>类加载指的是将类的class文件读入内存，并为之创建一个<code>java.lang.Class</code>对象。</p>
+<p>类的加载由类加载器完成，通过使用不同的类加载器，可以从不同来源加载类的二进制数据，通常有以下几种来源：</p>
+<ol>
+<li>从本地文件系统加载编译后生成的class文件，这是绝大部分程序的类加载方式。</li>
+<li>从JAR包加载class文件。</li>
+<li>通过网络加载class文件。</li>
+<li>动态编译生成一个字节流。</li>
+</ol>
+<h3 id="类的连接"><a href="#类的连接" class="headerlink" title="类的连接"></a>类的连接</h3><p>当类被加载之后，jvm中对应的Class对象已经创建完毕。连接阶段会将类的二进制数据合并到JRE中。</p>
+<h3 id="类的初始化-1"><a href="#类的初始化-1" class="headerlink" title="类的初始化"></a>类的初始化</h3><p>类的初始化阶段，就是执行类构造器&lt;cinit&gt;方法的阶段。&lt;cinit&gt;方法主要是对类变量进行初始化并且执行静态代码块。</p>
+<p>注意这里所说的类构造器和类变量都是 class 维度，而不是对象维度。</p>
+<p>类构造器是编译器生成的&lt;cinit&gt;方法，而不是我们在代码中声明的构造函数。类变量是指class 的变量，也就是静态变量，而非对象的成员变量。</p>
+<p>在Java中对类变量指定初始值有两种方式：</p>
+<ol>
+<li>声明类变量时指定初始值</li>
+<li>使用静态代码块为类变量指定初始值。</li>
+</ol>
+<p><strong>那么问题来了</strong>，如果两个线程同时初始化同一个类怎么办呢，&lt;cinit&gt;方法是不是执行了两次呢，答案是不会，&lt;cinit&gt;方法的线程安全是有 jvm 保证的，jvm 保证同一个类的初始化过程，只会被执行一次。顺便提一下，单例模式中有一种就是通过这个特性来保证“单例”的。</p>
+<p>整个类加载过程可以看下我画的这张图和注释：</p>
+<p><img src="https://i.loli.net/2021/03/07/c9WCiTQGX2JAbP3.png" alt="image-20210307181829276"></p>
+<h3 id="类的初始化时机"><a href="#类的初始化时机" class="headerlink" title="类的初始化时机"></a>类的初始化时机</h3><p>《Java虚拟机规范》中没有对“类加载”这一过程中的第一个步骤“加载”这一阶段进行硬性规定，取决于具体虚拟机的实现，<strong>但是</strong>对于第三个步骤“初始化”，《Java虚拟机规范》有严格规定，有且只有六种情况必须进行初始化，具体大家可以看下周志明的《深入理解虚拟机》，真正的深入浅出。</p>
+<p>我们平常用到的一般是遇到这四个字节码指令的时候：</p>
+<ul>
+<li>new</li>
+<li>getstatic</li>
+<li>putstatic</li>
+<li>invokestatic</li>
+</ul>
+<p>分别对应：创建对象；读取静态变量；设置静态变量；调用静态方法。</p>
+<p>总结：当Java程序首次通过下面5种方式来使用某个类时，系统就会初始化该类：</p>
+<ul>
+<li>创建类的实例：1.包括new；2.通过反射来创建实例；3.通过反序列化方式来创建实例。</li>
+<li>调用某个类的静态方法。</li>
+<li>访问某个类的类变量，或为该类变量赋值。</li>
+<li>初始化某个类的子类，则会初始化这个父类。</li>
+<li>通过反射方式创建某个类的<code>java.lang.Class</code>对象，例如<code>Class.forName(&quot;bear&quot;);</code></li>
+</ul>
+<h2 id="static的作用"><a href="#static的作用" class="headerlink" title="static的作用"></a>static的作用</h2><p>理解了类的初始化流程之后，static就很好理解了，有以下几个特性：</p>
+<ol>
+<li>无论创建多少个对象，静态数据都只占用一份存储区域，所有对象共享这个区域。</li>
+<li>静态方法会引发类的初始化，也就是会执行静态代码块和给类变量赋值。</li>
+<li>构造方法会引发类的初始化。</li>
+<li>static不能修饰局部变量。</li>
+</ol>
+<p><strong>总结：常量使用 static 修饰的意义在于，保证了常量在 整个 jvm 中只有一份，避免浪费空间</strong></p>
+<h2 id="final的作用"><a href="#final的作用" class="headerlink" title="final的作用"></a>final的作用</h2><p>static 关键字讲完了，我们的工作还剩下一半，下面说一下 final 关键字。</p>
+<p>final 在 java 中应用非常广泛，他可以</p>
+<ul>
+<li><p>修饰变量（包括形参）</p>
+</li>
+<li><p>修饰方法</p>
+</li>
+<li><p>修饰类</p>
+</li>
+</ul>
+<p>我们依次说一下</p>
+<h3 id="final变量"><a href="#final变量" class="headerlink" title="final变量"></a>final变量</h3><h4 id="修饰基本类型"><a href="#修饰基本类型" class="headerlink" title="修饰基本类型"></a>修饰基本类型</h4><p>用final修饰基本类型数据可以保证变量的值永不改变；</p>
+<h4 id="修饰引用类型"><a href="#修饰引用类型" class="headerlink" title="修饰引用类型"></a>修饰引用类型</h4><p>用final修饰引用类型只能保证引用指向的对象地址不变：一旦被指向了一个对象，就无法再把它改为指向另一个对象。</p>
+<p>但是对象自身的属性是可以被修改的。</p>
+<p>Java并未提供任何使对象恒定不变的方法，严格意义上的<strong>不可变类</strong>只能依赖程序员自己保证</p>
+<h4 id="空白final变量"><a href="#空白final变量" class="headerlink" title="空白final变量"></a>空白final变量</h4><p>Java允许使用空白final变量，所谓空白final是指声明变量时未给定初始值的域。相比于声明时指定初始值，空白final更加灵活：一个类中的final域可以做到根据对象不同而使用构造器传入不同的初始化值，却又保持变量值恒定不变的特性。</p>
+<p><strong>需要注意的是，空白 final 变量的赋值时机，有且仅有一个，就是在构造方法中。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Diamond</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> price;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Diamond</span><span class="params">(<span class="keyword">int</span> price)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Diamond diamond = <span class="keyword">new</span> Diamond(<span class="number">1</span>);</span><br><span class="line"><span class="comment">//      diamond.price=3; 编译错误,price不可变</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="final形参"><a href="#final形参" class="headerlink" title="final形参"></a>final形参</h4><p>final可以用来修饰方法中的参数，这样使用的效果是：可以读参数，但是无法在方法中更改引用类型参数指定的对象地址或者基本类型参数的值。</p>
+<p>这一特性常用来向匿名内部类传递数据。</p>
+<p>听起来好像没啥大用，平常写代码的时候也没见谁的方法声明中参数是用 final 修饰的，那到底该不该用 final 修饰参数呢？</p>
+<p>我去网上搜了一下，在 stackoverflow 上发现了这个<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/2236599/final-keyword-in-method-parameters">答案</a>。答案中说道：</p>
+<p>java 中的参数传递总是会将实际传递的对象地址复制一份，也就是说，对形参进行重新赋值，影响不到调用方。我做了以下实验：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        t1();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">t1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Cat cat = <span class="keyword">new</span> Cat();</span><br><span class="line">        cat.color = <span class="string">&quot;white&quot;</span>;</span><br><span class="line">        System.out.println(cat);</span><br><span class="line">        System.out.println(cat.color);</span><br><span class="line">        t2(cat);</span><br><span class="line">        System.out.println(cat);</span><br><span class="line">        System.out.println(cat.color);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">t2</span><span class="params">(Cat cat)</span> </span>&#123;</span><br><span class="line">        cat.color = <span class="string">&quot;blue&quot;</span>;</span><br><span class="line">        Cat cat2 = <span class="keyword">new</span> Cat();</span><br><span class="line">        cat2.color = <span class="string">&quot;orange&quot;</span>;</span><br><span class="line">        cat = cat2;</span><br><span class="line">        cat.color = <span class="string">&quot;black&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Cat</span> </span>&#123;</span><br><span class="line">        String color;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**output:</span></span><br><span class="line"><span class="comment">finalp.Test1$Cat@29453f44</span></span><br><span class="line"><span class="comment">white</span></span><br><span class="line"><span class="comment">finalp.Test1$Cat@29453f44</span></span><br><span class="line"><span class="comment">blue</span></span><br><span class="line"><span class="comment">**/</span></span><br></pre></td></tr></table></figure>
+
+<p>我尝试对形参进行重新赋值，发现调用方的对象地址没有被改变，说明果真如答案所说，java 中的方法调用会将实参复制一份。</p>
+<p>也就是说： <strong>java 本身就保证了方法内不能对形参进行重新赋值，或者说重新赋值没有意义，完全不需要 final 语义。这就是为什么很少见到final 修饰形参的原因，因为根本不需要！</strong></p>
+<h3 id="final方法"><a href="#final方法" class="headerlink" title="final方法"></a>final方法</h3><ol>
+<li><p>用final修饰方法来禁止子类去修改方法实现。</p>
+</li>
+<li><p>所有private方法都隐式地被final修饰。</p>
+</li>
+</ol>
+<h3 id="final类"><a href="#final类" class="headerlink" title="final类"></a>final类</h3><ol>
+<li>用final修饰类来禁止有任何类继承它。</li>
+<li>final类的域并不是隐式final，他们可以根据个人意愿选择是或不是final。</li>
+<li>final类的所有方法都隐式的被final修饰。</li>
+</ol>
+<p><strong>总结：常量用final修饰，旨在强调常量不可变。</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>常量使用 static final 修饰，是为了让 jvm 中只存在唯一的一份，并且这个变量是不可变的“常量”。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/2236599/final-keyword-in-method-parameters">https://stackoverflow.com/questions/2236599/final-keyword-in-method-parameters</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>首发地址：</strong>
+    <a href="http://klhans.com/static-final-constant.html" title="常量为什么要用 static final 修饰?">http://klhans.com/static-final-constant.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"><i class="fa fa-tag"></i> java</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/java-exception.html" rel="next" title="谈谈 Java 的异常机制">
+      谈谈 Java 的异常机制 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">类的初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.1.</span> <span class="nav-text">类的加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.2.</span> <span class="nav-text">类的连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96-1"><span class="nav-number">2.3.</span> <span class="nav-text">类的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%97%B6%E6%9C%BA"><span class="nav-number">2.4.</span> <span class="nav-text">类的初始化时机</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">static的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#final%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">final的作用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#final%E5%8F%98%E9%87%8F"><span class="nav-number">4.1.</span> <span class="nav-text">final变量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E9%A5%B0%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.1.1.</span> <span class="nav-text">修饰基本类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E9%A5%B0%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.1.2.</span> <span class="nav-text">修饰引用类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%BA%E7%99%BDfinal%E5%8F%98%E9%87%8F"><span class="nav-number">4.1.3.</span> <span class="nav-text">空白final变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#final%E5%BD%A2%E5%8F%82"><span class="nav-number">4.1.4.</span> <span class="nav-text">final形参</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#final%E6%96%B9%E6%B3%95"><span class="nav-number">4.2.</span> <span class="nav-text">final方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#final%E7%B1%BB"><span class="nav-number">4.3.</span> <span class="nav-text">final类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">引用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      欢迎你，第
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+      位童鞋
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uno6T8mk5eaEGYj1FKo9v206-gzGzoHsz',
+      appKey     : 'V1QGjvh9QIYlk8fJLg70puH4',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
