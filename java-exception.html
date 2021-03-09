@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/03/07/4wSCoQrOPtpKB7k.png">
 <meta property="og:image" content="https://i.loli.net/2021/03/07/MBrsZY8ioEUtuOK.png">
 <meta property="article:published_time" content="2020-06-07T06:22:34.000Z">
-<meta property="article:modified_time" content="2021-03-07T09:44:59.005Z">
+<meta property="article:modified_time" content="2021-03-09T12:47:46.990Z">
 <meta property="article:author" content="孔令翰">
 <meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
@@ -267,7 +267,8 @@
 <p>总的来说就是耦合耦合太过紧密，针对这几个问题，产生了现在语言的“异常”体系。</p>
 <p>现代的异常允许底层抛出的异常，跨越数个调用方法，一直到最顶层的方法，这样耦合性就降低了，没有能力异常的调用方不需要非得对异常进行处理，可以简单的向上抛出。</p>
 <h2 id="Java异常体系"><a href="#Java异常体系" class="headerlink" title="Java异常体系"></a>Java异常体系</h2><p>Java所有的异常都继承自<code>Exception</code>对象，<code>Exception</code>继承自<code>Throwable</code>类，同时继承自<code>Throwable</code>类的还有用于表示错误的<code>Error</code>类，他们的类图如下：</p>
-<p><img src="https://i.loli.net/2021/03/05/JynQBmbuGHjKEgS.png" alt="image-20210305221611195"></p>
+<img src="https://i.loli.net/2021/03/05/JynQBmbuGHjKEgS.png" alt="image-20210305221611195" style="zoom: 50%;" />
+
 <p>其中<code>Error</code>类表示严重的错误，我们👨‍💻‍大部分是与<code>Exception</code>打交道，本文不对<code>Error</code>做讨论。</p>
 <h3 id="异常的两种模型"><a href="#异常的两种模型" class="headerlink" title="异常的两种模型"></a>异常的两种模型</h3><p>调用方接到下层方法抛出的异常时，一般有两种解决方案：</p>
 <ol>
@@ -287,7 +288,8 @@
 <p>Spring Data将<code>java.sql.SQLException extends java.lang.Exception</code>异常全部包装为非受检异常。</p>
 <p>这种编程模式的出现让我们重新思考Java语言中受检异常存在的必要性，在我看来恢复模型似乎有些刻板和理想化了。而且 python和 C++不支持受检异常似乎也发展良好。</p>
 <h2 id="异常的基础用法"><a href="#异常的基础用法" class="headerlink" title="异常的基础用法"></a>异常的基础用法</h2><h3 id="构造异常"><a href="#构造异常" class="headerlink" title="构造异常"></a>构造异常</h3><p>异常和其他对象一样，也可以有属性、构造方法等，比如我司的统一异常类如下：</p>
-<p><img src="https://i.loli.net/2021/03/07/4wSCoQrOPtpKB7k.png" alt="image-20210307132808529"></p>
+<img src="https://i.loli.net/2021/03/07/4wSCoQrOPtpKB7k.png" alt="image-20210307132808529" style="zoom: 33%;" />
+
 <h3 id="抛出异常"><a href="#抛出异常" class="headerlink" title="抛出异常"></a>抛出异常</h3><p>下层方法可以在方法签名上声明可能抛出的受检异常，（为什么强调是受检异常，因为都方法上声明非受检异常没有意义，调用方不会被编译器提示要处理这个异常，除非他来看你的源代码）</p>
 <p>这样做的目的是为了提示上层方法：</p>
 <p>hey，我有可能会抛出这些异常，你能处理的话就要 catch，不能处理的话也要像我一样 throw 喔。</p>
@@ -436,20 +438,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
