@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言：这个系列是将自己看过的一些国外大佬的文章，翻译整理一下，避免以后看的时候还得再看一遍英文。本篇作为第一篇是 Martin Fowler 在博客中探讨有关EDA(事件驱动架构)的文章，原文地址：https:&#x2F;&#x2F;martinfowler.com&#x2F;articles&#x2F;201701-event-driven.html    Towards the end of last year I attended">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What do you mean by “Event-Driven”?[译文]">
+<meta property="og:url" content="http://klhans.com/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="前言：这个系列是将自己看过的一些国外大佬的文章，翻译整理一下，避免以后看的时候还得再看一遍英文。本篇作为第一篇是 Martin Fowler 在博客中探讨有关EDA(事件驱动架构)的文章，原文地址：https:&#x2F;&#x2F;martinfowler.com&#x2F;articles&#x2F;201701-event-driven.html    Towards the end of last year I attended">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-14T07:36:48.000Z">
+<meta property="article:modified_time" content="2021-05-17T09:17:06.198Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="DDD">
+<meta property="article:tag" content="译文">
+<meta property="article:tag" content="EDA">
+<meta property="article:tag" content="Martin Fowler">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://klhans.com/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>What do you mean by “Event-Driven”?[译文] | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          What do you mean by “Event-Driven”?[译文]
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-14 15:36:48" itemprop="dateCreated datePublished" datetime="2021-05-14T15:36:48+08:00">2021-05-14</time>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前言：这个系列是将自己看过的一些国外大佬的文章，翻译整理一下，避免以后看的时候还得再看一遍英文。<br>本篇作为第一篇是 Martin Fowler 在博客中探讨有关EDA(事件驱动架构)的文章，原文地址：<a target="_blank" rel="noopener" href="https://martinfowler.com/articles/201701-event-driven.html">https://martinfowler.com/articles/201701-event-driven.html</a></p>
+<hr>
+<blockquote>
+<p> Towards the end of last year I attended a workshop with my colleagues in ThoughtWorks to discuss the nature of “event-driven” applications. Over the last few years we’ve been building lots of systems that make a lot of use of events, and they’ve been often praised, and often damned. Our North American office organized a summit, and ThoughtWorks senior developers from all over the world showed up to share ideas.</p>
+</blockquote>
+<p>在去年年底，我与ThoughtWorks的同事一起参加了一个研讨会 思考讨论“事件驱动”应用的本质。在最近几年里，我们一直在建立大量的系统，这些系统大量使用了事件，并且他们毁誉参半。我们的北美办公室组织了一个峰会，来自世界各地的ThoughtWorks的高级开发与会并分享想法。</p>
+<blockquote>
+<p>The biggest outcome of the summit was recognizing that when people talk about “events”, they actually mean some quite different things. So we spent a lot of time trying to tease out what some useful patterns might be. This note is a brief summary of the main ones we identified. </p>
+</blockquote>
+<p>峰会的最大结果是：我们认识到当人们谈论 “事件”，他们实际上意味着一些完全不同的东西。所以我们花了很多时间，试图整理出有用的模式可能是什么。本说明是对我们确定的主要部分的一个简短的摘要。</p>
+<h2 id="Event-Notification事件通知"><a href="#Event-Notification事件通知" class="headerlink" title="Event Notification事件通知"></a>Event Notification事件通知</h2><blockquote>
+<p>This happens when a system sends event messages to notify other systems of a change in its domain. A key element of event notification is that the source system doesn’t really care much about the response. Often it doesn’t expect any answer at all, or if there is a response that the source does care about, it’s indirect. There would be a marked separation between the logic flow that sends the event and any logic flow that responds to some reaction to that event.</p>
+</blockquote>
+<p>“事件通知”发生在：一个系统发出事件消息以通知其他系统他自己的领域内发生了某种变化。事件通知的一个关键元素是 源系统对响应并不关心。通常源系统根本不期望任何响应，或者即使源系统确实关心响应，但响应是间接的。在发送事件的逻辑流程和任何对该事件作出反应的响应之间，应该是标记分离的。</p>
+<blockquote>
+<p> Event notification is nice because it implies a low level of coupling, and is pretty simple to set up. It can become problematic, however, if there really is a logical flow that runs over various event notifications. The problem is that it can be hard to see such a flow as it’s not explicit in any program text. Often the only way to figure out this flow is from monitoring a live system. This can make it hard to debug and modify such a flow. The danger is that it’s very easy to make nicely decoupled systems with event notification, without realizing that you’re losing sight of that larger-scale flow, and thus set yourself up for trouble in future years. The pattern is still very useful, but you have to be careful of the trap.</p>
+</blockquote>
+<p>事件通知很棒，因为它意味着低耦合，并且实现起来相当简单。但是，如果一个逻辑流程真的运行在各种事件通知中，可能会产生问题。问题是很难看到这样的逻辑流程，因为它在任何程序文本中都不明晰。通常情况下，唯一能弄清楚这个流程的方法是“监控实时系统”（<strong>译者注：监控实时系统是指：通过监控系统在运行状态下发生的事件，来确定逻辑流程。</strong>）。这导致此类流程难以 debug 和修改。危险是通过“事件通知”很容易做出相当解耦的系统，而没有意识到你失去了从整体观察整个流程的视野，因此给未来的自己造成了麻烦。这个模式模式仍然非常有用，但你必须小心陷阱。</p>
+<blockquote>
+<p>A simple example of this trap is when an event is used as a passive-aggressive command. This happens when the source system expects the recipient to carry out an action, and ought to use a command message to show that intention, but styles the message as an event instead.</p>
+</blockquote>
+<p>​    这个陷阱的一个简单示例是：一个事件被用作被动攻击性命令。（<strong><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Wikipedia:%E8%A2%AB%E5%8B%95%E6%94%BB%E6%93%8A">https://zh.wikipedia.org/wiki/Wikipedia:%E8%A2%AB%E5%8B%95%E6%94%BB%E6%93%8A</a> 被动攻击在这里的语义是指，某个动作是某个流程中的一部分，但是却通过广播事件的方式尝试执行本应该设计为命令消息的动作，这种事件就叫做被动攻击</strong>）当源系统期望监听者执行一个动作时，就会发生这种情况。应该使用命令消息来表现该意图，而不是将其设计为“事件”。</p>
+<blockquote>
+<p>An event need not carry much data on it, often just some id information and a link back to the sender that can be queried for more information. The receiver knows something has changed, may get some minimal information on the nature of the change, but then issues a request back to the sender to decide what to do next.</p>
+</blockquote>
+<p>事件通常不需要携带太多数据，只是一些id信息和一个能够支持回访消息发布者以获取更多信息的链接。接收者知道有些事情发生了变化，可能会获得一些关于变化的性质的最小信息， 但是之后向消息发布者发出请求以决定下一步该做什么。</p>
+<p>//TODO</p>
+<h2 id="Event-Carried-State-Transfer事件携带的国家转移"><a href="#Event-Carried-State-Transfer事件携带的国家转移" class="headerlink" title="Event-Carried State Transfer事件携带的国家转移"></a>Event-Carried State Transfer事件携带的国家转移</h2><p>This pattern shows up when you want to update clients of a system in such a way that they don’t need to contact the source system in order to do further work. A customer management system might fire off events whenever a customer changes their details (such as an address) with events that contain details of the data that changed. A recipient can then update it’s own copy of customer data with the changes, so that it never needs to talk to the main customer system in order to do its work in the future.当您想要以这样的方式更新系统的客户端时，此模式会显示出来 他们不需要联系源系统以进行进一步的工作。一种 每当客户更改他们时，客户管理系统可能会开除事件 具有包含数据详细信息的事件的详细信息（如地址） 改变了。然后，收件人可以更新它是您自己的客户数据副本 更改，因此它永远不需要与主要客户系统交谈以便 它在未来的工作。</p>
+<p>An obvious down-side of this pattern is that there’s lots of data schlepped around and lots of copies. But that’s less of a problem in an age of abundant storage. What we gain is greater resilience, since the recipient systems can function if the customer system is becomes unavailable. We reduce latency, as there’s no remote call required to access customer information. We don’t have to worry about load on the customer system to satisfy queries from all the consumer systems. But it does involve more complexity on the receiver, since it has to sort out maintaining all the state, when it’s usually easier just to call the sender for more information when needed.这种模式的明显下方是有很多数据Schlepped 周围和大量的副本。但这在丰富的时代的问题较少 贮存。由于收件人系统可以是，我们获得的是更大的弹性 功能如果客户系统变得不可用。我们减少延迟，如 访问客户信息需要无需远程呼叫。我们没有 担心客户系统加载，以满足所有消费者的查询 系统。但它确实涉及接收者的复杂性，因为它必须排序 保持所有状态，当它通常更容易才能打电话给发件人 需要时提供更多信息。</p>
+<h2 id="Event-Sourcing事件采购"><a href="#Event-Sourcing事件采购" class="headerlink" title="Event-Sourcing事件采购"></a>Event-Sourcing事件采购</h2><p>The core idea of <a target="_blank" rel="noopener" href="https://martinfowler.com/eaaDev/EventSourcing.html">event sourcing</a> is that whenever we make a change to the state of a system, we record that state change as an event, and we can confidently rebuild the system state by reprocessing the events at any time in the future. The event store becomes the principal source of truth, and the system state is purely derived from it. For programmers, the best example of this is a version-control system. The log of all the commits is the event store and the working copy of the source tree is the system state.事件采购的核心思想是，每当我们 改变系统的状态，我们将该状态的变化记录为事件，以及 我们可以通过随时重新处理事件来自信地重建系统状态 将来。事件商店成为了真理的主要来源和系统 纯粹衍生自州。对于程序员来说，这是一个最好的例子 版本控制系统。所有提交的日志是事件商店和 源树的工作副本是系统状态。</p>
+<p>Event-sourcing introduces a lot of issues, which I won’t go into here, but I do want to highlight some common misconceptions. There’s no need for event processing to be asynchronous, consider the case of updating a local git repository - that’s entirely a synchronous operation, as is updating a centralized version-control system like subversion. Certainly having all these commits allows you to do all sorts of interesting behaviors, git is the great example, but the core commit is fundamentally a simple action.事件采购引入了很多问题，我不会进入这里，但我这样做 想要突出一些常见的误解。没有必要的事件处理 要异步，请考虑更新本地GIT存储库的情况 - 即 完全是同步操作，正如更新集中式版本控制 像颠覆等系统。当然拥有所有这些宣告允许您完成所有 种类的有趣行为，Git是一个很棒的例子，但核心提交是 从根本上起作用。</p>
+<p>Another common mistake is to assume that everyone using an event-sourced system should understand and access the event log to determine useful data. But knowledge of the event log can be limited. I’m writing this in an editor that is ignorant of all the commits in my source tree, it just assumes there is a file on the disk. Much of the processing in an event-sourced system can be based on a useful working copy. Only elements that really need the information in the event log should have to manipulate it. We can have multiple working copies with different schema, if that helps; but usually there should be a clear separation between domain processing and deriving a working copy from the event log. 另一个常见的错误是假设每个人都使用事件源系统 应该理解并访问事件日志以确定有用的数据。但知识 事件日志可以限制。我在一个编辑器中写这一点 我源自源树中所有提交的忽略，它只是假设有一个文件 磁盘。事件源系统中的大部分处理都可以基于一个有用的 工作副本。只有真正需要事件日志中的信息的元素应该 必须操纵它。如果是，我们可以拥有多个与不同架构的工作副本 帮助;但通常应该在域处理和域的清晰分离 从事件日志中派生工作副本。</p>
+<p>When working with an event log, it is often useful to build snapshots of the working copy so that you don’t have to process all the events from scratch every time you need a working copy. Indeed there is a duality here, we can look at the event log as either a list of changes, or as a list of states. We can derive one from the other. Version-control systems often mix snapshots and deltas in their event log in order to get the best performance. <a target="_blank" rel="noopener" href="https://martinfowler.com/articles/201701-event-driven.html#footnote-git-snapshot">[1]</a>使用事件日志时，它是 通常有用的是构建工作副本的快照，以便您不必 每次需要工作副本都会从头开始处理所有事件。确实在那里 在这里是一种二元性，我们可以将事件日志视为更改列表，或者作为一个 名单。我们可以从另一个中得出一个。版本控制系统通常混合 他们的事件日志中的快照和Δ以获得最佳性能。 [1]</p>
+<p>Event-sourcing has many interesting benefits, which easily come to mind when thinking of the value of version-control systems. The event log provides a strong audit capability (accounting transactions are an event source for account balances). We can recreate historic states by replaying the event log up to a point. We can explore alternative histories by injecting hypothetical events when replaying. Event sourcing make it plausible to have non-durable working copies, such as a <a target="_blank" rel="noopener" href="https://martinfowler.com/bliki/MemoryImage.html">Memory Image</a>.事件采购有许多有趣的福利，很容易想到何时 思考版本控制系统的价值。事件日志提供了强大的 审计能力（会计交易是帐户余额的事件来源）。 我们可以通过重播事件登录到一个点来重新创建历史状态。我们可以 通过在重放时注入假设事件来探索备份历史。事件 采购使其具有不可持久的工作副本，例如记忆图像。</p>
+<p>Event sourcing does have its problems. Replaying events becomes problematic when results depend on interactions with outside systems. We have to figure out how to deal with changes in the schema of events over time. Many people find the event processing adds a lot of complexity to an application (although I do wonder if that’s more due to poor separation between components that derive a working copy and components that do the domain processing).事件采购确实存在问题。重放事件发生问题 结果取决于与外部系统的交互。我们必须弄清楚如何 随着时间的推移处理事件架构的变化。很多人都找到了这个活动 处理为应用程序增加了大量复杂性（虽然我不知道 这更像是由于衍生工作副本的组件之间的不良分离 执行域处理的组件）。</p>
+<h2 id="CQRS"><a href="#CQRS" class="headerlink" title="CQRS"></a>CQRS</h2><p><a target="_blank" rel="noopener" href="https://martinfowler.com/bliki/CQRS.html">Command Query Responsibility Segregation (CQRS</a>) is the notion of having separate data structures for reading and writing information. Strictly CQRS isn’t really about events, since you can use CQRS without any events present in your design. But commonly people do combine CQRS with the earlier patterns here, hence their presence at the summit.命令查询责任分离（CQRS）是 具有用于读取和写入信息的单独数据结构的概念。 严格的CQRS并不是关于事件，因为您可以使用没有任何事件的CQRS 目前在您的设计中。但通常的人确实与前面的CQRS结合起来 在这里的模式，因此他们在峰会的存在。</p>
+<p>The justification for CQRS is that in complex domains, a single model to handle both reads and writes gets too complicated, and we can simplify by separating the models. This is particularly appealing when you have a difference in access patterns, such as lots of reads and very few writes. But the gain for using CQRS has to be balanced against the additional complexity of having separate models. I find many of my colleagues are deeply wary of using CQRS, finding it often misused.CQRS的理由在复杂的域中，可以处理单个模型 读取和写入都太复杂，我们可以通过分离来简化 楷模。当您对访问差异时，这尤其吸引人 模式，例如许多读数和很少的写作。但是使用CQRS的增益 抵御具有单独模型的额外复杂性。我发现 我的许多同事都非常谨慎地使用CQRS，发现经常滥用。</p>
+<h2 id="Making-sense-of-these-patterns了解这些模式"><a href="#Making-sense-of-these-patterns了解这些模式" class="headerlink" title="Making sense of these patterns了解这些模式"></a>Making sense of these patterns了解这些模式</h2><p>As a sort of software botanist, keen to collect samples, I find this a tricky terrain. The core problem is confusing the different patterns. On one project the capable and experienced project manager told me that event sourcing had been a disaster - any change took twice the work to update both the read and write models. Just in that phrase I can detect a potential confusion between event-sourcing and CQRS - so how can I figure out which was culprit? The tech lead on the project claimed the main problem was lots of asynchronous communications, certainly a known complexity-booster, but not one that’s a necessary part of either event-sourcing or CQRS. Furthermore we have to beware that all these patterns are good in the right place and bad when put on the wrong terrain. But it’s hard to figure out what the right terrain is when we conflate the patterns.作为一种软件植物学家，热衷于收集样品，我发现这是一个棘手的 地形。核心问题令人困惑不同的模式。在一个项目上 有能力和经验丰富的项目经理告诉我，活动采购是一个 灾难 - 任何更改都需要两倍的工作来更新读写模型。 就在那个短语中，我可以检测到事件采购之间的潜在混淆 CQRS - 那么我如何弄清楚这是罪魁祸首的？技术领先项目 声称主要问题是许多异步通信，当然是一个已知的 复杂性 - 助推器，但不是一个是事件采购的必要部分或 CQRS。此外，我们必须注意所有这些模式都在右侧很好 放在错误的地形上的地方和坏。但很难弄清楚什么 正确的地形是当我们混淆模式时。</p>
+<p>I’d love to write some definitive treatise that sorts all this confusion out, and gives solid guidelines on how to do each pattern well, and when it should be used. Sadly I don’t have the time to do it. I write this note in the hope it will be useful, but am quite aware that it falls well short of what is really needed.我很想写一些明确的论文，这些论述各种各样的混乱 提供稳定的指导方针如何妥善执行每个模式，并且应该使用时。 可悲的是，我没有时间去做。我在希望它的希望中写下这笔记 有用，但我非常清楚它缺乏真正需要的东西。</p>
+<hr>
+<h2 id="Further-Reading进一步阅读"><a href="#Further-Reading进一步阅读" class="headerlink" title="Further Reading进一步阅读"></a>Further Reading进一步阅读</h2><p>I prepared a talk on this topic which was the <a target="_blank" rel="noopener" href="https://martinfowler.com/videos.html#many-meanings-event">keynote at goto Chicago 2017</a>.我准备了关于这个主题的谈判，这是Goto的主题演讲 芝加哥2017年。</p>
+<p>Back in 2006, I wrote a bunch of proto-patterns with the thought of making a further volume of my <a target="_blank" rel="noopener" href="https://martinfowler.com/books/eaa.html">P of EAA book</a>. Sadly, even a decade later, I haven’t had time to continue with this work. The stuff I did write then, however, is there to be read. For events I’d start with <a target="_blank" rel="noopener" href="https://martinfowler.com/eaaDev/EventNarrative.html">Focusing on Events</a>, which summarizes my thinking on using events at the time. Although it is a while ago, I think most of what I wrote then is still valid.回到2006年，我写了一堆改良模式，想到了 我的eaa书的更多体积。可悲的是，即使十年 后来，我没有时间继续这项工作。我写的东西然后， 但是，有没有被阅读。对于事件，我会从重点开始 关于事件，总结了我当时使用事件的思考。虽然 这是一段时间，我认为我写的大部分仍然有效。</p>
+<p>The most influential of these articles is the on <a target="_blank" rel="noopener" href="https://martinfowler.com/eaaDev/EventSourcing.html">Event Sourcing</a>. It primarily talks about the value of using replay to form historic and alternative states.这些文章最有影响力的是关于活动 采购。它主要讨论使用重播来形成历史的价值 和替代国家。</p>
+<p>The article on <a target="_blank" rel="noopener" href="https://martinfowler.com/eaaDev/EventCollaboration.html">Event Collaboraton</a> touches on the patterns of Event Notification and Event-Carried State Transfer, but conflates the patterns (it was only during the workshop that I started thinking of them as separate).关于Collaboraton活动的文章触及了 事件通知模式和事件携带的状态转移，但混合了 模式（只是在研讨会期间，我开始像分开的方式思考它们）。</p>
+<p>I have a bliki post on <a target="_blank" rel="noopener" href="https://martinfowler.com/bliki/CQRS.html">CQRS</a>.我在CQRS上有一个bliki帖子。</p>
+<p>There’s a lot more material on the web about these topics, so have fun exploring that. I don’t have any comments on it here as I haven’t spent time looking through it and picking out some recommendations.关于这些主题的网络上有很多材料，所以玩得开心探索 那。我这里没有任何意见，因为我没有花时间看 它并挑出一些建议。</p>
+<h2 id="Updates更新"><a href="#Updates更新" class="headerlink" title="Updates更新"></a>Updates更新</h2><p>2017-02-08: Tweaked discussion of use of event log versus application state and added a footnote to clarify role of git and snapshots.2017-02-08：调整事件日志与应用程序状态的使用讨论 添加了一个脚注，以澄清Git和快照的角色。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>首发地址：</strong>
+    <a href="http://klhans.com/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html" title="What do you mean by “Event-Driven”?[译文]">http://klhans.com/What-do-you-mean-by-“Event-Driven”.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/DDD/" rel="tag"><i class="fa fa-tag"></i> DDD</a>
+              <a href="/tags/%E8%AF%91%E6%96%87/" rel="tag"><i class="fa fa-tag"></i> 译文</a>
+              <a href="/tags/EDA/" rel="tag"><i class="fa fa-tag"></i> EDA</a>
+              <a href="/tags/Martin-Fowler/" rel="tag"><i class="fa fa-tag"></i> Martin Fowler</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/bookislife.html" rel="prev" title="BookIsLife 读书清单">
+      <i class="fa fa-chevron-left"></i> BookIsLife 读书清单
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Event-Driven-Architecture-Terminology.html" rel="next" title="Event Driven Architecture Terminology[译文]">
+      Event Driven Architecture Terminology[译文] <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Event-Notification%E4%BA%8B%E4%BB%B6%E9%80%9A%E7%9F%A5"><span class="nav-number">1.</span> <span class="nav-text">Event Notification事件通知</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Event-Carried-State-Transfer%E4%BA%8B%E4%BB%B6%E6%90%BA%E5%B8%A6%E7%9A%84%E5%9B%BD%E5%AE%B6%E8%BD%AC%E7%A7%BB"><span class="nav-number">2.</span> <span class="nav-text">Event-Carried State Transfer事件携带的国家转移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Event-Sourcing%E4%BA%8B%E4%BB%B6%E9%87%87%E8%B4%AD"><span class="nav-number">3.</span> <span class="nav-text">Event-Sourcing事件采购</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CQRS"><span class="nav-number">4.</span> <span class="nav-text">CQRS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Making-sense-of-these-patterns%E4%BA%86%E8%A7%A3%E8%BF%99%E4%BA%9B%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">Making sense of these patterns了解这些模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Further-Reading%E8%BF%9B%E4%B8%80%E6%AD%A5%E9%98%85%E8%AF%BB"><span class="nav-number">6.</span> <span class="nav-text">Further Reading进一步阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Updates%E6%9B%B4%E6%96%B0"><span class="nav-number">7.</span> <span class="nav-text">Updates更新</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      欢迎你，第
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+      位童鞋
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uno6T8mk5eaEGYj1FKo9v206-gzGzoHsz',
+      appKey     : 'V1QGjvh9QIYlk8fJLg70puH4',
+      placeholder: "技术更新飞快，难免疏漏，欢迎批评指导",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

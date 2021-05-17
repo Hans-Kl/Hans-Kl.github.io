@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言：本篇通过一个实际的例子，探讨 EDA 在微服务中的应用，原文地址：https:&#x2F;&#x2F;sarahtaraporewalla.com&#x2F;architecture&#x2F;Event-Driven-Architecture-Terminology  It’s Eventuary all month long at ThoughtWorks Australia. We have so many projects">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Event Driven Architecture Terminology[译文]">
+<meta property="og:url" content="http://klhans.com/Event-Driven-Architecture-Terminology.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="前言：本篇通过一个实际的例子，探讨 EDA 在微服务中的应用，原文地址：https:&#x2F;&#x2F;sarahtaraporewalla.com&#x2F;architecture&#x2F;Event-Driven-Architecture-Terminology  It’s Eventuary all month long at ThoughtWorks Australia. We have so many projects">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/domain.png">
+<meta property="og:image" content="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/event-example.png">
+<meta property="og:image" content="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/anatomy.png">
+<meta property="og:image" content="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/direct-call.png">
+<meta property="og:image" content="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/event-and-command.png">
+<meta property="article:published_time" content="2021-05-15T08:40:18.000Z">
+<meta property="article:modified_time" content="2021-05-17T09:17:12.987Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="DDD">
+<meta property="article:tag" content="译文">
+<meta property="article:tag" content="EDA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/domain.png">
+
+<link rel="canonical" href="http://klhans.com/Event-Driven-Architecture-Terminology.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Event Driven Architecture Terminology[译文] | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/Event-Driven-Architecture-Terminology.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Event Driven Architecture Terminology[译文]
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-15 16:40:18" itemprop="dateCreated datePublished" datetime="2021-05-15T16:40:18+08:00">2021-05-15</time>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/Event-Driven-Architecture-Terminology.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/Event-Driven-Architecture-Terminology.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前言：本篇通过一个实际的例子，探讨 EDA 在微服务中的应用，原文地址：<a target="_blank" rel="noopener" href="https://sarahtaraporewalla.com/architecture/Event-Driven-Architecture-Terminology">https://sarahtaraporewalla.com/architecture/Event-Driven-Architecture-Terminology</a></p>
+<hr>
+<p>It’s <em>Eventuary</em> all month long at <a target="_blank" rel="noopener" href="https://www.thoughtworks.com/careers/jobs">ThoughtWorks Australia</a>. We have so many projects incorporating Event Driven Architecture underfoot that we thought we would celebrate and share our insights.这是澳大利亚的思考好月份。我们有这么多项目，该项目包含在脚下的事件驱动架构，我们认为我们会庆祝和分享我们的见解。</p>
+<p><a target="_blank" rel="noopener" href="https://martinfowler.com/tags/event%20architectures.html">Event Driven Architecture</a> is gaining popularity again as teams look for ways to simplify the coordination of their microservices. Add to this the growing popularity of Kakfa, we get many teams beginning to explore Event Driven Architectures for the first time.事件驱动的架构又称流行，因为团队寻找简化他们的微服务协调的方法。加入这一普遍普及的Kakfa，我们获得了许多团队首次开始探索活动驱动的架构。</p>
+<p>Today I am taking a look at several complementary concepts that fall under the Event Driven Architecture (EDA) umbrella. I have been working as an Architect in a team that is starting their EDA journey. I compiled this terminology explanation for them to help unpack the many connected concepts.今天我正在看看几种互补概念，该概念落在了活动驱动的建筑（EDA）伞下。我一直在一支开始他们的eda旅程的团队中担任建筑师。我编译了这个术语解释，以帮助解压缩许多连接的概念。</p>
+<p>Some of these concepts govern a high-level macro architecture (how our system hangs together) and others are closer to code, micro architecture (what our system does). We can consider the macro architecture the Big Boxes, and how they work together, whereas the micro architecture governs what is happening inside the box.其中一些概念管理高级宏体系结构（我们的系统如何挂起），其他概念更接近代码，微架构（我们的系统）。我们可以考虑宏观体系结构大盒子，以及它们如何一起工作，而微型架构管理盒子里面发生的事情。</p>
+<p>For the purpose of this explanation, I’ll explore these concepts through the lens of a Restaurant.出于这种解释的目的，我将通过餐厅的镜头探索这些概念。</p>
+<h2 id="Higher-Level-Macro-Architecture更高级别-宏观体系结构"><a href="#Higher-Level-Macro-Architecture更高级别-宏观体系结构" class="headerlink" title="Higher Level/Macro Architecture更高级别/宏观体系结构"></a>Higher Level/Macro Architecture更高级别/宏观体系结构</h2><h3 id="Microservices-Self-Contained-Services微服务-自包含服务"><a href="#Microservices-Self-Contained-Services微服务-自包含服务" class="headerlink" title="Microservices/Self Contained Services微服务/自包含服务"></a>Microservices/Self Contained Services微服务/自包含服务</h3><p><a target="_blank" rel="noopener" href="https://samnewman.io/talks/principles-of-microservices/">Microservices</a> is a term which was pioneered around 2011, and has gained steady traction to date. In its essence, it is about defining boundaries around your code to deploy and develop smaller services in order to improve the quality of the end product.微服务是2011年左右开创的术语，并迄今为止获得了稳定的牵引力。在其本质上，它是关于在代码周围定义边界以部署和开发较小的服务，以提高最终产品的质量。</p>
+<p>The size of the service (the micro part) is often questioned - just how small do we make this? At an extreme is the notion that services are so very small they could be rewritten easily within a day.服务的大小（微部分）经常质疑 - 我们做到了多么小？在极端的是，服务如此小的概念，它们可以在一天内轻松重写。</p>
+<p>Instead of considering the size of each service, focus on the boundary between services. The boundary should be informed by the Business Context and the Business Capabilities it supports.而不是考虑每个服务的大小，专注于服务之间的边界。 Business Context的边界应了解情况，并支持它支持的业务功能。</p>
+<p>In our Restaurant example, our Bounded Contexts (and therefore services) might be:在我们的餐厅示例中，我们有界上下文（因此服务）可能是：</p>
+<ul>
+<li>  the Kitchen厨房</li>
+<li>  the Waiter服务员</li>
+<li>  the Cashier收银员</li>
+<li>  the Stockroom储物室</li>
+</ul>
+<p><img src="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/domain.png" alt="Restaurant Services"></p>
+<p>Each service is responsible for managing its own data, its business processes and its UI.每个服务负责管理自己的数据，业务流程及其UI。</p>
+<p>We are not aiming for homogenous SCS, but would rather select an appropriate technology (however the technology choices are governed by our Tech Radar).我们不是针对同质的SCS，但宁愿选择合适的技术（但是，技术选择受我们的技术雷达的管辖）。</p>
+<h3 id="Event-Driven-Architecture活动驱动架构"><a href="#Event-Driven-Architecture活动驱动架构" class="headerlink" title="Event Driven Architecture活动驱动架构"></a>Event Driven Architecture活动驱动架构</h3><p>Now we have defined our self contained services for our domain, there are times when the end of a process in one service triggers the start of a process within another service. After all, in our restaurant domain, the Stockroom needs to know what food the kitchen is using to know when to restock, and the cashier needs to know what was ordered in order to prepare the bill.现在我们已经确定了我们的域的自我包含的服务，有时候在一个服务中的进程结束时触发另一个服务中的进程的开始。毕竟，在我们的餐厅域名中，奶器需要了解厨房用来了解何时补货的食物，以及收银员需要知道订购了什么，以便准备账单。</p>
+<p>One method is for the microservices to call each other to trigger business processes within different services. But that couples the services to each other, to the point where it can be difficult to understand how to develop locally without all the microservices, releases result in deploying all services and it ends up in a big tangled mess.一种方法是微服务互相调用以触发不同服务中的业务流程。但这使得彼此互相致力于，在没有所有微服务的情况下难以理解如何在本地开发的地步，发布导致部署所有服务，它最终在一个大纠结的混乱中。</p>
+<p>We can do better.我们可以做得更好。</p>
+<p>Once a service finishes its process, it can shout what it just did. The Kitchen shouts out “Steak and Chips for table 26”. That’s the end of Kitchen’s involvement. It doesn’t know or care what happens in the rest of the system. The Cashier hears the message and adds $35 to the bill for Table 26. The Waiter hears the message, and delivers a plate of food to table 26.一旦服务完成了它的过程，它就会喊它刚刚做了什么。厨房喊出“表26”的“牛排和薯片”。这是厨房的参与结束。它不知道或关心系统其余部分发生的事情。收银员听取了表格26的账单中的留言并向账单增加了35美元。服务员听到了该信息，并将一盘食物送到表26。</p>
+<p><img src="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/event-example.png" alt="Restaurant Services"></p>
+<p>Now the Kitchen, Cashier and Waiter are loosely coupled to each other by the broadcasting of the Event. It simplifies our development and testing, as we don’t need to have the whole system running in order to develop locally, we can release each service independently, and the communication between each service is simplified and easier to understand.现在，厨房，收银员和服务员通过活动的广播松散地互相耦合。它简化了我们的开发和测试，因为我们不需要整个系统运行才能在本地开发，我们可以独立释放每个服务，并且每次服务之间的通信都简化且更容易理解。</p>
+<p>This is Event Driven Architecture.这是事件驱动的架构。</p>
+<p>Event Driven Architecture is an architectural paradigm in which the system changes in reaction to events that have happened. This allows us to create loosely coupled software components and services and describes how small independent business processes are choreographed. Components in a loosely coupled system are quicker to build, easy-to-understand and simpler to test.事件驱动架构是一种架构范式，其中系统对发生的事件的反应变化。这使我们能够创建松散耦合的软件组件和服务，并描述了如何编排独立的业务流程。松散耦合系统中的组件更快地构建，易于理解和更简单的测试。</p>
+<h4 id="Anatomy-of-an-Event-Driven-system事件驱动系统的解剖"><a href="#Anatomy-of-an-Event-Driven-system事件驱动系统的解剖" class="headerlink" title="Anatomy of an Event Driven system事件驱动系统的解剖"></a>Anatomy of an Event Driven system事件驱动系统的解剖</h4><p>An event-driven system typically consists of event publishers (also called emitter or producers), event subscriber (also called listener or consumer or sink), and event stream (or event channel).事件驱动系统通常由事件发布者（也称为发射器或生产者），事件订户（也称为侦听器或消费者或宿区）以及事件流（或事件频道）组成。</p>
+<p><img src="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/anatomy.png" alt="Restaurant Services"></p>
+<blockquote>
+<p>​    There are some important characteristics of an event. Primarily, events are things in the past. They are a broadcast message to the ecosystem that something has happened. Secondarily, these events should be recognised by our business as key events.</p>
+</blockquote>
+<p>“事件”有一些重要的特征。主要的是，“事件”描述的是已经发生的事情。它们是对生态系统发出的广播信息，标识出某件事已经发生了。其次，我们的业务应当识别出这些事件中的关键事件。</p>
+<blockquote>
+<p>​    My colleagues <a target="_blank" rel="noopener" href="https://twitter.com/uglybugger">Andrew Harcourt</a> and <a target="_blank" rel="noopener" href="https://twitter.com/SteveM_01">Steve Morris</a> have been propogating a nice pattern called <a target="_blank" rel="noopener" href="https://andrewharcourt.com/articles/assert-act-announce">Act Assert Announce</a> that works well for Event Driven Architectures.</p>
+</blockquote>
+<p>我的同事安德鲁哈尔科特和史蒂夫·莫里斯一直在取代一个叫做ACT断言的良好模式，这对事件驱动的架构工作整合的很好。</p>
+<h3 id="Eventual-consistency最终一致性"><a href="#Eventual-consistency最终一致性" class="headerlink" title="Eventual consistency最终一致性"></a>Eventual consistency最终一致性</h3><blockquote>
+<p>Eventual consistency is a consistency model used in distributed computing to achieve high availability. Eventual consistency informally guarantees that, if no new updates are made to a given data item, eventually all accesses to that item will return the last updated value.</p>
+</blockquote>
+<p>最终一致性是分布式计算中使用的一致性模型，以实现高可用性。最终的一致性是非正式的保证，如果不再对给定数据项进行新的更新，则最终对该项的所有访问都将返回最后的更新值。</p>
+<blockquote>
+<p> Imagine when the Kitchen broadcasts the event “Steak and Chips for tabel 26”. The Cashier doesn’t have to act synchronously to update the bill, so long as that charge is on the bill by the time the restaurant-goer leaves.</p>
+</blockquote>
+<p>想象一下，当厨房广播事件“26 桌牛排和薯条”。收银员不必同时行动以更新账单，只要在顾客离开之前，将费用记录在账单上就行。</p>
+<blockquote>
+<p> (Below is my little rant about Eventual consistency)</p>
+</blockquote>
+<p>（下面是我对最终一致性的咆哮）</p>
+<blockquote>
+<p>The world is not synchronous, so why force your systems to be?</p>
+</blockquote>
+<p>世界本来就不不同步，所以你的系统非得是同步的？</p>
+<blockquote>
+<p>Somewhere along the line, we started to believe that all data updates had to be synchronous and that data couldn’t be inconsistent. But let’s look at what happens to data in the real world. When I moved house a year ago, my address was not changed everywhere simultaneously. I notified Medicare, my bank and my hair dresser with different urgency. These records eventually became consistent. And if I didn’t get to it before an important letter was sent, my postal redirect would catch it. The real world survives in an inconsistent state. So then why do we insist on Single Source of Truth? Why are our transactions atomic? It’s about time we embrace eventual consistency.</p>
+</blockquote>
+<p>不知道从何时开始，我们开始相信所有数据更新都必须同步，数据不能够不一致。但是，让我们看看现实世界中的数据会发生什么。当我在一年前搬家时，我的住址没有同时改变。我按不同的急迫性通知我的医保，银行和理发师。这些记录是在最终才变得一致。如果我没有再收到重要信件前改变原住址，那我的邮政重定向会处理。现实世界本身就处于一个不一致的状态。所以为什么我们坚持单一的真理来源？为什么我们的交易是原子性的？是时候让我们拥抱最终一致性了。</p>
+<h3 id="Commands-not-passive-aggressive-events"><a href="#Commands-not-passive-aggressive-events" class="headerlink" title="Commands, not passive aggressive events"></a>Commands, not passive aggressive events</h3><blockquote>
+<p>A step within a business process might require two services to interact. When our Waiter takes an order, it needs the Kitchen to start making it. One method is for Waiter to broadcast a <em>Table 26 has ordered Steak and Chips</em> event and expect the Kitchen to start making it. But we really need to make sure that Kitchen will act on that event, so really this is just the Waiter broadcasting a passive-aggressive event.</p>
+</blockquote>
+<p>业务流程中的某些步骤可能需要两个服务进行交互。当我们的服务员下单时，厨房需要开始烹饪。一种方法是服务员广播一个“26桌已经订购了牛排和薯条的”的事件，并期望厨房开始烹饪。但我们需要真的确保厨房将对该事件作出反应，所以这真的只是游客广播被动攻击事件。</p>
+<blockquote>
+<p>In these cases it is entirely appropriate for one service to issue a direct command to another service (eg Waiter calls the MakeOrder(Steak and Chips, table26) in Kitchen). This is far more preferable than publishing a passive-aggressive event, where a service expects an action to follow.</p>
+</blockquote>
+<p>在这些情况下，它完全适用于一个服务向另一个服务发出直接命令（例如服务员调用厨房服务的“烹饪订单”）。如果一个服务期望一个动作紧接着被执行，发出直接命令比发布“被动激进事件”更优选。<img src="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/direct-call.png" alt="Restaurant Services"></p>
+<blockquote>
+<p>It’s possible that due to performance or other constraints, point-to-point calls are inappropriate (consider cases where a service is down). In these cases, we could consider publishing these commands to a queue and take advantage of the underlying Eventing platform. We should treat these commands separate to any event we might emit to the Event Stream,</p>
+</blockquote>
+<p>有可能由于性能或其他约束，点对点呼叫不合适（考虑服务关闭的情况）。在这些情况下，我们可以考虑将这些命令发布到一个队列中并利用底层的事件平台。我们应该将这些命令与我们正常发送到事件流中的事件区分开来。</p>
+<p><img src="https://sarahtaraporewalla.com/assets/posts/event_driven_architecture_terminology/event-and-command.png" alt="Restaurant Services"></p>
+<h3 id="Domain-Driven-Design-DDD"><a href="#Domain-Driven-Design-DDD" class="headerlink" title="Domain Driven Design (DDD)"></a>Domain Driven Design (DDD)</h3><p>In his seminal book, <a target="_blank" rel="noopener" href="https://www.amazon.com.au/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215">Domain Driven Design</a> Eric Evans “explains how to incorporate effective domain modeling into the software development process”. The cornerstones of Domain Driven Design are: Ubiquitous Language (between “the business”, “the techies” and the code), Bounded Contexts (in which consistency is important only within the boundary), Building blocks (like Entities, Value objects and Aggregate Roots).</p>
+<p>You can do Event Driven Architecture without it, but why would you? DDD gives us the tools to define our bounded contexts, which give us our services. Modelling the domain helps us identify the events that are important to the domain.</p>
+<h2 id="Inside-the-box-Micro-Architecture"><a href="#Inside-the-box-Micro-Architecture" class="headerlink" title="Inside the box/Micro Architecture"></a>Inside the box/Micro Architecture</h2><h3 id="Command-Query-Responsibility-Segregation-CQRS"><a href="#Command-Query-Responsibility-Segregation-CQRS" class="headerlink" title="Command Query Responsibility Segregation (CQRS)"></a>Command Query Responsibility Segregation (CQRS)</h3><p>CQRS is a way to separate doing actions (commands) from read requests (queries). Although this style might seem obvious today, and contemporary frameworks have this as the norm, this technique was adopted in a time when services were not RESTful and actions and queries were all together in a request (if you’ve ever worked on a ASP codebase are you know what I’m talking about).</p>
+<p>At an extreme, some implement this with separate deployable services for commands (things that change state) and queries (things that read current state). Technologies that support this approach include GraphQL and ElasticSearch.</p>
+<p>I prefer to take a more tempered approach. Commands and Queries are served from the same deployable service. To enable the separation The service API follows RESTful verbs : POST, PUT and DELETE are used for Commands and GET is used for Queries. Although some systems enforce the separation of commands and reads in the controller (ie a controller only responds to Get and other controllers only respond to Post) we take a relaxed approach a mix these methods in the one controller.</p>
+<p>Commands can be wrapped in a Commit Transaction, where Queries can be wrapped in a rollback transaction. Convention tests help us enforce this separation.</p>
+<h3 id="Event-Sourcing"><a href="#Event-Sourcing" class="headerlink" title="Event Sourcing"></a>Event Sourcing</h3><p>Event sourcing is a data storage technique that stores state changes as opposed to the current state of an object. Current state is reconstituted by replaying the state changes. This allows the system to not only know the current state but also past states as well.</p>
+<p>A great example of an event-sourced system is Git. Git stores the delta commits, and calculates the current state by applying the delta commits (changes) from an initialised state.</p>
+<p>Although it can work well with Event Streaming, it is important to note that Event Sourcing is a separate concept. Event Sourcing applies to the database (and the ORMs) and is therefore a concern of Inside the Box architecture.</p>
+<p>Let’s consider our Restaurant. At night, the Kitchen is busy making orders and announcing “Steak and Chips for table 26”. The Stockroom could listen to each of these messages and reduce its Steak quantity each time it hears this event. But the Stockroom only orders in the morning. So instead, when it makes the order to restock, it replays all the “Steak …” events, as well as “Steak received” events to determine stock levels.</p>
+<h2 id="To-Conclude"><a href="#To-Conclude" class="headerlink" title="To Conclude"></a>To Conclude</h2><p>We’ve built up a nice little Restaurant system now, formed around our domain boundaries, broadcasting Events to each other, issuing commands when needed and event sourcing stock levels. Our system is easy to understand, no spaghetti communication between services and no centralized orchestration. We have easily developed and created nice isolated tests without requiring the whole restaurant to be assembled locally.</p>
+<p>As you can see, all these concepts are complementary to each other, and whilst they have their differences, they work very well together. I hope this provides enough explanation of each to help progress you on your EDA journey.</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>首发地址：</strong>
+    <a href="http://klhans.com/Event-Driven-Architecture-Terminology.html" title="Event Driven Architecture Terminology[译文]">http://klhans.com/Event-Driven-Architecture-Terminology.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/DDD/" rel="tag"><i class="fa fa-tag"></i> DDD</a>
+              <a href="/tags/%E8%AF%91%E6%96%87/" rel="tag"><i class="fa fa-tag"></i> 译文</a>
+              <a href="/tags/EDA/" rel="tag"><i class="fa fa-tag"></i> EDA</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html" rel="prev" title="What do you mean by “Event-Driven”?[译文]">
+      <i class="fa fa-chevron-left"></i> What do you mean by “Event-Driven”?[译文]
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/events-or-commands.html" rel="next" title="Events or Commands[译文]">
+      Events or Commands[译文] <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Higher-Level-Macro-Architecture%E6%9B%B4%E9%AB%98%E7%BA%A7%E5%88%AB-%E5%AE%8F%E8%A7%82%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Higher Level&#x2F;Macro Architecture更高级别&#x2F;宏观体系结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Microservices-Self-Contained-Services%E5%BE%AE%E6%9C%8D%E5%8A%A1-%E8%87%AA%E5%8C%85%E5%90%AB%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.1.</span> <span class="nav-text">Microservices&#x2F;Self Contained Services微服务&#x2F;自包含服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Event-Driven-Architecture%E6%B4%BB%E5%8A%A8%E9%A9%B1%E5%8A%A8%E6%9E%B6%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">Event Driven Architecture活动驱动架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Anatomy-of-an-Event-Driven-system%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%A7%A3%E5%89%96"><span class="nav-number">1.2.1.</span> <span class="nav-text">Anatomy of an Event Driven system事件驱动系统的解剖</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Eventual-consistency%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">1.3.</span> <span class="nav-text">Eventual consistency最终一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Commands-not-passive-aggressive-events"><span class="nav-number">1.4.</span> <span class="nav-text">Commands, not passive aggressive events</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Domain-Driven-Design-DDD"><span class="nav-number">1.5.</span> <span class="nav-text">Domain Driven Design (DDD)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Inside-the-box-Micro-Architecture"><span class="nav-number">2.</span> <span class="nav-text">Inside the box&#x2F;Micro Architecture</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Command-Query-Responsibility-Segregation-CQRS"><span class="nav-number">2.1.</span> <span class="nav-text">Command Query Responsibility Segregation (CQRS)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Event-Sourcing"><span class="nav-number">2.2.</span> <span class="nav-text">Event Sourcing</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#To-Conclude"><span class="nav-number">3.</span> <span class="nav-text">To Conclude</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      欢迎你，第
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+      位童鞋
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uno6T8mk5eaEGYj1FKo9v206-gzGzoHsz',
+      appKey     : 'V1QGjvh9QIYlk8fJLg70puH4',
+      placeholder: "技术更新飞快，难免疏漏，欢迎批评指导",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

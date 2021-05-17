@@ -163,6 +163,320 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/events-or-commands.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/events-or-commands.html" class="post-title-link" itemprop="url">Events or Commands[译文]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-17 16:43:36" itemprop="dateCreated datePublished" datetime="2021-05-17T16:43:36+08:00">2021-05-17</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/events-or-commands.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/events-or-commands.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>6.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前言：本篇探讨命令与事件各自优缺点和如何选择，原文地址：<a target="_blank" rel="noopener" href="https://codesimple.blog/2018/04/16/events-or-commands/">https://codesimple.blog/2018/04/16/events-or-commands/</a></p>
+<hr>
+<h2 id="事件还是命令"><a href="#事件还是命令" class="headerlink" title="事件还是命令"></a>事件还是命令</h2><p>Most of the programmers quickly agree that naming is one of the hardest things they have to do as part of their Job.大多数程序员迅速同意命名是他们作为工作的最艰难的事情之一。</p>
+<blockquote>
+<p>As Phil Karlton puts it “_There are only two hard things in Computer Science: cache invalidation and naming things._“正如菲尔卡尔顿所说的那样，“计算机科学中只有两个艰难的东西：缓存失效和命名的东西。”</p>
+</blockquote>
+<p>Naming is hard because it is important to get it right. It is one of the key UX for readers/consumers of your software components. There is plenty of material (books/blogs) written on this topic. I have also shared my thoughts in another <a target="_blank" rel="noopener" href="http://satjinder.com/2017/03/11/use-meaningful-names-in-your-code/">post</a>.命名很难，因为重要的是要正确。它是软件组件的读者/消费者的关键UX之一。有大量的材料（书籍/博客）写在这个主题上。我还在另一个帖子中分享了我的想法。</p>
+<p>Besides other challenges, developers of Event-Driven systems are suffering from this pain at another level. While building an event-driven system, generally we find it difficult to name an event. Often in this situation, if the name of the event you are raising does not resonate the business event then you should be alarmed and reassess the event.除其他挑战外，活动驱动系统的开发人员正在患有这种痛苦的痛苦。在构建事件驱动的系统时，通常我们发现难以命名事件。经常在这种情况下，如果您提出的事件的名称不会产生业务事件，那么您应该被警告并重新评估事件。</p>
+<p><a target="_blank" rel="noopener" href="https://martinfowler.com/">Martin Fowler</a> warns about the trap of <a target="_blank" rel="noopener" href="https://martinfowler.com/articles/201701-event-driven.html">Passive Aggressive Commands:</a>Martin Fowler警告了被动侵略性命令的陷阱：</p>
+<blockquote>
+<p>“This happens when the source system expects the recipient to carry out an action, and ought to use a command message to show that intention, but styles the message as an event instead.”“当源系统期望收件人执行一个动作时，会发生这种情况，并应该使用命令消息来显示该意图，但是改变为事件的消息。”</p>
+</blockquote>
+<p>Before digging deeper, lets define commands and events.在挖掘更深时，允许定义命令和事件。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/events-or-commands.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/Event-Driven-Architecture-Terminology.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Event-Driven-Architecture-Terminology.html" class="post-title-link" itemprop="url">Event Driven Architecture Terminology[译文]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-15 16:40:18" itemprop="dateCreated datePublished" datetime="2021-05-15T16:40:18+08:00">2021-05-15</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/Event-Driven-Architecture-Terminology.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/Event-Driven-Architecture-Terminology.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前言：本篇通过一个实际的例子，探讨 EDA 在微服务中的应用，原文地址：<a target="_blank" rel="noopener" href="https://sarahtaraporewalla.com/architecture/Event-Driven-Architecture-Terminology">https://sarahtaraporewalla.com/architecture/Event-Driven-Architecture-Terminology</a></p>
+<hr>
+<p>It’s <em>Eventuary</em> all month long at <a target="_blank" rel="noopener" href="https://www.thoughtworks.com/careers/jobs">ThoughtWorks Australia</a>. We have so many projects incorporating Event Driven Architecture underfoot that we thought we would celebrate and share our insights.这是澳大利亚的思考好月份。我们有这么多项目，该项目包含在脚下的事件驱动架构，我们认为我们会庆祝和分享我们的见解。</p>
+<p><a target="_blank" rel="noopener" href="https://martinfowler.com/tags/event%20architectures.html">Event Driven Architecture</a> is gaining popularity again as teams look for ways to simplify the coordination of their microservices. Add to this the growing popularity of Kakfa, we get many teams beginning to explore Event Driven Architectures for the first time.事件驱动的架构又称流行，因为团队寻找简化他们的微服务协调的方法。加入这一普遍普及的Kakfa，我们获得了许多团队首次开始探索活动驱动的架构。</p>
+<p>Today I am taking a look at several complementary concepts that fall under the Event Driven Architecture (EDA) umbrella. I have been working as an Architect in a team that is starting their EDA journey. I compiled this terminology explanation for them to help unpack the many connected concepts.今天我正在看看几种互补概念，该概念落在了活动驱动的建筑（EDA）伞下。我一直在一支开始他们的eda旅程的团队中担任建筑师。我编译了这个术语解释，以帮助解压缩许多连接的概念。</p>
+<p>Some of these concepts govern a high-level macro architecture (how our system hangs together) and others are closer to code, micro architecture (what our system does). We can consider the macro architecture the Big Boxes, and how they work together, whereas the micro architecture governs what is happening inside the box.其中一些概念管理高级宏体系结构（我们的系统如何挂起），其他概念更接近代码，微架构（我们的系统）。我们可以考虑宏观体系结构大盒子，以及它们如何一起工作，而微型架构管理盒子里面发生的事情。</p>
+<p>For the purpose of this explanation, I’ll explore these concepts through the lens of a Restaurant.出于这种解释的目的，我将通过餐厅的镜头探索这些概念。</p>
+<h2 id="Higher-Level-Macro-Architecture更高级别-宏观体系结构"><a href="#Higher-Level-Macro-Architecture更高级别-宏观体系结构" class="headerlink" title="Higher Level/Macro Architecture更高级别/宏观体系结构"></a>Higher Level/Macro Architecture更高级别/宏观体系结构</h2><h3 id="Microservices-Self-Contained-Services微服务-自包含服务"><a href="#Microservices-Self-Contained-Services微服务-自包含服务" class="headerlink" title="Microservices/Self Contained Services微服务/自包含服务"></a>Microservices/Self Contained Services微服务/自包含服务</h3><p><a target="_blank" rel="noopener" href="https://samnewman.io/talks/principles-of-microservices/">Microservices</a> is a term which was pioneered around 2011, and has gained steady traction to date. In its essence, it is about defining boundaries around your code to deploy and develop smaller services in order to improve the quality of the end product.微服务是2011年左右开创的术语，并迄今为止获得了稳定的牵引力。在其本质上，它是关于在代码周围定义边界以部署和开发较小的服务，以提高最终产品的质量。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Event-Driven-Architecture-Terminology.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html" class="post-title-link" itemprop="url">What do you mean by “Event-Driven”?[译文]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-14 15:36:48" itemprop="dateCreated datePublished" datetime="2021-05-14T15:36:48+08:00">2021-05-14</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前言：这个系列是将自己看过的一些国外大佬的文章，翻译整理一下，避免以后看的时候还得再看一遍英文。<br>本篇作为第一篇是 Martin Fowler 在博客中探讨有关EDA(事件驱动架构)的文章，原文地址：<a target="_blank" rel="noopener" href="https://martinfowler.com/articles/201701-event-driven.html">https://martinfowler.com/articles/201701-event-driven.html</a></p>
+<hr>
+<blockquote>
+<p> Towards the end of last year I attended a workshop with my colleagues in ThoughtWorks to discuss the nature of “event-driven” applications. Over the last few years we’ve been building lots of systems that make a lot of use of events, and they’ve been often praised, and often damned. Our North American office organized a summit, and ThoughtWorks senior developers from all over the world showed up to share ideas.</p>
+</blockquote>
+<p>在去年年底，我与ThoughtWorks的同事一起参加了一个研讨会 思考讨论“事件驱动”应用的本质。在最近几年里，我们一直在建立大量的系统，这些系统大量使用了事件，并且他们毁誉参半。我们的北美办公室组织了一个峰会，来自世界各地的ThoughtWorks的高级开发与会并分享想法。</p>
+<blockquote>
+<p>The biggest outcome of the summit was recognizing that when people talk about “events”, they actually mean some quite different things. So we spent a lot of time trying to tease out what some useful patterns might be. This note is a brief summary of the main ones we identified. </p>
+</blockquote>
+<p>峰会的最大结果是：我们认识到当人们谈论 “事件”，他们实际上意味着一些完全不同的东西。所以我们花了很多时间，试图整理出有用的模式可能是什么。本说明是对我们确定的主要部分的一个简短的摘要。</p>
+<h2 id="Event-Notification事件通知"><a href="#Event-Notification事件通知" class="headerlink" title="Event Notification事件通知"></a>Event Notification事件通知</h2><blockquote>
+<p>This happens when a system sends event messages to notify other systems of a change in its domain. A key element of event notification is that the source system doesn’t really care much about the response. Often it doesn’t expect any answer at all, or if there is a response that the source does care about, it’s indirect. There would be a marked separation between the logic flow that sends the event and any logic flow that responds to some reaction to that event.</p>
+</blockquote>
+<p>“事件通知”发生在：一个系统发出事件消息以通知其他系统他自己的领域内发生了某种变化。事件通知的一个关键元素是 源系统对响应并不关心。通常源系统根本不期望任何响应，或者即使源系统确实关心响应，但响应是间接的。在发送事件的逻辑流程和任何对该事件作出反应的响应之间，应该是标记分离的。</p>
+<blockquote>
+<p> Event notification is nice because it implies a low level of coupling, and is pretty simple to set up. It can become problematic, however, if there really is a logical flow that runs over various event notifications. The problem is that it can be hard to see such a flow as it’s not explicit in any program text. Often the only way to figure out this flow is from monitoring a live system. This can make it hard to debug and modify such a flow. The danger is that it’s very easy to make nicely decoupled systems with event notification, without realizing that you’re losing sight of that larger-scale flow, and thus set yourself up for trouble in future years. The pattern is still very useful, but you have to be careful of the trap.</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://klhans.com/bookislife.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -902,7 +1216,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -915,7 +1229,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

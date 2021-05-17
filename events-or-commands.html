@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言：本篇探讨命令与事件各自优缺点和如何选择，原文地址：https:&#x2F;&#x2F;codesimple.blog&#x2F;2018&#x2F;04&#x2F;16&#x2F;events-or-commands&#x2F;  事件还是命令Most of the programmers quickly agree that naming is one of the hardest things they have to do as part of thei">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Events or Commands[译文]">
+<meta property="og:url" content="http://klhans.com/events-or-commands.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="前言：本篇探讨命令与事件各自优缺点和如何选择，原文地址：https:&#x2F;&#x2F;codesimple.blog&#x2F;2018&#x2F;04&#x2F;16&#x2F;events-or-commands&#x2F;  事件还是命令Most of the programmers quickly agree that naming is one of the hardest things they have to do as part of thei">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://satjinderdotcom.files.wordpress.com/2018/02/events.png">
+<meta property="og:image" content="https://satjinderdotcom.files.wordpress.com/2018/02/command.png">
+<meta property="og:image" content="https://satjinderdotcom.files.wordpress.com/2018/02/usingasynccommands.png">
+<meta property="article:published_time" content="2021-05-17T08:43:36.000Z">
+<meta property="article:modified_time" content="2021-05-17T09:17:06.198Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="DDD">
+<meta property="article:tag" content="译文">
+<meta property="article:tag" content="EDA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://satjinderdotcom.files.wordpress.com/2018/02/events.png">
+
+<link rel="canonical" href="http://klhans.com/events-or-commands.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Events or Commands[译文] | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/events-or-commands.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Events or Commands[译文]
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-17 16:43:36" itemprop="dateCreated datePublished" datetime="2021-05-17T16:43:36+08:00">2021-05-17</time>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/events-or-commands.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/events-or-commands.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>6.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前言：本篇探讨命令与事件各自优缺点和如何选择，原文地址：<a target="_blank" rel="noopener" href="https://codesimple.blog/2018/04/16/events-or-commands/">https://codesimple.blog/2018/04/16/events-or-commands/</a></p>
+<hr>
+<h2 id="事件还是命令"><a href="#事件还是命令" class="headerlink" title="事件还是命令"></a>事件还是命令</h2><p>Most of the programmers quickly agree that naming is one of the hardest things they have to do as part of their Job.大多数程序员迅速同意命名是他们作为工作的最艰难的事情之一。</p>
+<blockquote>
+<p>As Phil Karlton puts it “_There are only two hard things in Computer Science: cache invalidation and naming things._“正如菲尔卡尔顿所说的那样，“计算机科学中只有两个艰难的东西：缓存失效和命名的东西。”</p>
+</blockquote>
+<p>Naming is hard because it is important to get it right. It is one of the key UX for readers/consumers of your software components. There is plenty of material (books/blogs) written on this topic. I have also shared my thoughts in another <a target="_blank" rel="noopener" href="http://satjinder.com/2017/03/11/use-meaningful-names-in-your-code/">post</a>.命名很难，因为重要的是要正确。它是软件组件的读者/消费者的关键UX之一。有大量的材料（书籍/博客）写在这个主题上。我还在另一个帖子中分享了我的想法。</p>
+<p>Besides other challenges, developers of Event-Driven systems are suffering from this pain at another level. While building an event-driven system, generally we find it difficult to name an event. Often in this situation, if the name of the event you are raising does not resonate the business event then you should be alarmed and reassess the event.除其他挑战外，活动驱动系统的开发人员正在患有这种痛苦的痛苦。在构建事件驱动的系统时，通常我们发现难以命名事件。经常在这种情况下，如果您提出的事件的名称不会产生业务事件，那么您应该被警告并重新评估事件。</p>
+<p><a target="_blank" rel="noopener" href="https://martinfowler.com/">Martin Fowler</a> warns about the trap of <a target="_blank" rel="noopener" href="https://martinfowler.com/articles/201701-event-driven.html">Passive Aggressive Commands:</a>Martin Fowler警告了被动侵略性命令的陷阱：</p>
+<blockquote>
+<p>“This happens when the source system expects the recipient to carry out an action, and ought to use a command message to show that intention, but styles the message as an event instead.”“当源系统期望收件人执行一个动作时，会发生这种情况，并应该使用命令消息来显示该意图，但是改变为事件的消息。”</p>
+</blockquote>
+<p>Before digging deeper, lets define commands and events.在挖掘更深时，允许定义命令和事件。</p>
+<p><strong>Commands</strong> are directed by 1 or more systems towards a single system to processes these commands. So when you send a command, it results in a success or failure. The calling system may or may not care about the outcome.命令由1个或多个系统指向单个系统来处理这些命令。因此，当您发送命令时，它会导致成功或失败。呼叫系统可能或可能不关心结果。</p>
+<p><strong>Events</strong> are the facts stated by the source system without targeting any system. Events are raised by one system and consumed by one or more systems. System raising the event does not know about the subscribers of that event.事件是源系统没有针对任何系统的情况说明的事实。事件由一个系统提出并由一个或多个系统消耗。提高事件的系统不知道该事件的订阅者。</p>
+<p>So what is this trap that Martin Fowler is warning about and why should we care about “command versus event”? The easiest example to compare can be a system where several bounded contexts want to correspond with the user via email/SMS.那么这个陷阱是什么是马丁福勒警告，为什么我们应该关心“命令与活动”？比较最简单的示例可以是一个系统，其中几个有界上下文希望通过电子邮件/短信对应用户。</p>
+<ul>
+<li>  Sales System wants to notify users of the new addition to the inventory.销售系统希望向用户通知库存的新增功能。</li>
+<li>  Dispatch System wants to notify users about dispatching of the product with postage tracking information.调度系统希望向用户通知使用邮资跟踪信息调度产品。</li>
+<li>  Correspondence system takes care of talking to the infrastructure layer as well as providing additional responsibilities of notifying the user on the user-preferred medium of correspondence.对应系统负责处理与基础设施层进行交谈，并提供向用户通知用户优先对应介质的额外责任。</li>
+</ul>
+<p>Now, this can be done in two ways: either all these systems send commands to the Correspondence system OR the Correspondence system listens to all the business events and decides when to notify the user. Let’s try digging a bit deeper.现在，这可以通过两种方式完成：所有这些系统向对应系统发送命令或通信系统会侦听所有业务事件，并决定何时通知用户。让我们尝试挖掘一点更深。</p>
+<h2 id="Using-Events使用事件"><a href="#Using-Events使用事件" class="headerlink" title="Using Events使用事件"></a>Using Events使用事件</h2><p><img src="https://satjinderdotcom.files.wordpress.com/2018/02/events.png" alt="Events.png"></p>
+<h3 id="Bad"><a href="#Bad" class="headerlink" title="Bad:"></a>Bad:</h3><p><strong>Visibility:</strong> This takes the visibility away from the Shipping domain of notification to the user as part of some operation.可见性：这将远离发货域的通知，作为某些操作的一部分。</p>
+<p><strong>Context Leakage:</strong> Correspondence will need to understand the logic of all other domains (Shipping in this case).上下文泄漏：对应关系需要了解所有其他域的逻辑（在这种情况下运输）。</p>
+<h3 id="Good"><a href="#Good" class="headerlink" title="Good:"></a>Good:</h3><p><strong>Resilience:</strong> If correspondence is temporarily down for some reason, an event in the queue will be retried a few times. This allows the shipping process to complete its processes with the assurance of guaranteed delivery of the event messages via service bus.</p>
+<p>弹性：如果由于某种原因暂时关闭对应，则队列中的事件将被重新检测几次。这允许运输过程通过服务总线确保递送事件消息的保证来完成其流程。</p>
+<blockquote>
+<p>Martin Fowler also warns about this in his post on <a target="_blank" rel="noopener" href="https://martinfowler.com/articles/201701-event-driven.html">event driven systems</a>:Martin Fowler还在事件驱动系统上发布了这一点：</p>
+<p>“The danger is that it’s very easy to make nicely decoupled systems with event notification, without realizing that you’re losing sight of that larger-scale flow, and thus set yourself up for trouble in future years.”“危险是，用事件通知制作精美的解耦系统非常容易，而无需意识到您正在忽视这种更大的流量，因此将自己在未来几年中遇到麻烦。”</p>
+</blockquote>
+<p>As an alternative, we can convert the events to commands. This will move the logic and visibility back to the Shipping domain.作为替代方案，我们可以将事件转换为命令。这将使逻辑和可视性移动回送货域。</p>
+<h2 id="Using-Commands使用命令"><a href="#Using-Commands使用命令" class="headerlink" title="Using Commands使用命令"></a>Using Commands使用命令</h2><p><img src="https://satjinderdotcom.files.wordpress.com/2018/02/command.png" alt="command.png"></p>
+<p>This solution addresses a couple of the concerns, but it brings back some of the pains which event-driven systems are an answer to.该解决方案解决了几个问题，但它带回了一些事件驱动系统是答案的一些痛苦。</p>
+<h3 id="Good-1"><a href="#Good-1" class="headerlink" title="Good:"></a><strong>Good:</strong></h3><p><strong>No context leakage</strong>: Every system will own their logic/rules and content of the email/SMS for the correspondence (depends on how generic the command is). The correspondence does not need to know about all the other domains while acting as a generic infrastructure layer.没有上下文泄露：每个系统都将拥有其逻辑/规则和电子邮件/短信的内容，用于对应关系（取决于命令的通用方式）。该对应关系不需要知道所有其他域，同时充当通用基础架构层。</p>
+<p><strong>Visibility:</strong> In the event-driven system, there is a risk of losing the sight, as an event is a 1-to-many style communication so it can have multiple subscribers. Whereas a command is a many-to-1 style communication. Just by looking at the command you know who it is for and what service is going to handle it.</p>
+<p>可见性：在事件驱动系统中，存在丢失视线的风险，因为一个事件是一个一对多的风格通信，所以它可以有多个订阅者。虽然命令是一个达到1的风格通信。只需通过查看您知道它是谁的命令以及服务将要处理的服务。</p>
+<p><strong>Transaction:</strong> The system sending a command can react to the outcome of the command. If the command fails, e.g. transaction commit vs rollback etc.</p>
+<p>事务：发送命令的系统可以对命令的结果作出反应。如果命令失败，例如，事务提交VS回滚等</p>
+<h3 id="Bad-1"><a href="#Bad-1" class="headerlink" title="Bad:"></a><strong>Bad:</strong></h3><p><strong>Tight coupling:</strong> Just like the Shipping system, any other system that needs to send the communication out will need to know the command. So any change in the command will impact all the systems using this command.</p>
+<p>紧密耦合：就像运输系统一样，任何需要发送通信的系统都需要知道命令。因此命令中的任何更改都将使用此命令影响所有系统。</p>
+<p><strong>Single point of failure / Not resilient:</strong> When correspondence is down, other systems will fail to send any correspondence. So all the calling systems will need to build resiliency around it.</p>
+<p>单点失败/非弹性：当通信下降时，其他系统将无法发送任何通信。因此，所有呼叫系统都需要在其周围构建弹性。</p>
+<h2 id="Best-of-Both-Worlds-两全其美"><a href="#Best-of-Both-Worlds-两全其美" class="headerlink" title="Best of Both Worlds 两全其美"></a>Best of Both Worlds 两全其美</h2><blockquote>
+<p>We need resilience and loosely coupled system without losing visibility of internal context of other domains. So what if we do the commands in the way we do events.</p>
+</blockquote>
+<p>我们需要弹性和松耦合的系统，而不会损失其他领域的内部上下文的可见性。所以如果我们在我们做事的方式下做命令怎么办。</p>
+<p><strong>Command as an async Message</strong>命令作为异步消息</p>
+<p><img src="https://satjinderdotcom.files.wordpress.com/2018/02/usingasynccommands.png" alt="UsingAsyncCommands"></p>
+<blockquote>
+<p>Sending commands as a message via service bus brings back the resiliency and still leaving the internal context of the shipping domain where it belongs. For example the Correspondence does not need to know if the user has to be notified of shipping, instead, it will just focus on the logic within its own context i.e. User preferences on correspondence and notification.</p>
+</blockquote>
+<p>通过service bus将命令作为消息来回复系统弹性，并仍将送货域的内部上下文保留在它应该在的位置。例如，通信域将只关注自己上下文的逻辑，而不必要知道送货域是否通过自己通知了用户。i.e.用户对通信和通知的偏好。</p>
+<blockquote>
+<p>The calling system loses the Correspondence system from the transaction boundary. But it is OK in this case as the guaranteed message delivery delegates the onus on to the Correspondence to ensure the eventual delivery of the email/SMS.</p>
+</blockquote>
+<p>调用方系统与通信系统之间失去了事务特性。但是在当前场景下是无妨的，保证邮件传递委托对应的通知以确保电子邮件/短信的最终交付。</p>
+<blockquote>
+<p>In short, while working on the event-driven systems, we should try to identify all the business events and design architecture accordingly. If you struggle choosing your event name and cannot relate it to any real business event, it is better to be pragmatic about how our bounded contexts should communicate instead of attempting to shoehorn everything into events.</p>
+</blockquote>
+<p>简而言之，在着手与事件驱动的系统时，我们应该相应地识别出所有业务事件和设计架构。如果您挣扎于选择事件名称，并无法将其与任何真正的业务活动相关联，最好是务实地思考限界上下文之间改如何交互而不是将所有事情都扔给“事件”机制。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>首发地址：</strong>
+    <a href="http://klhans.com/events-or-commands.html" title="Events or Commands[译文]">http://klhans.com/events-or-commands.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/DDD/" rel="tag"><i class="fa fa-tag"></i> DDD</a>
+              <a href="/tags/%E8%AF%91%E6%96%87/" rel="tag"><i class="fa fa-tag"></i> 译文</a>
+              <a href="/tags/EDA/" rel="tag"><i class="fa fa-tag"></i> EDA</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Event-Driven-Architecture-Terminology.html" rel="prev" title="Event Driven Architecture Terminology[译文]">
+      <i class="fa fa-chevron-left"></i> Event Driven Architecture Terminology[译文]
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E8%BF%98%E6%98%AF%E5%91%BD%E4%BB%A4"><span class="nav-number">1.</span> <span class="nav-text">事件还是命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-Events%E4%BD%BF%E7%94%A8%E4%BA%8B%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">Using Events使用事件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bad"><span class="nav-number">2.1.</span> <span class="nav-text">Bad:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Good"><span class="nav-number">2.2.</span> <span class="nav-text">Good:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-Commands%E4%BD%BF%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">Using Commands使用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Good-1"><span class="nav-number">3.1.</span> <span class="nav-text">Good:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bad-1"><span class="nav-number">3.2.</span> <span class="nav-text">Bad:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Best-of-Both-Worlds-%E4%B8%A4%E5%85%A8%E5%85%B6%E7%BE%8E"><span class="nav-number">4.</span> <span class="nav-text">Best of Both Worlds 两全其美</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      欢迎你，第
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+      位童鞋
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uno6T8mk5eaEGYj1FKo9v206-gzGzoHsz',
+      appKey     : 'V1QGjvh9QIYlk8fJLg70puH4',
+      placeholder: "技术更新飞快，难免疏漏，欢迎批评指导",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
