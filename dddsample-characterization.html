@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言:此篇文章是对 cargo 项目的类归属的翻译。原文链接:http:&#x2F;&#x2F;dddsample.sourceforge.net&#x2F;characterization.html  Characterization类归属 Careful characterization of the classes is an important activity when doing Domain-Driven Des">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dddsample-characterization[译文]">
+<meta property="og:url" content="http://klhans.com/dddsample-characterization.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="前言:此篇文章是对 cargo 项目的类归属的翻译。原文链接:http:&#x2F;&#x2F;dddsample.sourceforge.net&#x2F;characterization.html  Characterization类归属 Careful characterization of the classes is an important activity when doing Domain-Driven Des">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-19T14:30:18.000Z">
+<meta property="article:modified_time" content="2021-05-19T14:36:02.607Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="DDD">
+<meta property="article:tag" content="译文">
+<meta property="article:tag" content="cargo">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://klhans.com/dddsample-characterization.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>dddsample-characterization[译文] | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/dddsample-characterization.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          dddsample-characterization[译文]
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-19 22:30:18" itemprop="dateCreated datePublished" datetime="2021-05-19T22:30:18+08:00">2021-05-19</time>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/dddsample-characterization.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/dddsample-characterization.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前言:此篇文章是对 cargo 项目的类归属的翻译。<br>原文链接:<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/characterization.html">http://dddsample.sourceforge.net/characterization.html</a></p>
+<hr>
+<h2 id="Characterization类归属"><a href="#Characterization类归属" class="headerlink" title="Characterization类归属"></a>Characterization类归属</h2><blockquote>
+<p>Careful characterization of the classes is an important activity when doing Domain-Driven Design. Sometimes it is fairly obvious in what category a particular class belongs, other times it is not as easy to sort out the different <em>Building Blocks of a Model-Driven Design</em>.</p>
+</blockquote>
+<p>在进行领域驱动设计时，仔细的界定类的身份是重要的活动。有时候特定类的所属哪个类别非常明显，有时则不然。</p>
+<blockquote>
+<p>The trickiest ones to classify are typically <em>Entities</em> , <em>Aggregates</em>, <em>Value Objects</em> and <em>Domain Events</em>. When possible, we tend to favor <em>Value Objects</em> over <em>Entities</em> or <em>Domain Events</em>, because they require less attention during implementation. <em>Value Objects</em> can be created and thrown away at will, and since they are immutable we can pass them around as we wish. We must be much less cavalier with <em>Entities</em> as identity and life-cycle have to be carefully managed. Below is a short walkthrough of key classes in the application and the motivation behind their implementation choice. All but <em>Domain Event</em> are thoroughly described in <a target="_blank" rel="noopener" href="http://www.domaindrivendesign.org/books/index.html#DDD">Eric Evans’ book</a>. A short introduction to Domain Events can be found here: <a target="_blank" rel="noopener" href="http://martinfowler.com/eaaDev/DomainEvent.html">http://martinfowler.com/eaaDev/DomainEvent.html</a></p>
+</blockquote>
+<p>棘手的分类工作通常是针对实体，聚合，值对象和领域事件。可能的话，我们倾向于使用值对象而不是实体或领域事件，因为它们在实现期间需要注意的东西更少。可以任意创建值对象并将其丢弃，因为它们是不可变的；而我们必须对实体更加小心因为实体的身份和生命周期需要小心的管理。以下是一个关于关键类的简短演示，以及他们选择的实现的背后动机。除了领域事件外，都在<a target="_blank" rel="noopener" href="http://www.domaindrivendesign.org/books/index.html#DDD">Eric Evans的书</a>中有完整的描述。在此处可以找到关于领域事件的简述：<a target="_blank" rel="noopener" href="http://martinfowler.com/eaadev/domainainevent.html">http://martinfowler.com/eaadev/domainainevent.html</a></p>
+<h2 id="Entities实体"><a href="#Entities实体" class="headerlink" title="Entities实体"></a>Entities实体</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Cargo.html">Cargo</a>: Cargo has both a clear identity and a life-cycle with state transitions that we care about, so it’s an entity. Many cargo instances will exist in the system simultaneously. The different instances have the same origin and destination, they may even contain the same kind of things, but it is important for us to be able to track individual cargo instances. In our case the cargo’s identity is its tracking id. The tracking id is assigned upon creation and is never changed. This is the handle used to track the cargo’s progress, e.g. from the tracking website.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Cargo.html">Cargo</a>(货运)：cargo具有明确的唯一标识和我们关心的有状态变化的生命周期，所以它是一个实体。许多cargo实例将同时存在于系统中。不同的实例具有相同的起源和目的地，它们甚至可能包含相同类型的东西，但是对我们来说，能够跟踪指定cargo实例很重要。在我们的case 中，cargo的唯一标识是其tracking id。tracking id在创建时分配，并且永远不会改变。这是用来跟踪cargo进行情况的handle，例如，在网上追踪。</p>
+<blockquote>
+<p>The cargo’s delivery state will change during it’s lifetime. It’s transport status will start out as NOT_RECEIVED, i.e. booked but not yet handed over to the shipping company at the port, and in the normal case ends its life as CLAIMED (note that this is a property of the cargo’s <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Delivery.html">Delivery</a>}, tracking the current state the cargo. During a cargo’s lifetime it may be assigned new destinations, its itinerary may be changed many times and it’s Delivery will be recalculated as new <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/handling/HandlingEvent.html">HandlingEvent</a>}s are received.</p>
+</blockquote>
+<p>在cargo的生命周期中，他的delivery(交付)状态会改变。它的运输状态将跟踪当前的货物状态：从<em>NOT_RECEIVED</em>开始，比如：预订，但尚未移交给港口的航运公司，并且在正常情况下，生命周期结束时，状态会变为<em>CLAIMED</em>。（请注意这是cargo’s <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Delivery.html">Delivery</a>的属性}。在cargo的生命周期中，它可能会被分配新的目的地，它的路线可能会发生多次改变，并且他的delivery将重新计算，当收到新的*<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/handling/HandlingEvent.html">HandlingEvent</a>*事件。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/voyage/Voyage.html">Voyage</a>: Voyage is a vessel’s trip from orgin to destination, typically made up of several segments, (<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/voyage/CarrierMovement.html">CarrierMovment</a>s). In the sample app Voyage consists of a <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/voyage/Schedule.html">Schedule</a> with the different CarrierMovements in it and has a very clear notion of identity, <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/voyage/VoyageNumber.html">VoyageNumber</a>, This id could be something like a flight number for air shipments or a vessel voyage number for a ship, it is not the name or the identification of the actual vessel. To see this domain concept in a different context, try searching the current vessel schedule for <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Emma_Maersk">Emma Maersk</a> at <a target="_blank" rel="noopener" href="http://www.maerskline.com/">http://www.maerskline.com/</a> (please note that we are not associated with Maersk in any way).</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/voyage/Voyage.html">Voyage</a>(航程)：Voyage是一种船舶从起点到目的地的旅行，通常由几段<em>载体运动</em>组成(<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/voyage/CarrierMovement.html">CarrierMovment</a>s)。在示例应用中，Voyage由不同载体运动的<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/voyage/Schedule.html">Schedule</a>(计划)组成，并且具有非常明确的唯一标识概念——<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/voyage/VoyageNumber.html">VoyageNumber</a>，这个ID可以类比于航班的飞行号码或船舶的航行号码，因此不是实际船只的姓名或唯一表示。要在不同的上下文中查看此领域概念，请尝试在<a target="_blank" rel="noopener" href="http://www.maerskline.com/%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E8%88%B9%E5%8F%AA%E6%97%A5%E7%A8%8B%E8%A1%A8http://www.maerskline.com/%EF%BC%88%E8%AF%B7%E6%B3%A8%E6%84%8F%EF%BC%8C%E6%88%91%E4%BB%AC%E6%B2%A1%E6%9C%89%E4%BB%A5%E4%BB%BB%E4%BD%95%E6%96%B9%E5%BC%8F%E4%B8%8EMaersk%E7%9B%B8%E5%85%B3%E8%81%94%EF%BC%89%E3%80%82">http://www.maerskline.com/查看当前船只日程表http://www.maerskline.com/（请注意，我们没有以任何方式与Maersk相关联）。</a></p>
+<h2 id="Value-Objects值对象"><a href="#Value-Objects值对象" class="headerlink" title="Value Objects值对象"></a>Value Objects值对象</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Leg.html">Leg</a>: Leg consists of a starting point and an ending point (to <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/location/Location.html">Location</a> and from Location), and a reference to a voyage. A leg has no sense of identity; two legs with the same from Location, end Location and Voyage are in our model completely interchangeable. We implement Leg as an immutable <em>Value Object</em>.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Leg.html">Leg</a>（航段）：Leg由起点和终点组成，并且持有对<em>voyage</em>的引用。一个Leg没有唯一标识;具有相同起点、终点、voyage 的两个 leg 在我们的模型中是完全可以互换的。我们将腿部实现为不可变<em>值对象</em>。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Itinerary.html">Itinerary</a>: An Itinerary consists of a list of Legs, with the load Location of the first Leg in the list as the starting point of the Itinerary and the unload Location of the last Leg as the final destination. The same reasoning applies to Itineraries as to Legs, they do not have identity and are implemented as <em>Value Objects</em>. Now, a Cargo can certainly have its Itinerary updated. One way to accomplish this would be to keep the original Itinerary instance and update the legs in the Itinerary’s list, in this case the Itinerary must be mutable and has to be implemented as an <em>Entity</em>. With the Itinerary as a <em>Value Object</em>, as in the case of the sample application model and implementation, updating it is a simple operation of acquiring a complete new Itinerary from the RoutingService and replacing the old one. Implementation of a Cargo’s Itinerary management is much simplified by having the Itinerary as a <em>Value Object</em>.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Itinerary.html">Itinerary</a>（行程）：行程包括一个 Leg列表，列表中第一个 Leg的装载位置是<em>Itinerary</em>的起点，最后一个 Leg的卸载位置作为最终的目的地。与Leg的推理相同的，它们没有唯一标识所以被实现为<em>值对象</em>。现在，一个cargo当然可以更新其Itinerary。实现这一目标的一种方法是持有原始Itinerary实例并在Itinerary的Leg列表中更新Leg，在这种情况下，行程必须是可变的，所以必须实现为实体。而如果行程设计为<em>值对象</em>，就像在示例应用程序模型和实现的情况一样，更新它是从RoutingService获取完整的新Itinerary并替换旧的简单操作。通过将Itinerary设计为值对象，来实现Cargo’s Itinerary的管理非常简单。</p>
+<h2 id="Domain-Event领域事件"><a href="#Domain-Event领域事件" class="headerlink" title="Domain Event领域事件"></a>Domain Event领域事件</h2><blockquote>
+<p>Some things clearly have identity but no life-cycle, or an extremely limited life-cycle with just one state. We call these things <em>Domain Events</em> and they can be viewed as hybrid of <em>Entities</em> and <em>Value Objects</em>. In the sample application <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/handling/HandlingEvent.html">HandlingEvent</a> is a <em>Domain Event</em> that represent a real-life event such as a Cargo being loaded or unloaded, customs cleared etc. They carry both a completion time and a registration time. The completion time is the time when the event occurred and the registration time is the time when the event was received by the system. The HandlingEvent id is composed of the cargo, voyage, completion time, location and type (LOAD, UNLOAD etc).</p>
+</blockquote>
+<p>有些事情显然有唯一标识，但没有生命周期，或者是仅有一个状态的极其有限的生命周期。我们称呼这些东西为<em>领域事件</em>，它们可以被视为实体和值对象的混合。在示例应用程序中，<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/handling/HandlingEvent.html">HandlingEvent</a>是一个领域事件，代表现实生活中的事件，比如正在装载或卸载的货物，清算等。它们携带完成时间和注册时间。完成时间是事件发生的时间，注册时间是系统接收到事件的时间。 HandledingEvent 唯一标识由cargo, voyage，完成时间，位置和类型（负载，卸载等）组成。</p>
+<h2 id="Aggregates聚合"><a href="#Aggregates聚合" class="headerlink" title="Aggregates聚合"></a>Aggregates聚合</h2><p>In real life most things are connected, directly or indirectly. Mimicking this approach when building large software systems tend to bring unnecessary complexity and poor performance. DDD provides tactics to help you sort these things out, aggregates being one of the most important ones. Aggregates help with decoupling of large structures by setting rules for relations between entities. Aggregates can also have properties, methods, and invariants that doesn’t fit within one single class. Java and other OO-languages typically miss specific language constructs to handle aggregates and in the sample application responsibilities that belong to an aggregate is most often implemented in the aggregate root.</p>
+<blockquote>
+<p>在现实生活中，大多数事情都直接或间接地连接。在构建大型软件系统时模仿这种方法往往会带来不必要的复杂性和性能差。 DDD提供了策略来帮助您解决这些事情，聚合是其中最重要的。聚合有助于解耦大型架构通过在实体的关系之间设置规则。聚合还可以具有不适合在单个类中实现的属性，方法和不变性。 Java和其他OO语言通常不存在特定的语言构造以处理聚合，并且在示例应用程序中，属于聚合的职责经常在聚合根中实现。</p>
+</blockquote>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/package-summary.html">cargo</a>: cargo is the central aggregate in the sample application. Cargo is the aggregate root and the aggregate also contains the <em>Value Objects</em> Delivery, Itinereray, Leg and a few more classes. </p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/package-summary.html">cargo</a>：cargo是示例应用中的核心聚合。 Cargo是聚合根，并且聚合暗中还包含值对象<em>Delivery</em>，Itinereray，Leg和更多类。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/handling/package-summary.html">handling</a>: handling is another important aggregate. It contains the HandlingEvents that are registered throughout a cargo’s progress from NOT_RECEIVED to CLAIMED. The HandlingEvents have a relation to the Cargo for which the event belongs, this is allowed since Cargo is an aggregate root. </p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/handling/package-summary.html">handling</a>：把手是另一个重要的聚合。它包含在cargo状态从NOT_RECEIVED 到 CLAIMED过程中注册的HandlingEvents。 HandledingEvents持有一个事件所属的cargo 的引用，这是允许的，因为cargo是聚合根。</p>
+<blockquote>
+<p>The main reason for not making HandlingEvent part of the cargo aggregate is performance. HandlingEvents are received from external parties and systems, e.g. warehouse management systems, port handling systems, that call our <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/interfaces/handling/ws/HandlingReportServiceImpl.html">HandlingReportService</a> webservice implementation. The number of events can be very high and it is important that our webservice can dispatch the remote calls quickly. To be able to support this use case we need to handle the remote webservice calls asynchronously, i.e. we do not want to load the big cargo structure synchronously for each received HandlingEvent. Since all relationships in an aggregate must be handled synchronously we put the HandlingEvent in an aggregate of its own and we are able processes the events quickly and at the same time eliminate dead-locking situations in the system.</p>
+</blockquote>
+<p>没有将HandlingEvent作为 cargo 聚合的一部分的主要原因是性能。HandlingEvents时从三方宝和系统中收到的，例如仓库管理系统，端口处理系统，这些低筒调用我们的WebService实现<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/interfaces/handling/ws/HandlingReportServiceImpl.html">HandlingReportService</a>。事件数量非常高，重要的是我们的WebService需要能够快速调度远程请求。为了能够支持这种用例，我们需要异步处理远程WebService调用，即我们不希望为每个接收到的HandlingEvent同步加载cargo 这个大型结构。由于聚合中的所有关系必须同步处理，因此我们将HandlingEvent放在自己的聚合中以便我们能够快速处理事件，同时消除系统中的死锁情况。</p>
+<h2 id="Repositories仓储"><a href="#Repositories仓储" class="headerlink" title="Repositories仓储"></a>Repositories仓储</h2><p>With the aggregates and their roots defined its fairly trivial to define the <em>Repositories</em>. The <em>Repositories</em> work on aggregate roots and in the sample application there is one <em>Repository</em> per aggregate root, the <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/CargoRepository.html">CargoRepository</a> is responsible for finding and storing Cargo aggregates. The finders return Cargo instances or lists of Cargo instances.</p>
+<blockquote>
+<p>与聚合及聚合根的定义相比，仓储的定义相当微不足道。仓储的工作依赖于聚合根，并且在示例应用程序中，每个聚合根有一个仓储，<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/CargoRepository.html">CargoRepository</a> 负责查找和存储cargo 聚合。finders返回 cargo 实例或一个 cargo 实例的列表。</p>
+</blockquote>
+<p>The <em>Repository</em> interfaces are part of the domain layer, their implementations are part of the infrastructure layer. E.g. CargoRepository has an Hibernate implementation in the infrastructure layer: <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/infrastructure/persistence/hibernate/CargoRepositoryHibernate.html">CargoRepositoryHibernate</a>.</p>
+<blockquote>
+<p>仓储接口是领域层的一部分，它们的实现是基础架构层的一部分。例如。 CargorePository在基础设施层中有一个Hibernate的实现： <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/infrastructure/persistence/hibernate/CargoRepositoryHibernate.html">CargoRepositoryHibernate</a>。</p>
+</blockquote>
+<h2 id="Services服务"><a href="#Services服务" class="headerlink" title="Services服务"></a>Services服务</h2><blockquote>
+<p>There are two basic kinds of services in the sample application:</p>
+</blockquote>
+<p>示例应用程序中有两种基本的服务：</p>
+<ul>
+<li><p>Domain services encapsulate domain concepts that just are not naturally modeled as things.</p>
+<p>领域服务封装了领域概念，该概念只是无法自然地在领域对象中建模的东西。</p>
+</li>
+<li><p>Application services constitute the application, or <a target="_blank" rel="noopener" href="http://martinfowler.com/eaaCatalog/serviceLayer.html">service</a>, layer.</p>
+<p>应用程序服务构成应用程序或服务层。</p>
+</li>
+</ul>
+<h3 id="Domain-services领域服务"><a href="#Domain-services领域服务" class="headerlink" title="Domain services领域服务"></a>Domain services领域服务</h3><blockquote>
+<p>Domain services are expressed in terms of the ubiquitous language and the domain types, i.e. the method arguments and the return values are proper domain classes. Sometimes, only the service interface (<em>what</em> the service does) is part of the domain layer, but the implementation (<em>how</em> the service does it) is part of the infrastructure layer. This is analogous to how repository interfaces are part of the domain layer, but the Hibernate implementations are not.</p>
+</blockquote>
+<p>领域服务以统一语言和领域类型表示，比如方法参数和返回值是完全的领域类。有时，只有服务的接口（服务做了什么）是领域层的一部分，而实现（服务如何做的）是基础架构层的一部分。这类似于仓储接口是领域层的一部分，但Hibernate的实现不是。</p>
+<blockquote>
+<p>A good example of that is the <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/service/RoutingService.html">RoutingService</a>, which provides access to the routing system and is used to find possible routes for a give specification. The <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/infrastructure/routing/ExternalRoutingService.html">implementation</a> communicates with another team’s context and translates to and from an external API and data model.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/service/RoutingService.html">RoutingService</a>是一个很好的例子，它提供对路由系统的访问，用于找到指定规范的可能的路由。该<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/infrastructure/routing/ExternalRoutingService.html">implementation</a>与另一个团队的上下文通信并转换为外部API和数据模型。</p>
+<blockquote>
+<p>On the other hand, if the service is possible to implement strictly using the domain layer, both the interface and the implementation could be part of the domain layer.</p>
+</blockquote>
+<p>另一方面，如果可以完全使用领域层实现领域服务，则接口和实现都可以是领域层的一部分。</p>
+<h3 id="Application-services应用服务"><a href="#Application-services应用服务" class="headerlink" title="Application services应用服务"></a>Application services应用服务</h3><blockquote>
+<p>The application services in the sample application are responsible for driving workflow and coordinating transaction management (by use of the declarative transaction management support in Spring). They also provide a high-level abstraction for clients to use when interacting with the domain. These services are typically designed to define or support specific use cases. See <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/application/impl/BookingServiceImpl.html">BookingService</a> or <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/application/impl/HandlingEventServiceImpl.html">HandlingEventService</a>.</p>
+</blockquote>
+<p>示例应用程序中的应用程序服务负责驱动工作流程和协调事务管理（通过使用Spring支持的声明式事务管理）。它们还为客户端与领域交互时提供了高级抽象。这些服务通常旨在定义或支持特定的用例。请参阅<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/application/impl/BookingServiceImpl.html">BookingService</a> 或 <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/application/impl/HandlingEventServiceImpl.html">HandlingEventService</a>.</p>
+<blockquote>
+<p>In some situations, e.g. when dealing with graphs of lazy-loaded domain objects or when passing services’ return values over network boundaries, the services are wrapped in facades. The facades handle ORM session management issues and/or convert the domain objects to more portable <a target="_blank" rel="noopener" href="http://martinfowler.com/eaaCatalog/dataTransferObject.html">Data Transfer Objects</a>) that can be tailored to specific use cases. In that case, we consider the DTO-serializing facade part of the <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/architecture.html#Interfaces">interfaces layer</a>. See <a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/interfaces/booking/facade/internal/BookingServiceFacadeImpl.html">BookingServiceFacade</a> for an example.</p>
+</blockquote>
+<p>在某些情况下，例如在处理懒加载的领域对象的图形或通过网络边界传递服务的返回值时，服务将在外观中包装。外观处理ORM会话管理问题和/或将领域对象转换为可以根据特定用例定制的更轻便的 <a target="_blank" rel="noopener" href="http://martinfowler.com/eaaCatalog/dataTransferObject.html">Data Transfer Objects</a>。在这种情况下，我们考虑将DTO序列化外观作为<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/architecture.html#Interfaces">interfaces layer</a>的一部分。例子请参阅<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/interfaces/booking/facade/internal/BookingServiceFacadeImpl.html">BookingServiceFacade</a> 。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>首发地址：</strong>
+    <a href="http://klhans.com/dddsample-characterization.html" title="dddsample-characterization[译文]">http://klhans.com/dddsample-characterization.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/DDD/" rel="tag"><i class="fa fa-tag"></i> DDD</a>
+              <a href="/tags/%E8%AF%91%E6%96%87/" rel="tag"><i class="fa fa-tag"></i> 译文</a>
+              <a href="/tags/cargo/" rel="tag"><i class="fa fa-tag"></i> cargo</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/dddsample-Architecture.html" rel="prev" title="dddsample-Architecture[译文]">
+      <i class="fa fa-chevron-left"></i> dddsample-Architecture[译文]
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Characterization%E7%B1%BB%E5%BD%92%E5%B1%9E"><span class="nav-number">1.</span> <span class="nav-text">Characterization类归属</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Entities%E5%AE%9E%E4%BD%93"><span class="nav-number">2.</span> <span class="nav-text">Entities实体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Value-Objects%E5%80%BC%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.</span> <span class="nav-text">Value Objects值对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Domain-Event%E9%A2%86%E5%9F%9F%E4%BA%8B%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">Domain Event领域事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aggregates%E8%81%9A%E5%90%88"><span class="nav-number">5.</span> <span class="nav-text">Aggregates聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Repositories%E4%BB%93%E5%82%A8"><span class="nav-number">6.</span> <span class="nav-text">Repositories仓储</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Services%E6%9C%8D%E5%8A%A1"><span class="nav-number">7.</span> <span class="nav-text">Services服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Domain-services%E9%A2%86%E5%9F%9F%E6%9C%8D%E5%8A%A1"><span class="nav-number">7.1.</span> <span class="nav-text">Domain services领域服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Application-services%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1"><span class="nav-number">7.2.</span> <span class="nav-text">Application services应用服务</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      欢迎你，第
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+      位童鞋
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uno6T8mk5eaEGYj1FKo9v206-gzGzoHsz',
+      appKey     : 'V1QGjvh9QIYlk8fJLg70puH4',
+      placeholder: "技术更新飞快，难免疏漏，欢迎批评指导",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
