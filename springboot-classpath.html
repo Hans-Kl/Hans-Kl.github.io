@@ -20,22 +20,27 @@
     var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="谁能凭爱意要富士山私有    ——林夕 《富士山下》  前言观察者模式和策略模式使我们在编写业务代码时最常用的两种模式，真真的简单又好用。（策略模式以后单独写篇文章分析） 本篇文章主要介绍观察者模式的作用和实现，分别用手写、Guava、SpringBoot 来实现同一套观察者模式，比较他们的使用区别，最后会深入源码层面分析一下 Guava 和 SpringBoot 给我们封装好的观察者模式。">
+  <meta name="description" content="前言最近又在研究 SpringBoot 源码（研究好几次了，研究完有些用不上就忘了😅），在 SpringBoot 执行 main 方法启动过程中，会根据 classpath 下的类信息推断当前环境信息。这里 classpath 究竟是指哪呢，搜了中文语境下的技术文章，竟然没有找到想要的回答，可能是问题太简单了。本篇记录下我的看法。 java 最基础的 classpathclasspath，顾名思">
 <meta property="og:type" content="article">
-<meta property="og:title" content="简单好用的观察者模式">
-<meta property="og:url" content="http://klhans.com/design-patterns-observer.html">
+<meta property="og:title" content="SpringBoot项目中的classpath到底指什么?">
+<meta property="og:url" content="http://klhans.com/springboot-classpath.html">
 <meta property="og:site_name" content="孔令翰-个人博客">
-<meta property="og:description" content="谁能凭爱意要富士山私有    ——林夕 《富士山下》  前言观察者模式和策略模式使我们在编写业务代码时最常用的两种模式，真真的简单又好用。（策略模式以后单独写篇文章分析） 本篇文章主要介绍观察者模式的作用和实现，分别用手写、Guava、SpringBoot 来实现同一套观察者模式，比较他们的使用区别，最后会深入源码层面分析一下 Guava 和 SpringBoot 给我们封装好的观察者模式。">
+<meta property="og:description" content="前言最近又在研究 SpringBoot 源码（研究好几次了，研究完有些用不上就忘了😅），在 SpringBoot 执行 main 方法启动过程中，会根据 classpath 下的类信息推断当前环境信息。这里 classpath 究竟是指哪呢，搜了中文语境下的技术文章，竟然没有找到想要的回答，可能是问题太简单了。本篇记录下我的看法。 java 最基础的 classpathclasspath，顾名思">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://i.loli.net/2021/03/09/mdFIsoAhYG5RDPS.jpg">
-<meta property="article:published_time" content="2021-03-09T12:44:59.000Z">
-<meta property="article:modified_time" content="2021-03-10T02:43:46.612Z">
+<meta property="og:image" content="https://i.loli.net/2021/05/28/RMcDbzyXBwTEaLO.png">
+<meta property="og:image" content="https://i.loli.net/2021/05/28/YbpD1d3yuk4aoXn.png">
+<meta property="og:image" content="https://i.loli.net/2021/05/28/vXPoV59UNDzOuFJ.png">
+<meta property="og:image" content="https://i.loli.net/2021/05/28/AM2WSVQv4OG8xej.png">
+<meta property="og:image" content="https://i.loli.net/2021/05/28/RcFJDEpMuOLPbZQ.png">
+<meta property="article:published_time" content="2021-05-28T02:33:51.000Z">
+<meta property="article:modified_time" content="2021-05-28T07:11:52.934Z">
 <meta property="article:author" content="孔令翰">
-<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="springboot">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.loli.net/2021/03/09/mdFIsoAhYG5RDPS.jpg">
+<meta name="twitter:image" content="https://i.loli.net/2021/05/28/RMcDbzyXBwTEaLO.png">
 
-<link rel="canonical" href="http://klhans.com/design-patterns-observer.html">
+<link rel="canonical" href="http://klhans.com/springboot-classpath.html">
 
 
 <script id="page-configurations">
@@ -48,7 +53,7 @@
   };
 </script>
 
-  <title>简单好用的观察者模式 | 孔令翰-个人博客</title>
+  <title>SpringBoot项目中的classpath到底指什么? | 孔令翰-个人博客</title>
   
 
 
@@ -169,7 +174,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/design-patterns-observer.html">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot-classpath.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -182,7 +187,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          简单好用的观察者模式
+          SpringBoot项目中的classpath到底指什么?
         </h1>
 
         <div class="post-meta">
@@ -192,16 +197,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-09 20:44:59" itemprop="dateCreated datePublished" datetime="2021-03-09T20:44:59+08:00">2021-03-09</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
-                </span>
+              <time title="创建时间：2021-05-28 10:33:51" itemprop="dateCreated datePublished" datetime="2021-05-28T10:33:51+08:00">2021-05-28</time>
             </span>
 
           
@@ -222,8 +218,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/design-patterns-observer.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/design-patterns-observer.html" itemprop="commentCount"></span>
+    <a title="valine" href="/springboot-classpath.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/springboot-classpath.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -232,7 +228,7 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>204</span>
+              <span>1.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -250,13 +246,34 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><img src="https://i.loli.net/2021/03/09/mdFIsoAhYG5RDPS.jpg"></p>
-<blockquote>
-<p>谁能凭爱意要富士山私有    ——林夕 《富士山下》</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近又在研究 SpringBoot 源码（研究好几次了，研究完有些用不上就忘了😅），在 SpringBoot 执行 main 方法启动过程中，会根据 classpath 下的类信息推断当前环境信息。这里 classpath 究竟是指哪呢，搜了中文语境下的技术文章，竟然没有找到想要的回答，可能是问题太简单了。本篇记录下我的看法。</p>
+<h2 id="java-最基础的-classpath"><a href="#java-最基础的-classpath" class="headerlink" title="java 最基础的 classpath"></a>java 最基础的 classpath</h2><p><strong>classpath</strong>，顾名思义，就是指 .class 文件所在的路径。.class 文件由 .java 文件编译后产生，我们用 java 命令执行.class 文件时，需要指定 jvm 去哪搜索目标 class 文件，总不能全盘扫描对吧，而<em>指定去哪搜索</em>就是 classpath 的含义，即：<br><strong><code>classpath</code>是JVM用到的一个环境变量，它用来指示JVM如何搜索<code>class</code>。</strong></p>
+<p>执行 java 命令时，通过<code>java -classpath dir</code>或者简写为 <code>java -cp dir</code>来指定，</p>
+<p>如果命令中没有显式指定，则 jvm 在当前目录中查找，即默认为：<code>java -cp .</code>。</p>
+<p>可以在命令中指定多个classpath，Linux 下用<code>：</code>分隔。jvm 会依次查找指定目录，查找到一个之后不再继续查找下一个，比如<code>java -cp .:/usr/local:/tmp/work</code>。</p>
+<h2 id="jar-包的-classpath"><a href="#jar-包的-classpath" class="headerlink" title="jar 包的 classpath"></a>jar 包的 classpath</h2><p>我们工程中一般都会有很多 .class 文件，利用 jar 包可以将他们批量管理起来，像这样<code>java -cp ./demo.jar boo.Helloworld</code>指定 jar 包为 classpath 的话，jvm 就会去这个 jar 包里面搜索需要的类。</p>
+<p>jar包还可以包含一个特殊的<code>/META-INF/MANIFEST.MF</code>文件，<code>MANIFEST.MF</code>是纯文本，可以指定<code>Main-Class</code>和其它信息。JVM会自动读取这个<code>MANIFEST.MF</code>文件，如果存在<code>Main-Class</code>，我们就不必在命令行指定启动的类名，而是用更方便的命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar hello.jar</span><br></pre></td></tr></table></figure>
+
+<p>jar包还可以包含其它jar包，这个时候，就需要在<code>MANIFEST.MF</code>文件里配置<code>classpath</code>了。</p>
+<p>在大型项目中，不可能手动编写<code>MANIFEST.MF</code>文件，再手动创建zip包。Java社区提供了大量的开源构建工具，例如<a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1252599548343744/1255945359327200">Maven</a>，可以非常方便地创建jar包。</p>
+<h2 id="SpringBoot-特殊的-classpath"><a href="#SpringBoot-特殊的-classpath" class="headerlink" title="SpringBoot 特殊的 classpath"></a>SpringBoot 特殊的 classpath</h2><p>我们将一个基于 SpringBoot 和 Maven 开发的工程打成 jar 包，然后解压，可以看到这样的目录结构：</p>
+<p><img src="https://i.loli.net/2021/05/28/RMcDbzyXBwTEaLO.png" alt="image-20210528150316369"></p>
+<p>其中<code>/META-INF/MANIFEST.MF</code>就是我们上文所述的可以指定<code>Main-Class</code>的文件，我们打开看一下：</p>
+<p><img src="https://i.loli.net/2021/05/28/YbpD1d3yuk4aoXn.png" alt="image-20210528150704871"></p>
+<p>其中<code>Main-Class</code>标识 SpringBoot 项目启动时，使用了自己的类<code>JarLauncher</code>来加载 jar 包；</p>
+<p><code>Spring-Boot-Classes</code>指定了 SpringBoot 项目的业务代码的文件夹路径；</p>
+<p><code>Spring-Boot-Lib</code>指定了 SpringBoot 项目依赖的 jar 包的文件夹路径</p>
+<p>我们打开文件夹进行验证，果然如此，SpringBoot 项目看来对搜索 jar 包的规则进行了改造：</p>
+<p><img src="https://i.loli.net/2021/05/28/vXPoV59UNDzOuFJ.png" alt="image-20210528151119477"></p>
+<h2 id="在-IDEA-中启动应用时的-classpath"><a href="#在-IDEA-中启动应用时的-classpath" class="headerlink" title="在 IDEA 中启动应用时的 classpath"></a>在 IDEA 中启动应用时的 classpath</h2><p>在 IDEA 等工具中运行 java 程序时，IDEA帮我们用命令行传入了我们依赖的所有 jar 包，这是我项目的命令，可以看出来非常多：</p>
+<p><img src="https://i.loli.net/2021/05/28/AM2WSVQv4OG8xej.png" alt="image-20210528142255311"></p>
+<p>点开下图这行灰色的就能看到完整命令了：</p>
+<p><img src="https://i.loli.net/2021/05/28/RcFJDEpMuOLPbZQ.png" alt="image-20210528142356501"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1252599548343744/1260466914339296">https://www.liaoxuefeng.com/wiki/1252599548343744/1260466914339296</a></p>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000015802324">https://segmentfault.com/a/1190000015802324</a></p>
 </blockquote>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>观察者模式</strong>和<strong>策略模式</strong>使我们在编写业务代码时最常用的两种模式，真真的简单又好用。（策略模式以后单独写篇文章分析）</p>
-<p>本篇文章主要介绍观察者模式的作用和实现，分别用手写、Guava、SpringBoot 来实现同一套观察者模式，比较他们的使用区别，最后会深入源码层面分析一下 Guava 和 SpringBoot 给我们封装好的观察者模式。</p>
-<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>观察者模式是一种常用的行为设计模式，</p>
 
     </div>
 
@@ -272,7 +289,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>首发地址：</strong>
-    <a href="http://klhans.com/design-patterns-observer.html" title="简单好用的观察者模式">http://klhans.com/design-patterns-observer.html</a>
+    <a href="http://klhans.com/springboot-classpath.html" title="SpringBoot项目中的classpath到底指什么?">http://klhans.com/springboot-classpath.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -284,7 +301,8 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"><i class="fa fa-tag"></i> 设计模式</a>
+              <a href="/tags/springboot/" rel="tag"><i class="fa fa-tag"></i> springboot</a>
+              <a href="/tags/java/" rel="tag"><i class="fa fa-tag"></i> java</a>
           </div>
 
         
@@ -298,12 +316,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/linux-profile.html" rel="prev" title="linux设置环境变量">
-      <i class="fa fa-chevron-left"></i> linux设置环境变量
+    <a href="/dddsample-characterization.html" rel="prev" title="dddsample-characterization[译文]">
+      <i class="fa fa-chevron-left"></i> dddsample-characterization[译文]
     </a></div>
       <div class="post-nav-item">
-    <a href="/bookislife.html" rel="next" title="BookIsLife 读书清单">
-      BookIsLife 读书清单 <i class="fa fa-chevron-right"></i>
+    <a href="/valueobject.html" rel="next" title="ValueObject-译文">
+      ValueObject-译文 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -364,7 +382,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%9C%BA"><span class="nav-number">2.</span> <span class="nav-text">动机</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java-%E6%9C%80%E5%9F%BA%E7%A1%80%E7%9A%84-classpath"><span class="nav-number">2.</span> <span class="nav-text">java 最基础的 classpath</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jar-%E5%8C%85%E7%9A%84-classpath"><span class="nav-number">3.</span> <span class="nav-text">jar 包的 classpath</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-%E7%89%B9%E6%AE%8A%E7%9A%84-classpath"><span class="nav-number">4.</span> <span class="nav-text">SpringBoot 特殊的 classpath</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-IDEA-%E4%B8%AD%E5%90%AF%E5%8A%A8%E5%BA%94%E7%94%A8%E6%97%B6%E7%9A%84-classpath"><span class="nav-number">5.</span> <span class="nav-text">在 IDEA 中启动应用时的 classpath</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
