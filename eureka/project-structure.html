@@ -20,20 +20,25 @@
     var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="前言上一节我们研究完了 SpringApplication 的构造函数，传送门。这一节我们接着研究执行完构造函数的 springApplication实例对象的 run 方法。">
+  <meta name="description" content="前言这个系列开始研究spring-cloud-netflix微服务框架的各个组件源码，首先是注册中心eureka。本文先介绍eureka项目的基本结构。 介绍仓库Eureka是微服务框架spring-cloud-netflix中的一个核心组件，作为注册中心而被应用广泛，其前身是Netflix公司开源的组件Eureka。 github仓库地址：https:&#x2F;&#x2F;github.com&#x2F;Netflix&#x2F;e">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SpringBoot系列之启动流程2-SpringApplication执行run方法">
-<meta property="og:url" content="http://klhans.com/springboot-SpringApplication-run.html">
+<meta property="og:title" content="Eureka系列之项目结构介绍">
+<meta property="og:url" content="http://klhans.com/eureka/project-structure.html">
 <meta property="og:site_name" content="孔令翰-个人博客">
-<meta property="og:description" content="前言上一节我们研究完了 SpringApplication 的构造函数，传送门。这一节我们接着研究执行完构造函数的 springApplication实例对象的 run 方法。">
+<meta property="og:description" content="前言这个系列开始研究spring-cloud-netflix微服务框架的各个组件源码，首先是注册中心eureka。本文先介绍eureka项目的基本结构。 介绍仓库Eureka是微服务框架spring-cloud-netflix中的一个核心组件，作为注册中心而被应用广泛，其前身是Netflix公司开源的组件Eureka。 github仓库地址：https:&#x2F;&#x2F;github.com&#x2F;Netflix&#x2F;e">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-06-06T08:18:30.000Z">
-<meta property="article:modified_time" content="2021-06-06T08:25:50.454Z">
+<meta property="og:image" content="https://i.loli.net/2021/06/11/8CYnEyvsXq4VfeN.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/11/CbOGzjty7Ar9PiH.png">
+<meta property="article:published_time" content="2021-06-11T02:38:37.000Z">
+<meta property="article:modified_time" content="2021-06-11T06:54:10.419Z">
 <meta property="article:author" content="孔令翰">
-<meta property="article:tag" content="springboot">
+<meta property="article:tag" content="springcloud">
+<meta property="article:tag" content="netflix">
+<meta property="article:tag" content="eureka">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/06/11/8CYnEyvsXq4VfeN.png">
 
-<link rel="canonical" href="http://klhans.com/springboot-SpringApplication-run.html">
+<link rel="canonical" href="http://klhans.com/eureka/project-structure.html">
 
 
 <script id="page-configurations">
@@ -46,7 +51,7 @@
   };
 </script>
 
-  <title>SpringBoot系列之启动流程2-SpringApplication执行run方法 | 孔令翰-个人博客</title>
+  <title>Eureka系列之项目结构介绍 | 孔令翰-个人博客</title>
   
 
 
@@ -167,7 +172,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot-SpringApplication-run.html">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/project-structure.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -180,7 +185,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          SpringBoot系列之启动流程2-SpringApplication执行run方法
+          Eureka系列之项目结构介绍
         </h1>
 
         <div class="post-meta">
@@ -190,7 +195,20 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-06-06 16:18:30" itemprop="dateCreated datePublished" datetime="2021-06-06T16:18:30+08:00">2021-06-06</time>
+              <time title="创建时间：2021-06-11 10:38:37" itemprop="dateCreated datePublished" datetime="2021-06-11T10:38:37+08:00">2021-06-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
             </span>
 
           
@@ -211,8 +229,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/springboot-SpringApplication-run.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot-SpringApplication-run.html" itemprop="commentCount"></span>
+    <a title="valine" href="/eureka/project-structure.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/project-structure.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -221,13 +239,13 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>83</span>
+              <span>1.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -239,7 +257,63 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一节我们研究完了 SpringApplication 的构造函数，<a href="https://klhans.com/springboot-SpringApplication-constructor.html">传送门</a>。这一节我们接着研究执行完构造函数的 springApplication实例对象的 run 方法。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这个系列开始研究spring-cloud-netflix微服务框架的各个组件源码，首先是注册中心eureka。本文先介绍eureka项目的基本结构。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><h3 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h3><p>Eureka是微服务框架spring-cloud-netflix中的一个核心组件，作为注册中心而被应用广泛，其前身是Netflix公司开源的组件Eureka。</p>
+<p>github仓库地址：<a target="_blank" rel="noopener" href="https://github.com/Netflix/eureka.git%E3%80%82">https://github.com/Netflix/eureka.git。</a></p>
+<p>请注意不在spring仓库下，spring-cloud-netflix-eureka只是对Netflix-Eureka的一个包装，我们要去看Netflix仓库下的源码。</p>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>下图是eureka架构简图：</p>
+<p><img src="https://i.loli.net/2021/06/11/8CYnEyvsXq4VfeN.png" alt="未命名文件 (1)"></p>
+<p>分为三个角色：</p>
+<ul>
+<li>Eureka Server：也就是eureka的服务端，提供应用服务的服务注册和服务发现等功能。</li>
+<li>provider：应用服务的提供方，需要作为eureka-client向eureka-server注册他自己。</li>
+<li>consumer：应用服务的消费方，需要作为eureka-client从eureka-server拉取服务，然后向服务提供方发起远程调用</li>
+</ul>
+<p>图中1、2、3线标明服务中心的使用流程。注意实际使用中，provider同时也会是consumer，一般不会严格区分某个服务是否只需要消费而不需要注册或者只需要注册而不需要消费。</p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><p><img src="https://i.loli.net/2021/06/11/CbOGzjty7Ar9PiH.png" alt="image-20210611105343162"></p>
+<p>如图是将工程导入 IDEA 后的目录结构，下面说明主要包的用途。</p>
+<ul>
+<li>eureka-client：eureka 客户端</li>
+<li>eureka-core：eureka 服务端</li>
+<li>eureka-resources：基于 jsp 开发的eureka 后台页面</li>
+<li>eureka-server：eureka 集成包。包含客户端，服务端，后台页面</li>
+<li>eureka-examples：例子</li>
+<li>eureka-test-utils：单元测试工具类</li>
+</ul>
+<h3 id="阅读顺序"><a href="#阅读顺序" class="headerlink" title="阅读顺序"></a>阅读顺序</h3><ol>
+<li>先看看 eureka-server 集成模块下的构建配置文件，即<code>build.gradle</code>，这个文件会标识出：<ol>
+<li>模块的依赖；</li>
+<li>模块的构建方式：eureka 是通过 war 包</li>
+</ol>
+</li>
+<li>由于 eureka-server 是一个老式 web 应用，所以我们直接去看 <code>web.xml</code>文件内容，这个文件标识出：web 应用的监听器，拦截器，servlet ，欢迎页面等信息。</li>
+</ol>
+<p>我们看到web.xml 中配置了Servlet监听器：</p>
+<ul>
+<li>com.netflix.eureka.EurekaBootStrap</li>
+</ul>
+<p>Serlvet监听器是指实现了<code>javax.servlet.ServletContextListener</code>接口的实现类，这个接口提供了两个供子类实现的模板方法，分别会在web 容器初始化和销毁的时候被 Tomcat等实现了 Servlet 标准的 web 容器调用，一些框架会利用 Servlet 提供的监听器功能做初始化和销毁工作，比如我们现在讨论的 Eureka，</p>
+<p><strong>也就是说<code>com.netflix.eureka.EurekaBootStrap#contextInitialized</code>方法将作为eureka-core模块的核心入口方法。</strong></p>
+<p>另外四个功能拦截器：</p>
+<ul>
+<li>com.netflix.eureka.StatusFilter，猜测：负责状态相关的逻辑</li>
+<li>com.netflix.eureka.ServerRequestAuthFilter，猜测：负责对请求进行授权认证的逻辑</li>
+<li>com.netflix.eureka.RateLimitingFilter。猜测：负责限流相关的逻辑</li>
+<li>com.netflix.eureka.GzipEncodingEnforcingFilter。猜测：负责压缩，编码相关的逻辑</li>
+</ul>
+<p>还有一个jersey请求处理拦截器，负责处理请求，类似 SpringMVC 中的 DispatcherServlet，但是使用拦截器实现：</p>
+<ul>
+<li>com.sun.jersey.spi.container.servlet.ServletContainer</li>
+</ul>
+<p>一个欢迎页面：</p>
+<ul>
+<li>jsp/status.jsp</li>
+</ul>
+<p>另外：web.xml 中还配置了拦截器对应的过滤路径，值得注意的是，限流拦截器默认是没有配置过滤路径的，也就是说默认没有启动拦截器，按需启用。</p>
+<h2 id="预告"><a href="#预告" class="headerlink" title="预告"></a>预告</h2><p>下一篇准备介绍Eureka项目的调试入口，这个调试的地方有坑，很多中文博客都说的不对。😅</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.iocoder.cn/Eureka/project-structure/">https://www.iocoder.cn/Eureka/project-structure/</a></p>
+</blockquote>
 
     </div>
 
@@ -255,7 +329,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>首发地址：</strong>
-    <a href="http://klhans.com/springboot-SpringApplication-run.html" title="SpringBoot系列之启动流程2-SpringApplication执行run方法">http://klhans.com/springboot-SpringApplication-run.html</a>
+    <a href="http://klhans.com/eureka/project-structure.html" title="Eureka系列之项目结构介绍">http://klhans.com/eureka/project-structure.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -267,7 +341,9 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/springboot/" rel="tag"><i class="fa fa-tag"></i> springboot</a>
+              <a href="/tags/springcloud/" rel="tag"><i class="fa fa-tag"></i> springcloud</a>
+              <a href="/tags/netflix/" rel="tag"><i class="fa fa-tag"></i> netflix</a>
+              <a href="/tags/eureka/" rel="tag"><i class="fa fa-tag"></i> eureka</a>
           </div>
 
         
@@ -281,13 +357,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/springboot-starter-theory.html" rel="prev" title="SpringBoot系列之starter原理">
-      <i class="fa fa-chevron-left"></i> SpringBoot系列之starter原理
+    <a href="/springboot/tomcat-start.html" rel="prev" title="SpringBoot系列之tomcat内嵌web容器是如何启动的">
+      <i class="fa fa-chevron-left"></i> SpringBoot系列之tomcat内嵌web容器是如何启动的
     </a></div>
-      <div class="post-nav-item">
-    <a href="/springboot-annotation-SpringBootApplication.html" rel="next" title="SpringBoot系列之启动流程3-自动装配与@SpringBootApplication注解">
-      SpringBoot系列之启动流程3-自动装配与@SpringBootApplication注解 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -347,7 +420,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%93%E5%BA%93"><span class="nav-number">2.1.</span> <span class="nav-text">仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">架构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84"><span class="nav-number">3.1.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F"><span class="nav-number">3.2.</span> <span class="nav-text">阅读顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E5%91%8A"><span class="nav-number">4.</span> <span class="nav-text">预告</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -363,20 +436,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
