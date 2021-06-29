@@ -163,6 +163,1107 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/server-sync-up.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/server-sync-up.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 10.服务同步</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-26 20:08:33" itemprop="dateCreated datePublished" datetime="2021-06-26T20:08:33+08:00">2021-06-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/server-sync-up.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/server-sync-up.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>eureka客户端和服务端的通信前面九篇文章都已经将源码分析完毕，这篇文章我们将重点放在eureka-server集群内的多个节点间是如何通信的。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>eureka-server集群采用peer to peer的通信方式，简称p2p。即没有主副节点，所有节点地位平等。这就意味着所有节点要将自己的信息传递到自己节点中，达到信息的<strong>最终一致性</strong>，注意eureka采用的是CAP中的AP模型。</p>
+<p>源码中关键的是eureka-server启动时<code>EurekaBootStrap#initEurekaServerContext</code>方法中的这两步：</p>
+<p><img src="https://i.loli.net/2021/06/26/hSPkVIZ2FYcjxRq.png" alt="image-20210626205734149"></p>
+<h2 id="维护节点信息"><a href="#维护节点信息" class="headerlink" title="维护节点信息"></a>维护节点信息</h2><p><img src="https://i.loli.net/2021/06/26/B3Cqp5xFjEs6RMb.png" alt="image-20210626205816465"></p>
+<p>维护节点信息的方法会启动一个定时任务，每10min执行一次，这个定时任务的逻辑：</p>
+<p><img src="https://i.loli.net/2021/06/26/pqwGkIRCXyV8oEt.png" alt="image-20210626205943266"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/server-sync-up.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/server-self-preservation.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/server-self-preservation.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 9.自我保护</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-22 21:30:00" itemprop="dateCreated datePublished" datetime="2021-06-22T21:30:00+08:00">2021-06-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/server-self-preservation.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/server-self-preservation.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><strong>自我保护机制</strong>是指，eureka-sever如果在1min内，发现超过15%的大量服务实例下线了，会认为是自身出了问题，比如断网，导致服务实例client无法向自己发送心跳，这时不会将这些服务实例剔除。</p>
+<p>自我保护机制的入口：</p>
+<ul>
+<li>com.netflix.eureka.registry.PeerAwareInstanceRegistryImpl#isLeaseExpirationEnabled</li>
+</ul>
+<p><img src="https://i.loli.net/2021/06/26/ezGhV2jYu98UDpO.png" alt="image-20210626152104796"></p>
+<p>![image-20210626152124553](../../../../../Library/Application Support/typora-user-images/image-20210626152124553.png)</p>
+<p>方法实现比较简单：</p>
+<ol>
+<li>如果<code>isLeaseExpirationEnabled</code>方法返回true，则执行服务剔除的逻辑，否则直接返回。</li>
+<li>如果<code>isSelfPreservationModeEnabled</code>返回false，说明没有打开<strong>自我保护机制</strong>，则方法直接返回true，执行服务剔除的逻辑。</li>
+<li>默认情况下<strong>自我保护机制</strong>是打开的，则判断是否<code>getNumOfRenewsInLastMin() &gt; numberOfRenewsPerMinThreshold</code></li>
+</ol>
+<p>逻辑比较简单，但是引入了两个变量：</p>
+<ul>
+<li>numberOfRenewsPerMinThreshold    每分钟期望收到的心跳数阈值</li>
+<li>getNumOfRenewsInLastMin                上一分钟实际收到的心跳数</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/server-self-preservation.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/server-instance-eviction.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/server-instance-eviction.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 6.服务剔除</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-21 21:45:54" itemprop="dateCreated datePublished" datetime="2021-06-21T21:45:54+08:00">2021-06-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/server-instance-eviction.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/server-instance-eviction.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><strong>服务剔除是指：服务端会定时对实例进行检查检查，如果有没有发送心跳续约的实例，则将这个实例从注册表中剔除。</strong>所以这个功能是在服务端实现的，调用链路：</p>
+<ul>
+<li>com.netflix.eureka.EurekaBootStrap#contextInitialized<ul>
+<li>com.netflix.eureka.EurekaBootStrap#initEurekaServerContext<ul>
+<li>com.netflix.eureka.registry.InstanceRegistry#openForTraffic<ul>
+<li>com.netflix.eureka.registry.AbstractInstanceRegistry#postInit<ul>
+<li>com.netflix.eureka.registry.AbstractInstanceRegistry.EvictionTask#run<ul>
+<li>com.netflix.eureka.registry.AbstractInstanceRegistry.EvictionTask#getCompensationTimeMs</li>
+<li>com.netflix.eureka.registry.AbstractInstanceRegistry#evict(long)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><code>com.netflix.eureka.registry.PeerAwareInstanceRegistryImpl#openForTraffic</code>方法：</p>
+<p><img src="https://i.loli.net/2021/06/25/n1SyuoTP92GKQUN.png" alt="image-20210625171925082"></p>
+<p>该方法会计算出server端每分钟需要收到的总心跳数和阈值，阈值默认是心跳数*0.85。</p>
+<h4 id="每60s执行定时剔除任务"><a href="#每60s执行定时剔除任务" class="headerlink" title="每60s执行定时剔除任务"></a>每60s执行定时剔除任务</h4><p>然后调用<code>com.netflix.eureka.registry.AbstractInstanceRegistry#postInit</code>方法：</p>
+<p><img src="https://i.loli.net/2021/06/25/SANOivFzGj8V9DU.png" alt="image-20210625172158717"></p>
+<p>该方法会启动一个每60s执行一次的定时剔除实例任务，我们来看这个任务的逻辑：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/server-instance-eviction.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/client-shutdown.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/client-shutdown.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 8.服务下线</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-21 20:48:29" itemprop="dateCreated datePublished" datetime="2021-06-21T20:48:29+08:00">2021-06-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/client-shutdown.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/client-shutdown.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>eureka源码系列已经过去了大半，这篇文章我们来看<strong>”服务下线“</strong>。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><strong>服务下线</strong>是指：服务实例主动下线，由服务实例所在的eureka-client主动发起，并且通知server进行注册表下线的功能。</p>
+<h3 id="client下线"><a href="#client下线" class="headerlink" title="client下线"></a>client下线</h3><p>client调用链路：</p>
+<ul>
+<li>com.netflix.discovery.DiscoveryClient#shutdown<ul>
+<li>com.netflix.discovery.DiscoveryClient#cancelScheduledTasks</li>
+<li>com.netflix.discovery.DiscoveryClient#unregister</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://i.loli.net/2021/06/26/HcgZqTeWa6in4LV.png" alt="image-20210626131813010"></p>
+<p>client端有一个<code>shutdown</code>方法，服务实例下线的时候，会主动调用这个方法。方法中会将client端启动的定时任务都停止，包括：心跳续约，定时拉取增量注册表等等。</p>
+<p><img src="https://i.loli.net/2021/06/26/N9bBdMWgCP8124z.png" alt="image-20210626132132541"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/client-shutdown.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/client-renew.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/client-renew.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 6.服务续约</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-21 19:45:32" itemprop="dateCreated datePublished" datetime="2021-06-21T19:45:32+08:00">2021-06-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/client-renew.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/client-renew.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>988</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="client发送续约心跳"><a href="#client发送续约心跳" class="headerlink" title="client发送续约心跳"></a>client发送续约心跳</h3><p>client在构造方法中启动定时调度任务的方法中，启动了定时向server发送心跳的任务：</p>
+<p><img src="https://i.loli.net/2021/06/25/st5vp2fAE8Z4TWG.png" alt="image-20210625161341395"></p>
+<p>client调用链路：</p>
+<ul>
+<li>DiscoveryClient#DiscoveryClient<ul>
+<li>DiscoveryClient#heartbeatExecutor</li>
+<li>DiscoveryClient#initScheduledTasks<ul>
+<li>DiscoveryClient.HeartbeatThread#run<ul>
+<li>DiscoveryClient#renew</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>最终调用了<code>com.netflix.discovery.DiscoveryClient#renew</code>方法：</p>
+<p><img src="https://i.loli.net/2021/06/25/yjPmZnrfpWRhFkg.png" alt="image-20210625163058225"></p>
+<p>方法中向server端接口发起了一个请求，如果请求返回404的话，需要重新发起注册。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/client-renew.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/client-fetch-registry.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/client-fetch-registry.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 5.服务发现</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-14 19:18:02" itemprop="dateCreated datePublished" datetime="2021-06-14T19:18:02+08:00">2021-06-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/client-fetch-registry.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/client-fetch-registry.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="client抓取全量注册表"><a href="#client抓取全量注册表" class="headerlink" title="client抓取全量注册表"></a>client抓取全量注册表</h2><h3 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h3><p>客户端会在创建DiscoveryClient实例的时候，也就是DiscoveryClient的构造函数中，根据配置判断是否需要抓取注册表，默认是需要抓取。如果需要的话，第一次抓取采用全量抓取的方式，所谓全量抓取就是请求server的全量抓取接口，然后缓存在本地。调用链路：</p>
+<ul>
+<li>com.netflix.discovery.DiscoveryClient#DiscoveryClient<ul>
+<li>com.netflix.discovery.DiscoveryClient#initScheduledTasks<ul>
+<li>com.netflix.discovery.DiscoveryClient.CacheRefreshThread#run<ul>
+<li>com.netflix.discovery.DiscoveryClient#refreshRegistry<ul>
+<li>com.netflix.discovery.DiscoveryClient#fetchRegistry</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>DiscoveryClient中的抓取注册表入口：</p>
+<p><img src="https://i.loli.net/2021/06/16/6uIY3BONvsdPxbL.png" alt="image-20210616174735723"></p>
+<p>方法实现：</p>
+<p><img src="https://i.loli.net/2021/06/17/pYxBdEmqNhjKkWv.png" alt="image-20210617103209845"></p>
+<p><code>fetchRegistry</code>方法有一个布尔参数，表示是否强制拉取全量注册表，在DiscoveryClient的构造函数中调用这个方法时传入的是false，表示不需要强制全量拉取。</p>
+<ol>
+<li>获取cllient本地的注册表缓存<img src="https://i.loli.net/2021/06/24/OLl2piVIH9eDBsP.png" alt="image-20210624145402412"></li>
+<li>判断是否全量抓取注册表，如果是第一次拉取注册表的话，会走进这个分支</li>
+<li>拉取全量注册表</li>
+<li>否则拉取增量注册表</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/client-fetch-registry.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/client-instance-register.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/client-instance-register.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 4.服务注册</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-14 14:36:14" itemprop="dateCreated datePublished" datetime="2021-06-14T14:36:14+08:00">2021-06-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/client-instance-register.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/client-instance-register.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文讲解<strong>“服务注册”</strong>这个功能模块，这个模块涉及到client主动请求server进行<strong>服务注册</strong>，和server端对client端的请求进行处理。</p>
+<h2 id="client向server请求注册服务"><a href="#client向server请求注册服务" class="headerlink" title="client向server请求注册服务"></a>client向server请求注册服务</h2><p>client端服务注册的代码入口很难找，方法调用链路如下：</p>
+<ul>
+<li>DiscoveryClient#DiscoveryClient<ul>
+<li>DiscoveryClient#initScheduledTasks<ul>
+<li>InstanceInfoReplicator#start<ul>
+<li>DiscoveryClient#register</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>真正的实现在com.netflix.discovery.InstanceInfoReplicator#start</p>
+<p><img src="https://i.loli.net/2021/06/23/kjU13IdfWemyobc.png" alt="image-20210623211820185"></p>
+<p><code>InstanceInfoReplicator</code><strong>实例信息复制器</strong>（吐槽一下这个类名，做的是注册的事情，为什么不叫注册器，而是叫复制器呢🙄）实现了<code>Runnable</code>接口。<code>start</code>方法里最终会调用一个jdk的定时调度线程池，默认40s后执行本类的run方法，并且每次执行完之后，会循环调度run方法。</p>
+<p><em>这里说一下eureka对循环调用的实现：他没有用jdk线程的循环调度方法，而是每次都在任务中再次执行下一次的调度任务。感觉也挺巧妙的，但是不知道和原生提供的方法相比，有什么不同之处。</em></p>
+<p>run方法内部会检查实例信息是否是脏数据，即是否变更，如果变更的话，重新将实例信息注册到server。我们第一次服务注册的时候，在<code>start</code>方法中已经手动将数据置为脏数据，所以也会进行注册。<strong>服务注册</strong>的具体实现在<code>DiscoveryClient#register</code>方法中。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/client-instance-register.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/server-client-start.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/server-client-start.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 3.EurekaServer和Client的启动流程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-13 15:44:23" itemprop="dateCreated datePublished" datetime="2021-06-13T15:44:23+08:00">2021-06-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/server-client-start.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/server-client-start.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文讲解eureka-server的启动源码。</p>
+<h2 id="Server启动"><a href="#Server启动" class="headerlink" title="Server启动"></a>Server启动</h2><p><a href="https://klhans.com/eureka/project-structure.html">《Eureka源码系列 —— 2.源码启动入口》</a>文章中我们提到过<code>EurekaBootStrap</code>实现了<code>ServletContextListener</code>接口，web容器启动的时候，会调用<code>javax.servlet.ServletContextListener#contextInitialized</code>方法，将实现类的逻辑拉起来，这个方法就是eureka-server的启动入口，该方法如下图：</p>
+<p><img src="https://i.loli.net/2021/06/23/WZjCQm5hfyn6x3T.png" alt="image-20210623172100325"></p>
+<p>分为三步：</p>
+<ol>
+<li><p>初始化datacenter和环境,将这两个配置放入ConfigurationManager中, </p>
+<p>ConfigurationManager是eureka使用的统一管理配置的工具</p>
+</li>
+<li><p>初始化eureka-server上下文,主要逻辑在这里</p>
+</li>
+<li><p>将初始化好的 eureka-server上下文 放入servletContext中</p>
+</li>
+</ol>
+<p>重点在第二步的方法中，我们直接去看这个方法。</p>
+<h3 id="initEurekaServerContext方法"><a href="#initEurekaServerContext方法" class="headerlink" title="initEurekaServerContext方法"></a>initEurekaServerContext方法</h3><p><img src="https://i.loli.net/2021/06/23/c32PhQ95JuDnNs7.png" alt="image-20210623174536447"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/server-client-start.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/debug-start.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/eureka/debug-start.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 2.源码启动入口</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-11 15:14:09" itemprop="dateCreated datePublished" datetime="2021-06-11T15:14:09+08:00">2021-06-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/debug-start.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/debug-start.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文介绍如何搭建eureka源码的debug环境，网上有一些博客抄来抄去，抄错了都不知道。</p>
+<h2 id="eureka-server启动"><a href="#eureka-server启动" class="headerlink" title="eureka-server启动"></a>eureka-server启动</h2><p>eureka-server模块下有一个测试类：<code>eureka-server/src/test/java/com/netflix/eureka/resources/EurekaClientServerRestIntegrationTest.java</code>。这个类里面是对eureka-server的REST接口的集成测试包，里面肯定包含启动eureka-server的代码，我们可以以这个类为切入点，将eureka-server启动起来进行debug。</p>
+<p>这个类的<code>startServer()</code>方法是所有测试方法的前置方法，源码如下：</p>
+<p><img src="https://i.loli.net/2021/06/11/quQTcMYbAeXCNmV.png" alt="image-20210611152611651"></p>
+<p>这个方法会做三个事情：</p>
+<ol>
+<li>找war包</li>
+<li>声明并启动一个jetty容器，并将war包部署进容器</li>
+<li>保存eurekaServiceUrl</li>
+</ol>
+<p>其中第一步对于我们debug来说太麻烦了，每次都要打war包，并且war包中的内容无法debug。所以我们修改源代码，让他直接去读eureka-server模块下的web配置。（这也是我从网上的博文中学来的，但是他们的配置文件路径写错了，真坑😅）。修改如下：</p>
+<p><img src="https://i.loli.net/2021/06/11/ROxGjyeCr5bSNzo.png" alt="image-20210611152937579"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/eureka/debug-start.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/project-structure.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -177,7 +1278,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/eureka/project-structure.html" class="post-title-link" itemprop="url">Eureka系列之项目结构介绍</a>
+            <a href="/eureka/project-structure.html" class="post-title-link" itemprop="url">Eureka源码系列 —— 1.项目结构介绍</a>
         </h2>
 
         <div class="post-meta">
@@ -224,7 +1325,7 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>1.8k</span>
+              <span>2.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -242,12 +1343,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这个系列开始研究spring-cloud-netflix微服务框架的各个组件源码，首先是注册中心eureka。本文先介绍eureka项目的基本结构。</p>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这个系列开始研究spring-cloud-netflix微服务框架的各个组件源码，首先是注册中心eureka。</p>
+<p>本文先介绍eureka项目的基本结构，系列文章基于eureka版本 1.7.2。</p>
+<p><strong>没有特殊说明，本篇中所有client都指eureka-client，server指eureka-server。</strong></p>
+<p><strong>笔者在eureka源码中加了大量注释辅助理解，为了行文流畅，有些细节的注释没有在文中体现，读者有兴趣的话可以在<a target="_blank" rel="noopener" href="https://github.com/Hans-Kl/eureka/tree/klh-1.7.2">这里</a>获取笔者加了注释的eureka项目源码。</strong></p>
 <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><h3 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h3><p>Eureka是微服务框架spring-cloud-netflix中的一个核心组件，作为注册中心而被应用广泛，其前身是Netflix公司开源的组件Eureka。</p>
 <p>github仓库地址：<a target="_blank" rel="noopener" href="https://github.com/Netflix/eureka.git%E3%80%82">https://github.com/Netflix/eureka.git。</a></p>
-<p>请注意不在spring仓库下，spring-cloud-netflix-eureka只是对Netflix-Eureka的一个包装，我们要去看Netflix仓库下的源码。</p>
-<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>下图是eureka架构简图：</p>
-<p><img src="https://i.loli.net/2021/06/11/8CYnEyvsXq4VfeN.png" alt="未命名文件 (1)"></p>
+<p>请注意不在spring仓库下，spring-cloud-netflix-eureka只是对Netflix-Eureka的一个包装，核心逻辑代码在Netflix仓库下。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/eureka/project-structure.html#more" rel="contents">
@@ -270,930 +1372,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/tomcat-start.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/springboot/tomcat-start.html" class="post-title-link" itemprop="url">SpringBoot系列之tomcat内嵌web容器是如何启动的</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-07 21:13:20" itemprop="dateCreated datePublished" datetime="2021-06-07T21:13:20+08:00">2021-06-07</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/springboot/tomcat-start.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot/tomcat-start.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>83</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>如果看过我前几篇介绍 Springboot 是如何启动的文章，那内嵌的 tomcat 是如何启动的这个问题其实很好回答，这里我总结了一张时序图，感觉一图胜千言，分享给大家<img src="https://i.loli.net/2021/06/07/2jMCTgeYySJ6bi7.png" alt="ry-启动内嵌容器时序图 (1)"></p>
-
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/springboot/tomcat-start.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/annotation-SpringBootApplication.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/springboot/annotation-SpringBootApplication.html" class="post-title-link" itemprop="url">SpringBoot系列之启动流程3-自动装配与@SpringBootApplication注解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-06 16:27:02" itemprop="dateCreated datePublished" datetime="2021-06-06T16:27:02+08:00">2021-06-06</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/springboot/annotation-SpringBootApplication.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot/annotation-SpringBootApplication.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>2.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面两篇文章我们已经研究过SpringBootApplication类的构造方法和 run 方法，这篇文章会研究<code>@SpringBootApplication</code>注解。</p>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><code>@SpringBootApplication</code>注解基本在每一个 springboot 项目中都会看到，通常标注在启动类上。直接看源码：</p>
-<p><img src="https://i.loli.net/2021/06/06/AM5mucBdh39n2sL.png" alt="image-20210606163232129"></p>
-<p>发现这是一个复合或者说组合注解，有三个子注解构成：</p>
-<ul>
-<li>SpringBootConfiguration</li>
-<li>EnableAutoConfiguration</li>
-<li>ComponentScan</li>
-</ul>
-<p><code>SpringBootConfiguration</code>注解非常简单，他就是Springp非常常见的用来标识配置类的注解<code>Configuration</code>换了个名字。</p>
-<p><code>ComponentScan</code>注解也很常见，用来标识出 IOC 容器扫描 Bean 的范围。</p>
-<p>我们把重点放在<code>@EnableAutoConfiguration</code>注解上，翻译过来就是“启动自动装配”，哎呦不得了，这是 SpringBoot 的卖点之一<strong>自动装配</strong>啊，值得我们深入研究。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/springboot/annotation-SpringBootApplication.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/SpringApplication-run.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/springboot/SpringApplication-run.html" class="post-title-link" itemprop="url">SpringBoot系列之启动流程2-SpringApplication执行run方法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-06 16:18:30" itemprop="dateCreated datePublished" datetime="2021-06-06T16:18:30+08:00">2021-06-06</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/springboot/SpringApplication-run.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot/SpringApplication-run.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>83</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一节我们研究完了 SpringApplication 的构造函数，<a href="https://klhans.com/springboot-SpringApplication-constructor.html">传送门</a>。这一节我们接着研究执行完构造函数的 springApplication实例对象的 run 方法。</p>
-
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/springboot/SpringApplication-run.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/starter-theory.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/springboot/starter-theory.html" class="post-title-link" itemprop="url">SpringBoot系列之starter原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-06 12:58:14" itemprop="dateCreated datePublished" datetime="2021-06-06T12:58:14+08:00">2021-06-06</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/springboot/starter-theory.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot/starter-theory.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>1.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SpringBoot 除了提供自身的功能外，还为我们提供了众多开箱即用的<code>starter</code>，比如常用的像</p>
-<p><code>spring-boot-starter-jdbc</code>、<code>spring-boot-starter-logging</code>等。我们只要在 pom 文件中引入这些组件的依赖，springboot就会帮我们加载这些组件的 bean 到 IOC 容器中，并且允许我们对组件的一些配置进行定制，可谓是真正的“开箱即用”，这也是 springboot 现在称为行业事实标准的一个重要原因。那这样杀手锏级别的特性是如何实现的呢？本文我们将探讨这个话题。</p>
-<h2 id="依赖包什么都没有？"><a href="#依赖包什么都没有？" class="headerlink" title="依赖包什么都没有？"></a>依赖包什么都没有？</h2><p>我们以<code>spring-boot-starter-jdbc</code>2.0.3.RELEASE版本为例，去 maven 中央仓库下载对应的 jar 包，地址：<a target="_blank" rel="noopener" href="https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc/2.0.3.RELEASE%E3%80%82%E7%82%B9%E5%87%BB%E7%BA%A2%E6%A1%86%E5%86%85%E6%8C%89%E9%92%AE%E4%B8%8B%E8%BD%BD">https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc/2.0.3.RELEASE。点击红框内按钮下载</a> jar 包：</p>
-<p><img src="https://i.loli.net/2021/06/06/AVHw5P1ZoEzWycB.png" alt="image-20210606181054309"></p>
-<p>下载完解压，发现 jar 包内没有 class 文件，也没有 pom.xml：</p>
-<p><img src="https://i.loli.net/2021/06/06/9Qt2SUJiOAELnRh.png" alt="image-20210606181218985"></p>
-<p>而 <code>spring.provides</code> 在2.1.0之后的版本被去掉了，我们看下<code>MANIFEST.MF</code>文件：<img src="https://i.loli.net/2021/06/06/Udl4qJVKgIt37Au.png" alt="image-20210606181445762">这里面只是一些介绍和环境信息，what？！不符合客观规律啊，没找到任何有价值的东西啊，那引入这个依赖的 jar 包有啥用呢？</p>
-<h2 id="再看依赖包"><a href="#再看依赖包" class="headerlink" title="再看依赖包"></a>再看依赖包</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/springboot/starter-theory.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/SpringApplication-constructor.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/springboot/SpringApplication-constructor.html" class="post-title-link" itemprop="url">SpringBoot系列之启动流程1-SpringApplication的构造方法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-04 09:08:51" itemprop="dateCreated datePublished" datetime="2021-06-04T09:08:51+08:00">2021-06-04</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/springboot/SpringApplication-constructor.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot/SpringApplication-constructor.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>1.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本系列开始研究 SpringBoot 的源码，之前看过的源码都忘了，还是记录博客的方式能帮助自己更深入的思考和总结。</p>
-<p>先研究 SpringBoot 的启动流程，这个部分预计总共会有三篇，分别研究：</p>
-<ul>
-<li><p>SpringApplication的构造函数</p>
-</li>
-<li><p>SpringApplication 实例的 run 方法</p>
-</li>
-<li><p>SpringBoot 启动类上的注解<code>@SpringBootApplication</code></p>
-</li>
-</ul>
-<p>本篇是第一篇，研究SpringApplication 的构造函数。</p>
-<h2 id="1-推断-web-环境"><a href="#1-推断-web-环境" class="headerlink" title="1. 推断 web 环境"></a>1. 推断 web 环境</h2><p>SpringBoot 应用程序的入口最终会先走到如下的构造函数中：</p>
-<p><img src="https://i.loli.net/2021/06/06/8L6oi4w9akZYzex.png" alt="image-20210606135022331"></p>
-<p>构造函数的前两步代码我们直接忽略，不重要，看第三行<code>WebApplicationType.deduceFromClasspath()</code>，这一行是 SpringBoot 在推断当前程序的 web 环境，作用是：后续会根据这个 web 环境来决定使用哪一个 ApplicationContext 实现类。我们点进这个方法看看是怎么实现的。</p>
-<p><img src="https://i.loli.net/2021/06/06/NnMLpk9mGQlcYJb.png" alt="image-20210606140202116"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/springboot/SpringApplication-constructor.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/valueobject.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/valueobject.html" class="post-title-link" itemprop="url">ValueObject-译文</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-28 15:19:04" itemprop="dateCreated datePublished" datetime="2021-05-28T15:19:04+08:00">2021-05-28</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/valueobject.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/valueobject.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>7.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>7 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>前言：本篇探讨使用值对象的初衷和注意事项，原文地址：<a target="_blank" rel="noopener" href="https://martinfowler.com/bliki/ValueObject.html">https://martinfowler.com/bliki/ValueObject.html</a></p>
-<hr>
-<blockquote>
-<p>When programming, I often find it’s useful to represent things as a compound. A 2D coordinate consists of an x value and y value. An amount of money consists of a number and a currency. A date range consists of start and end dates, which themselves can be compounds of year, month, and day.</p>
-</blockquote>
-<p>编程时，我经常发现将一些事物作为一个整体来表示是有用的。2D坐标由x值和y值组成；金额 包括一个数字和货币；日期范围包括开始和结束日期，日期本身也由年，月和日组成。</p>
-<blockquote>
-<p>As I do this, I run into the question of whether two compound objects are the same. If I have two point objects that both represent the Cartesian coordinates of (2,3), it makes sense to treat them as equal. Objects that are equal due to the value of their properties, in this case their x and y coordinates, are called value objects.</p>
-</blockquote>
-<p>如果我这样做，我遇到了两个复合对象是否相同的问题。 如果我有两点对象，两者都代表笛卡尔坐标 （2,3），将它们视为相等是有意义的。对象相等性取决于它们属性的具体值，称为<strong>值对象</strong>，在这个 case 中，属性值指它们的x和y坐标，</p>
-<blockquote>
-<p>But unless I’m careful when programming, I may not get that behavior in my programs</p>
-</blockquote>
-<p>但除非我在编程时非常小心，否则我可能不会在程序中得到适当的行为。</p>
-<blockquote>
-<p>Say I want to represent a point in JavaScript.</p>
-</blockquote>
-<p>假设我想在javascript中代表一个点。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/valueobject.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/classpath.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/springboot/classpath.html" class="post-title-link" itemprop="url">SpringBoot项目中的classpath到底指什么?</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-28 10:33:51" itemprop="dateCreated datePublished" datetime="2021-05-28T10:33:51+08:00">2021-05-28</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/springboot/classpath.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot/classpath.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>1.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近又在研究 SpringBoot 源码（研究好几次了，研究完有些用不上就忘了😅），在 SpringBoot 执行 main 方法启动过程中，会根据 classpath 下的类信息推断当前环境信息。这里 classpath 究竟是指哪呢，搜了中文语境下的技术文章，竟然没有找到想要的回答，可能是问题太简单了。本篇记录下我的看法。</p>
-<h2 id="java-最基础的-classpath"><a href="#java-最基础的-classpath" class="headerlink" title="java 最基础的 classpath"></a>java 最基础的 classpath</h2><p><strong>classpath</strong>，顾名思义，就是指 .class 文件所在的路径。.class 文件由 .java 文件编译后产生，我们用 java 命令执行.class 文件时，需要指定 jvm 去哪搜索目标 class 文件，总不能全盘扫描对吧，而<em>指定去哪搜索</em>就是 classpath 的含义，即：<br><strong><code>classpath</code>是JVM用到的一个环境变量，它用来指示JVM如何搜索<code>class</code>。</strong></p>
-<p>执行 java 命令时，通过<code>java -classpath dir</code>或者简写为 <code>java -cp dir</code>来指定，</p>
-<p>如果命令中没有显式指定，则 jvm 在当前目录中查找，即默认为：<code>java -cp .</code>。</p>
-<p>可以在命令中指定多个classpath，Linux 下用<code>：</code>分隔。jvm 会依次查找指定目录，查找到一个之后不再继续查找下一个，比如<code>java -cp .:/usr/local:/tmp/work</code>。</p>
-<h2 id="jar-包的-classpath"><a href="#jar-包的-classpath" class="headerlink" title="jar 包的 classpath"></a>jar 包的 classpath</h2><p>我们工程中一般都会有很多 .class 文件，利用 jar 包可以将他们批量管理起来，像这样<code>java -cp ./demo.jar boo.Helloworld</code>指定 jar 包为 classpath 的话，jvm 就会去这个 jar 包里面搜索需要的类。</p>
-<p>jar包还可以包含一个特殊的<code>/META-INF/MANIFEST.MF</code>文件，<code>MANIFEST.MF</code>是纯文本，可以指定<code>Main-Class</code>和其它信息。JVM会自动读取这个<code>MANIFEST.MF</code>文件，如果存在<code>Main-Class</code>，我们就不必在命令行指定启动的类名，而是用更方便的命令：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/springboot/classpath.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/dddsample-characterization.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/dddsample-characterization.html" class="post-title-link" itemprop="url">dddsample-characterization[译文]</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-19 22:30:18" itemprop="dateCreated datePublished" datetime="2021-05-19T22:30:18+08:00">2021-05-19</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/dddsample-characterization.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/dddsample-characterization.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>11k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>10 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>前言:此篇文章是对 cargo 项目的类归属的翻译。<br>原文链接:<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/characterization.html">http://dddsample.sourceforge.net/characterization.html</a></p>
-<hr>
-<h2 id="Characterization类归属"><a href="#Characterization类归属" class="headerlink" title="Characterization类归属"></a>Characterization类归属</h2><blockquote>
-<p>Careful characterization of the classes is an important activity when doing Domain-Driven Design. Sometimes it is fairly obvious in what category a particular class belongs, other times it is not as easy to sort out the different <em>Building Blocks of a Model-Driven Design</em>.</p>
-</blockquote>
-<p>在进行领域驱动设计时，仔细的界定类的身份是重要的活动。有时候特定类的所属哪个类别非常明显，有时则不然。</p>
-<blockquote>
-<p>The trickiest ones to classify are typically <em>Entities</em> , <em>Aggregates</em>, <em>Value Objects</em> and <em>Domain Events</em>. When possible, we tend to favor <em>Value Objects</em> over <em>Entities</em> or <em>Domain Events</em>, because they require less attention during implementation. <em>Value Objects</em> can be created and thrown away at will, and since they are immutable we can pass them around as we wish. We must be much less cavalier with <em>Entities</em> as identity and life-cycle have to be carefully managed. Below is a short walkthrough of key classes in the application and the motivation behind their implementation choice. All but <em>Domain Event</em> are thoroughly described in <a target="_blank" rel="noopener" href="http://www.domaindrivendesign.org/books/index.html#DDD">Eric Evans’ book</a>. A short introduction to Domain Events can be found here: <a target="_blank" rel="noopener" href="http://martinfowler.com/eaaDev/DomainEvent.html">http://martinfowler.com/eaaDev/DomainEvent.html</a></p>
-</blockquote>
-<p>棘手的分类工作通常是针对实体，聚合，值对象和领域事件。可能的话，我们倾向于使用值对象而不是实体或领域事件，因为它们在实现期间需要注意的东西更少。可以任意创建值对象并将其丢弃，因为它们是不可变的；而我们必须对实体更加小心因为实体的身份和生命周期需要小心的管理。以下是一个关于关键类的简短演示，以及他们选择的实现的背后动机。除了领域事件外，都在<a target="_blank" rel="noopener" href="http://www.domaindrivendesign.org/books/index.html#DDD">Eric Evans的书</a>中有完整的描述。在此处可以找到关于领域事件的简述：<a target="_blank" rel="noopener" href="http://martinfowler.com/eaadev/domainainevent.html">http://martinfowler.com/eaadev/domainainevent.html</a></p>
-<h2 id="Entities实体"><a href="#Entities实体" class="headerlink" title="Entities实体"></a>Entities实体</h2><blockquote>
-<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Cargo.html">Cargo</a>: Cargo has both a clear identity and a life-cycle with state transitions that we care about, so it’s an entity. Many cargo instances will exist in the system simultaneously. The different instances have the same origin and destination, they may even contain the same kind of things, but it is important for us to be able to track individual cargo instances. In our case the cargo’s identity is its tracking id. The tracking id is assigned upon creation and is never changed. This is the handle used to track the cargo’s progress, e.g. from the tracking website.</p>
-</blockquote>
-<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Cargo.html">Cargo</a>(货运)：cargo具有明确的唯一标识和我们关心的有状态变化的生命周期，所以它是一个实体。许多cargo实例将同时存在于系统中。不同的实例具有相同的起源和目的地，它们甚至可能包含相同类型的东西，但是对我们来说，能够跟踪指定cargo实例很重要。在我们的case 中，cargo的唯一标识是其tracking id。tracking id在创建时分配，并且永远不会改变。这是用来跟踪cargo进行情况的handle，例如，在网上追踪。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/dddsample-characterization.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/dddsample-Architecture.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/dddsample-Architecture.html" class="post-title-link" itemprop="url">dddsample-Architecture[译文]</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-19 11:59:11" itemprop="dateCreated datePublished" datetime="2021-05-19T11:59:11+08:00">2021-05-19</time>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/dddsample-Architecture.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/dddsample-Architecture.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>3.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>前言:本系列翻译的对象是DDD 大蓝书中的示例项目 cargo 的相关文章。<br>本文原文链接：dddsample.w.net/architecture.html</p>
-<hr>
-<h2 id="Architecture架构"><a href="#Architecture架构" class="headerlink" title="Architecture架构"></a>Architecture架构</h2><blockquote>
-<p> The sample application is layered as illustrated by this picture:</p>
-</blockquote>
-<p>示例应用程序分层如图所示：</p>
-<p><img src="http://dddsample.sourceforge.net/images/layers.jpg"></p>
-<blockquote>
-<p>There are three vertical layers: Interfaces, Application and Domain, each supported by different kinds of infrastructure.</p>
-</blockquote>
-<p>有三个垂直的分层：接口层，应用层和领域层，每层由不同类型的基础架构层支持。</p>
-<h2 id="Interfaces接口层"><a href="#Interfaces接口层" class="headerlink" title="Interfaces接口层"></a>Interfaces接口层</h2><blockquote>
-<p>This layer holds everything that interacts with other systems, such as web services, RMI interfaces or web applications, and batch processing frontends. It handles interpretation, validation and translation of incoming data. It also handles serialization of outgoing data, such as HTML or XML across HTTP to web browsers or web service clients, or DTO classes and distributed facade interfaces for remote Java clients.</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/dddsample-Architecture.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1261,7 +1443,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

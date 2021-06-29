@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="client抓取全量注册表入口客户端会在创建DiscoveryClient实例的时候，也就是DiscoveryClient的构造函数中，根据配置判断是否需要抓取注册表，默认是需要抓取。如果需要的话，第一次抓取采用全量抓取的方式，所谓全量抓取就是请求server的全量抓取接口，然后缓存在本地。调用链路：  com.netflix.discovery.DiscoveryClient#Discovery">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Eureka源码系列 —— 5.服务发现">
+<meta property="og:url" content="http://klhans.com/eureka/client-fetch-registry.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="client抓取全量注册表入口客户端会在创建DiscoveryClient实例的时候，也就是DiscoveryClient的构造函数中，根据配置判断是否需要抓取注册表，默认是需要抓取。如果需要的话，第一次抓取采用全量抓取的方式，所谓全量抓取就是请求server的全量抓取接口，然后缓存在本地。调用链路：  com.netflix.discovery.DiscoveryClient#Discovery">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/06/16/6uIY3BONvsdPxbL.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/17/pYxBdEmqNhjKkWv.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/OLl2piVIH9eDBsP.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/17/MEuRPWF1conGld2.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/fWQCMYNO9gXe364.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/8c4YaomxLM3ViON.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/17/CdzR5G8spNrEqtQ.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/VGvRxYfU4y5Sq8n.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/H1nxlgy98mDuTXF.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/79xVhPBvFkMsmAC.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/25/vfNrV789EQboTB1.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/25/gNFKxJ1dcMyQnhE.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/25/KUeqkCNZdgTnPLs.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/25/LDHuQ9pRcjxZkfO.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/25/ds2kfqpBuIJ5WDb.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/25/HwPsXvnyDMSm21J.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/25/7rJNCnVgsIuPafq.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/25HDnTIoOukqWiF.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/OLl2piVIH9eDBsP.png">
+<meta property="article:published_time" content="2021-06-14T11:18:02.000Z">
+<meta property="article:modified_time" content="2021-06-25T07:13:43.374Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="springcloud">
+<meta property="article:tag" content="netflix">
+<meta property="article:tag" content="eureka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/06/16/6uIY3BONvsdPxbL.png">
+
+<link rel="canonical" href="http://klhans.com/eureka/client-fetch-registry.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Eureka源码系列 —— 5.服务发现 | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/eureka/client-fetch-registry.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Eureka源码系列 —— 5.服务发现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-14 19:18:02" itemprop="dateCreated datePublished" datetime="2021-06-14T19:18:02+08:00">2021-06-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/eureka/" itemprop="url" rel="index"><span itemprop="name">eureka</span></a>
+                </span>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/eureka/client-fetch-registry.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/eureka/client-fetch-registry.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="client抓取全量注册表"><a href="#client抓取全量注册表" class="headerlink" title="client抓取全量注册表"></a>client抓取全量注册表</h2><h3 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h3><p>客户端会在创建DiscoveryClient实例的时候，也就是DiscoveryClient的构造函数中，根据配置判断是否需要抓取注册表，默认是需要抓取。如果需要的话，第一次抓取采用全量抓取的方式，所谓全量抓取就是请求server的全量抓取接口，然后缓存在本地。调用链路：</p>
+<ul>
+<li>com.netflix.discovery.DiscoveryClient#DiscoveryClient<ul>
+<li>com.netflix.discovery.DiscoveryClient#initScheduledTasks<ul>
+<li>com.netflix.discovery.DiscoveryClient.CacheRefreshThread#run<ul>
+<li>com.netflix.discovery.DiscoveryClient#refreshRegistry<ul>
+<li>com.netflix.discovery.DiscoveryClient#fetchRegistry</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>DiscoveryClient中的抓取注册表入口：</p>
+<p><img src="https://i.loli.net/2021/06/16/6uIY3BONvsdPxbL.png" alt="image-20210616174735723"></p>
+<p>方法实现：</p>
+<p><img src="https://i.loli.net/2021/06/17/pYxBdEmqNhjKkWv.png" alt="image-20210617103209845"></p>
+<p><code>fetchRegistry</code>方法有一个布尔参数，表示是否强制拉取全量注册表，在DiscoveryClient的构造函数中调用这个方法时传入的是false，表示不需要强制全量拉取。</p>
+<ol>
+<li>获取cllient本地的注册表缓存<img src="https://i.loli.net/2021/06/24/OLl2piVIH9eDBsP.png" alt="image-20210624145402412"></li>
+<li>判断是否全量抓取注册表，如果是第一次拉取注册表的话，会走进这个分支</li>
+<li>拉取全量注册表</li>
+<li>否则拉取增量注册表</li>
+</ol>
+<p>我们接着看<strong>抓取全量注册表</strong>的逻辑，进入<code>com.netflix.discovery.DiscoveryClient#getAndStoreFullRegistry</code>方法：</p>
+<p><img src="https://i.loli.net/2021/06/17/MEuRPWF1conGld2.png" alt="image-20210617103357351"></p>
+<p>getAndStoreFullRegistry方法就没什么逻辑了，就是向server端拉取全量注册表的接口发了个请求，接受到返回值后，缓存到client本地。</p>
+<p>发送的请求url：localhost:8080/v2/apps，get请求</p>
+<h2 id="server端处理抓取全量注册表的请求"><a href="#server端处理抓取全量注册表的请求" class="headerlink" title="server端处理抓取全量注册表的请求"></a>server端处理抓取全量注册表的请求</h2><h3 id="入口-1"><a href="#入口-1" class="headerlink" title="入口"></a>入口</h3><p>服务端处理请求的方法是com.netflix.eureka.resources.ApplicationsResource#getContainers：</p>
+<p><img src="https://i.loli.net/2021/06/24/fWQCMYNO9gXe364.png" alt="image-20210624165711277"></p>
+<p>方法逻辑:</p>
+<ol>
+<li>不允许访问的话,直接返回</li>
+<li>生成缓存的key</li>
+<li>从缓存中获取返回值，根据参数处理返回的数据格式</li>
+</ol>
+<p>可以发现，server端没有提供直接拉取原始注册表的方法，client想要拉取注册表，必须经过缓存。</p>
+<p>接下来就是eureka-server端的重头戏了，<strong>server端注册表缓存机制！</strong></p>
+<h3 id="读取缓存"><a href="#读取缓存" class="headerlink" title="读取缓存"></a>读取缓存</h3><p>eureka-server的缓存机制分为两层，他俩的缓存键和值是一样的：</p>
+<ul>
+<li><p>只读缓存 readOnlyCacheMap</p>
+</li>
+<li><p>读写缓存 readWriteCacheMap</p>
+</li>
+</ul>
+<p><img src="https://i.loli.net/2021/06/24/8c4YaomxLM3ViON.png" alt="image-20210624173049753"></p>
+<p>我们还是从<code>getContainers</code>方法中对缓存的调用入口开始看，调用链路：</p>
+<ul>
+<li>com.netflix.eureka.resources.ApplicationsResource#getContainers<ul>
+<li>com.netflix.eureka.registry.ResponseCache#get<ul>
+<li>com.netflix.eureka.registry.ResponseCacheImpl#get(com.netflix.eureka.registry.Key, boolean)<ul>
+<li>com.netflix.eureka.registry.ResponseCacheImpl#getValue</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>最后会调用到<code>ResponseCacheImpl#getValue</code>这个方法，这个方法内部就是获取缓存的逻辑了：</p>
+<p><img src="https://i.loli.net/2021/06/17/CdzR5G8spNrEqtQ.png" alt="image-20210617112417978"></p>
+<p>eureka-server的缓存机制由两部分缓存构成：</p>
+<ul>
+<li>只读缓存</li>
+<li>读写缓存</li>
+</ul>
+<p><img src="https://i.loli.net/2021/06/24/VGvRxYfU4y5Sq8n.png" alt="server缓存机制"></p>
+<p>获取缓存的策略：</p>
+<p><strong>获取缓存的时候先从只读缓存中获取，如果只读缓存为空，再从读写缓存中获取，并且将读写缓存中的值更新到只读缓存中；如果读写缓存也是空的话，从原始注册表中获取，并写入读写缓存和只读缓存。</strong></p>
+<h2 id="client每30s定时抓取增量注册表"><a href="#client每30s定时抓取增量注册表" class="headerlink" title="client每30s定时抓取增量注册表"></a>client每30s定时抓取增量注册表</h2><p>eureka在设计上为了避免每次都进行全量抓取而引起的性能损耗，所以在第一次进行全量抓取后，后续都采用定时抓取增量注册表的方式。</p>
+<h3 id="入口-2"><a href="#入口-2" class="headerlink" title="入口"></a>入口</h3><p>DiscoverClient的构造方法中，会执行<code>initScheduledTasks</code>方法，这个方法用来启动一些定时调度的线程池，实现client的定时调度，其中就有定时抓取增量注册表的方法逻辑，调用链路：</p>
+<ul>
+<li>com.netflix.discovery.DiscoveryClient#initScheduledTasks<ul>
+<li>com.netflix.discovery.DiscoveryClient#refreshRegistry<ul>
+<li>com.netflix.discovery.DiscoveryClient#fetchRegistry</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>上文<code>fetchRegistry</code>方法中，如果client本地没有注册表，那么client会走<strong>抓取增量注册表</strong>的逻辑分支，进入<code>getAndUpdateDelta</code>方法：</p>
+<p><img src="https://i.loli.net/2021/06/24/H1nxlgy98mDuTXF.png" alt="image-20210624203020211"></p>
+<p>拉取增量注册表的逻辑分为三步：</p>
+<ol>
+<li>从server拉取的增量注册表为null,则拉取全量注册表</li>
+<li>否则从server获取来的增量注册表与本地注册表合并，合并后用全部application信息计算出一个hashCode</li>
+<li>将刚刚在本地计算出的hashCode与server端返回的hashCode作对比,不相等的话说明出错了,这时候重新拉取全量注册表</li>
+</ol>
+<p>逻辑不复杂，但拉取增量注册表和利用hashCode做对比来增加可用性的思路，值得我们学习，接着我们看服务端是如何处理请求的</p>
+<h2 id="server端处理抓取增量注册表的请求"><a href="#server端处理抓取增量注册表的请求" class="headerlink" title="server端处理抓取增量注册表的请求"></a>server端处理抓取增量注册表的请求</h2><h3 id="入口-3"><a href="#入口-3" class="headerlink" title="入口"></a>入口</h3><p>server处理client的请求接口：com.netflix.eureka.resources.ApplicationsResource#getContainerDifferential。</p>
+<p>这个接口的逻辑和处理全量注册表请求的几乎一模一样，最大的区别在于获取缓存的key不同：</p>
+<p><img src="https://i.loli.net/2021/06/24/79xVhPBvFkMsmAC.png" alt="image-20210624203813308"></p>
+<h3 id="种缓存"><a href="#种缓存" class="headerlink" title="种缓存"></a>种缓存</h3><p>全量注册表缓存和增量注册表缓存都在同一个只读缓存和读写缓存中，依赖key中的一个字段来区分，读写缓存的种入口只有一个，就是<code>ResponseCacheImpl</code>的构造函数中：</p>
+<p><img src="https://i.loli.net/2021/06/25/vfNrV789EQboTB1.png" alt="image-20210625144723264"></p>
+<p>接着我们进入计算缓存值的方法：</p>
+<p><img src="https://i.loli.net/2021/06/25/gNFKxJ1dcMyQnhE.png" alt="image-20210625144914064"></p>
+<p>可以看到根据key的不同，走了不同的逻辑分支，最后调用了不同的生成缓存方法。全量缓存的生成比较简单，就是将server端所有的application都遍历一遍，取出应用信息并组装起来，我们这里就不赘述了，我们看一下增量缓存是怎么生成的：</p>
+<p><img src="https://i.loli.net/2021/06/25/KUeqkCNZdgTnPLs.png" alt="image-20210625150031799"></p>
+<p>重点在图中的红框，笔者发现增量缓存的数据，是从一个<code>recentlyChangedQueue</code>队列中遍历出来的，这个队列的声明：</p>
+<p><img src="https://i.loli.net/2021/06/25/LDHuQ9pRcjxZkfO.png" alt="image-20210625150146393"></p>
+<p>调用点：</p>
+<p><img src="https://i.loli.net/2021/06/25/ds2kfqpBuIJ5WDb.png" alt="image-20210625150210923"></p>
+<p>通过搜索调用点笔者发现：<code>recentlyChangedQueue</code>即最近更新队列会在实例状态有变更的时候，将实例信息加入队列中。客户端来获取增量缓存的时候，就返回这个队列中的最近有变更的数据。</p>
+<p>那这个队列数据是怎么删除的呢，有一个定时任务：</p>
+<p><img src="https://i.loli.net/2021/06/25/HwPsXvnyDMSm21J.png" alt="image-20210625150706475"></p>
+<p>定时任务中会将180s之前变更的数据清除掉，所有<code>recentlyChangedQueue</code>队列中会保留180s内变更的实例数据。</p>
+<p>这个定时任务会在<code>AbstractInstanceRegistry</code>的构造方法中被启用，默认每30s调用一次：</p>
+<p><img src="https://i.loli.net/2021/06/25/7rJNCnVgsIuPafq.png" alt="image-20210625150930150"></p>
+<h2 id="缓存设置"><a href="#缓存设置" class="headerlink" title="缓存设置"></a>缓存设置</h2><p><code>ResponseCacheImpl</code>的构造函数是一个重要的方法，这个方法中包含了：</p>
+<ul>
+<li>读写缓存的设置逻辑</li>
+<li>定时对比只读缓存和读写缓存，如果有不同，将读写缓存设置进只读缓存中</li>
+</ul>
+<p><img src="https://i.loli.net/2021/06/24/25HDnTIoOukqWiF.png" alt="image-20210624205155267"></p>
+<p><strong>缓存失效</strong>：</p>
+<p>应用实例注册、下线、过期时，失效 <code>readWriteCacheMap</code> 。这里要注意，只会将读写缓存置失效，只读缓存没有主动失效，要等待定时任务将两个缓存同步。</p>
+<h2 id="为什么设计缓存"><a href="#为什么设计缓存" class="headerlink" title="为什么设计缓存"></a>为什么设计缓存</h2><p>在 <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/CAP%E5%AE%9A%E7%90%86">CAP</a> 的选择上，Eureka 选择了 AP ，不同于 Zookeeper 选择了 CP 。</p>
+<p>推荐阅读：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://dockone.io/article/78">《为什么不应该使用ZooKeeper做服务发现》</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.spring-cloud.io/blog/sc-eureka.html">《Spring Cloud Netflix Eureka源码导读与原理分析》「4. 作为服务注册中心，Eureka比Zookeeper好在哪里」</a></li>
+</ul>
+<h2 id="对象清单"><a href="#对象清单" class="headerlink" title="对象清单"></a>对象清单</h2><h3 id="DiscoveryClient-localRegionApps-客户端本地缓存的注册表对象"><a href="#DiscoveryClient-localRegionApps-客户端本地缓存的注册表对象" class="headerlink" title="DiscoveryClient#localRegionApps    客户端本地缓存的注册表对象"></a>DiscoveryClient#localRegionApps    客户端本地缓存的注册表对象</h3><p>数据结构：AtomicReference&lt;Applications&gt;</p>
+<p><img src="https://i.loli.net/2021/06/24/OLl2piVIH9eDBsP.png" alt="image-20210624145658913"></p>
+<h2 id="配置参数"><a href="#配置参数" class="headerlink" title="配置参数"></a>配置参数</h2><p>前缀namespace，默认为eureka</p>
+<h3 id="是否进行服务注册"><a href="#是否进行服务注册" class="headerlink" title="是否进行服务注册"></a>是否进行服务注册</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">shouldFetchRegistry</span> = <span class="string">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="是否禁用增量抓取功能"><a href="#是否禁用增量抓取功能" class="headerlink" title="是否禁用增量抓取功能"></a>是否禁用增量抓取功能</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">disableDelta</span> = <span class="string">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="是否使用服务端的只读缓存"><a href="#是否使用服务端的只读缓存" class="headerlink" title="是否使用服务端的只读缓存"></a>是否使用服务端的只读缓存</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">shouldUseReadOnlyResponseCache</span> = <span class="string">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="读写缓存过期时间-s"><a href="#读写缓存过期时间-s" class="headerlink" title="读写缓存过期时间 (s)"></a>读写缓存过期时间 (s)</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">responseCacheAutoExpirationInSeconds</span> = <span class="string">180</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="“最近更新队列”中的数据的保留时间-ms"><a href="#“最近更新队列”中的数据的保留时间-ms" class="headerlink" title="“最近更新队列”中的数据的保留时间 (ms)"></a>“最近更新队列”中的数据的保留时间 (ms)</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">retentionTimeInMSInDeltaQueue</span> = <span class="string">3 * 60 * 1000</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="“最近更新队列”定时清除的时间-ms"><a href="#“最近更新队列”定时清除的时间-ms" class="headerlink" title="“最近更新队列”定时清除的时间 (ms)"></a>“最近更新队列”定时清除的时间 (ms)</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deltaRetentionTimerIntervalInMs</span> = <span class="string">30 * 1000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://www.iocoder.cn/Eureka/instance-registry-fetch-all/">https://www.iocoder.cn/Eureka/instance-registry-fetch-all/</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>首发地址：</strong>
+    <a href="http://klhans.com/eureka/client-fetch-registry.html" title="Eureka源码系列 —— 5.服务发现">http://klhans.com/eureka/client-fetch-registry.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/springcloud/" rel="tag"><i class="fa fa-tag"></i> springcloud</a>
+              <a href="/tags/netflix/" rel="tag"><i class="fa fa-tag"></i> netflix</a>
+              <a href="/tags/eureka/" rel="tag"><i class="fa fa-tag"></i> eureka</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/eureka/client-instance-register.html" rel="prev" title="Eureka源码系列 —— 4.服务注册">
+      <i class="fa fa-chevron-left"></i> Eureka源码系列 —— 4.服务注册
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/eureka/client-renew.html" rel="next" title="Eureka源码系列 —— 6.服务续约">
+      Eureka源码系列 —— 6.服务续约 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#client%E6%8A%93%E5%8F%96%E5%85%A8%E9%87%8F%E6%B3%A8%E5%86%8C%E8%A1%A8"><span class="nav-number">1.</span> <span class="nav-text">client抓取全量注册表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A5%E5%8F%A3"><span class="nav-number">1.1.</span> <span class="nav-text">入口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server%E7%AB%AF%E5%A4%84%E7%90%86%E6%8A%93%E5%8F%96%E5%85%A8%E9%87%8F%E6%B3%A8%E5%86%8C%E8%A1%A8%E7%9A%84%E8%AF%B7%E6%B1%82"><span class="nav-number">2.</span> <span class="nav-text">server端处理抓取全量注册表的请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A5%E5%8F%A3-1"><span class="nav-number">2.1.</span> <span class="nav-text">入口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96%E7%BC%93%E5%AD%98"><span class="nav-number">2.2.</span> <span class="nav-text">读取缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#client%E6%AF%8F30s%E5%AE%9A%E6%97%B6%E6%8A%93%E5%8F%96%E5%A2%9E%E9%87%8F%E6%B3%A8%E5%86%8C%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">client每30s定时抓取增量注册表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A5%E5%8F%A3-2"><span class="nav-number">3.1.</span> <span class="nav-text">入口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server%E7%AB%AF%E5%A4%84%E7%90%86%E6%8A%93%E5%8F%96%E5%A2%9E%E9%87%8F%E6%B3%A8%E5%86%8C%E8%A1%A8%E7%9A%84%E8%AF%B7%E6%B1%82"><span class="nav-number">4.</span> <span class="nav-text">server端处理抓取增量注册表的请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A5%E5%8F%A3-3"><span class="nav-number">4.1.</span> <span class="nav-text">入口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%8D%E7%BC%93%E5%AD%98"><span class="nav-number">4.2.</span> <span class="nav-text">种缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">缓存设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%BE%E8%AE%A1%E7%BC%93%E5%AD%98"><span class="nav-number">6.</span> <span class="nav-text">为什么设计缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E6%B8%85%E5%8D%95"><span class="nav-number">7.</span> <span class="nav-text">对象清单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DiscoveryClient-localRegionApps-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98%E7%9A%84%E6%B3%A8%E5%86%8C%E8%A1%A8%E5%AF%B9%E8%B1%A1"><span class="nav-number">7.1.</span> <span class="nav-text">DiscoveryClient#localRegionApps    客户端本地缓存的注册表对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-number">8.</span> <span class="nav-text">配置参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%AF%E5%90%A6%E8%BF%9B%E8%A1%8C%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C"><span class="nav-number">8.1.</span> <span class="nav-text">是否进行服务注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%AF%E5%90%A6%E7%A6%81%E7%94%A8%E5%A2%9E%E9%87%8F%E6%8A%93%E5%8F%96%E5%8A%9F%E8%83%BD"><span class="nav-number">8.2.</span> <span class="nav-text">是否禁用增量抓取功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%AF%E5%90%A6%E4%BD%BF%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E5%8F%AA%E8%AF%BB%E7%BC%93%E5%AD%98"><span class="nav-number">8.3.</span> <span class="nav-text">是否使用服务端的只读缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E7%BC%93%E5%AD%98%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4-s"><span class="nav-number">8.4.</span> <span class="nav-text">读写缓存过期时间 (s)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9C%E6%9C%80%E8%BF%91%E6%9B%B4%E6%96%B0%E9%98%9F%E5%88%97%E2%80%9D%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BF%9D%E7%95%99%E6%97%B6%E9%97%B4-ms"><span class="nav-number">8.5.</span> <span class="nav-text">“最近更新队列”中的数据的保留时间 (ms)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9C%E6%9C%80%E8%BF%91%E6%9B%B4%E6%96%B0%E9%98%9F%E5%88%97%E2%80%9D%E5%AE%9A%E6%97%B6%E6%B8%85%E9%99%A4%E7%9A%84%E6%97%B6%E9%97%B4-ms"><span class="nav-number">8.6.</span> <span class="nav-text">“最近更新队列”定时清除的时间 (ms)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      欢迎你，第
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+      位童鞋
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uno6T8mk5eaEGYj1FKo9v206-gzGzoHsz',
+      appKey     : 'V1QGjvh9QIYlk8fJLg70puH4',
+      placeholder: "技术更新飞快，难免疏漏，欢迎批评指导",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
