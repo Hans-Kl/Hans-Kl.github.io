@@ -32,11 +32,12 @@
 <meta property="og:image" content="https://i.loli.net/2021/07/04/6Ml1WzcVwdSIBat.png">
 <meta property="og:image" content="https://i.loli.net/2021/07/04/epDFcSI32h1jAmq.png">
 <meta property="og:image" content="https://i.loli.net/2021/07/04/vJ8ITaSLmyGbWe2.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/04/UbDiLZ97m8seQjl.png">
 <meta property="og:image" content="https://i.loli.net/2021/07/04/ubjWx7sCRmQ2D35.png">
 <meta property="og:image" content="https://i.loli.net/2021/07/04/cV3eNCPY4QUSDx8.png">
 <meta property="og:image" content="https://i.loli.net/2021/07/04/Af9rP4JgL5CsZoz.png">
 <meta property="article:published_time" content="2021-07-01T12:08:34.000Z">
-<meta property="article:modified_time" content="2021-07-04T14:58:04.145Z">
+<meta property="article:modified_time" content="2021-07-04T15:14:29.886Z">
 <meta property="article:author" content="孔令翰">
 <meta property="article:tag" content="springcloud">
 <meta property="article:tag" content="netflix">
@@ -245,7 +246,7 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>3.4k</span>
+              <span>3.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -305,7 +306,10 @@
 <ul>
 <li>com.netflix.loadbalancer.ServerList#getUpdatedListOfServers<ul>
 <li>org.springframework.cloud.netflix.ribbon.eureka.DomainExtractingServerList#getUpdatedListOfServers<ul>
-<li>com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList#getUpdatedListOfServers</li>
+<li>com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList#getUpdatedListOfServers<ul>
+<li>com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList#obtainServersViaDiscovery</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -318,7 +322,10 @@
 <li>获取<code>EurekaClient</code></li>
 <li>调用<code>EurekaClient</code>，从EurekaClient获取指定服务的注册表，其中参数的<code>vipAddress</code>就是我们要调用的服务的appId，比如UserTask</li>
 </ol>
-<p><code>getInstancesByVipAddress</code>方法最终调用<code>getInstancesBySecureVirtualHostName</code>方法，实现：</p>
+<p>第一步获取<code>EurekaClient</code>，那么EurekaClient到底是谁构造出来的呢？我们往上翻源码，翻到Bean的注册方法：</p>
+<p><img src="https://i.loli.net/2021/07/04/UbDiLZ97m8seQjl.png" alt="image-20210704231220459"></p>
+<p> 原来<code>Provider&lt;EurekaClient&gt;</code>是由Spring容器帮忙注入的，并不是由Ribbon主动构造的。也就是说：<strong>Ribbon组件与Eureka组件的交互，本身也是通过Spring容器来进行的，Spring还真是万能胶水啊😎</strong></p>
+<p>第二步中：<code>getInstancesByVipAddress</code>方法最终调用<code>getInstancesBySecureVirtualHostName</code>方法，实现：</p>
 <p><img src="https://i.loli.net/2021/07/04/ubjWx7sCRmQ2D35.png" alt="image-20210704224457365"></p>
 <p><strong>可以看到，EurekaClient是从本地的注册表中获取了指定服务的注册表，而不是即时的去EurekaServer拉取新鲜的注册表。</strong></p>
 <h2 id="更新注册表"><a href="#更新注册表" class="headerlink" title="更新注册表"></a>更新注册表</h2><p>上文中我们提到过<code>com.netflix.loadbalancer.DynamicServerListLoadBalancer#enableAndInitLearnNewServersFeature</code>方法也很重要，更新注册表的逻辑就在这个方法里：</p>
