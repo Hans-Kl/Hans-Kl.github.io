@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言Thread-local Storage，缩写TLS，中文翻译为线程本地存储。是多线程编程中一种常用的设计模式，在许多编程语言中都有对应实现，具体可以看这个wiki。本篇文章笔者聚焦Java中的实现——ThreadLocal，争取一篇文章将源码、坑点和最佳实践讲明白。 基本介绍 APIThreadLocal暴露的API非常精简，只有两个初始化方法和三个操作方法，分别是：  get 获取Thre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadLocal一探到底">
+<meta property="og:url" content="http://klhans.com/concurrency/threadLocal.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="前言Thread-local Storage，缩写TLS，中文翻译为线程本地存储。是多线程编程中一种常用的设计模式，在许多编程语言中都有对应实现，具体可以看这个wiki。本篇文章笔者聚焦Java中的实现——ThreadLocal，争取一篇文章将源码、坑点和最佳实践讲明白。 基本介绍 APIThreadLocal暴露的API非常精简，只有两个初始化方法和三个操作方法，分别是：  get 获取Thre">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/06/30/LRTdmF2eDNbpzI7.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/30/9dS8VXgRcoG5HAJ.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/30/8GeVoZSjw7Dc95W.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/30/Dk632aHNMGIXUxA.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/30/DYyXC4zOiIvAZwQ.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/06/30/scPaeW3RZSFyU7K.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/30/jWmfJn9hekgOERF.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/30/YF8DA7xTcNCf2ZH.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/01/UN1uw5f2Wz79OAp.png">
+<meta property="article:published_time" content="2021-06-30T06:05:14.000Z">
+<meta property="article:modified_time" content="2021-07-01T06:40:12.841Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="jvm">
+<meta property="article:tag" content="concurrency">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/06/30/LRTdmF2eDNbpzI7.png">
+
+<link rel="canonical" href="http://klhans.com/concurrency/threadLocal.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ThreadLocal一探到底 | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/concurrency/threadLocal.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ThreadLocal一探到底
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-30 14:05:14" itemprop="dateCreated datePublished" datetime="2021-06-30T14:05:14+08:00">2021-06-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
+                </span>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/concurrency/threadLocal.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/concurrency/threadLocal.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Thread-local Storage，缩写TLS，中文翻译为<code>线程本地存储</code>。是多线程编程中一种常用的设计模式，在许多编程语言中都有对应实现，具体可以看<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Thread-local_storage">这个wiki</a>。本篇文章笔者聚焦Java中的实现——ThreadLocal，争取一篇文章将源码、坑点和最佳实践讲明白。</p>
+<h2 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h2><p><img src="https://i.loli.net/2021/06/30/LRTdmF2eDNbpzI7.png" alt="image-20210630173918181"></p>
+<h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><p>ThreadLocal暴露的API非常精简，只有两个初始化方法和三个操作方法，分别是：</p>
+<ul>
+<li>get 获取ThreadLocal的值</li>
+<li>set 赋值/修改ThreadLocal的值</li>
+<li>remove 清空ThreadLocal的值</li>
+</ul>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><p>通过ThreadLocal对象，可以对线程私有对象（Thread Specific Object，简称TSO）进行操作。这个TSO本身是存储在当前线程中的，Thread类中持有这样一个Map字段：</p>
+<p><img src="https://i.loli.net/2021/06/30/9dS8VXgRcoG5HAJ.png" alt="image-20210630175043241"></p>
+<p>也就是说，每个线程都会有一个自己的ThreadLocalMap字段，用来存储TSO，那这个ThreadLocalMap中的键值对是谁呢？</p>
+<p><img src="https://i.loli.net/2021/06/30/8GeVoZSjw7Dc95W.png" alt="image-20210630175549664"></p>
+<p>从这可以看出来，ThreadLocalMap的键是ThreadLocal对象，值是TSO。这里有点绕，实际上ThreadLocal只是一个代理，让程序员可以方便的操作线程私有变量。如果不使用这种代理的话，我们获取TSO的伪代码是这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Thread.currentThread()<span class="comment">//获取当前线程</span></span><br><span class="line">  .getThreadLocalMap()<span class="comment">//每个线程内都持有一个线程私有的ThreadLocalMap，对应源码java.lang.ThreadLocal.ThreadLocalMap</span></span><br><span class="line">  .getEntry(threadLocal)<span class="comment">//Entry的key是threadLocal对象</span></span><br><span class="line">  .getValue();<span class="comment">//返回TSO</span></span><br></pre></td></tr></table></figure>
+
+<p>而通过代理的话：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">threadLocal.get();</span><br></pre></td></tr></table></figure>
+
+<p>可以看出来，代码简化了很多，对程序员的使用是非常友好的。</p>
+<p>数据结构图：</p>
+<p><img src="https://i.loli.net/2021/06/30/Dk632aHNMGIXUxA.png" alt="ThreadLocal引用关系图"></p>
+<h2 id="分析ThreadLocal的设计"><a href="#分析ThreadLocal的设计" class="headerlink" title="分析ThreadLocal的设计"></a>分析ThreadLocal的设计</h2><h3 id="假设ThreadLocalMap的Key是强引用"><a href="#假设ThreadLocalMap的Key是强引用" class="headerlink" title="假设ThreadLocalMap的Key是强引用"></a>假设ThreadLocalMap的Key是强引用</h3><p>这里有一张ThreadLocal的内存占用图：<img src="https://i.loli.net/2021/06/30/DYyXC4zOiIvAZwQ.jpg" alt="15473735704801.jpg"><br>我们看到ThreadLocalMap的key指向ThreadLocal对象，是一条虚线，虚线标识这个引用是一个弱引用Weak Reference，弱引用的大意是：当JVM发生GC时，不管内存空间是否足够，都会将只有弱引用的对象回收掉。那为什么ThreadLocal要采用弱引用的设计呢，我们先假设使用强引用的话。</p>
+<p>从上文我们知道，ThreadLocal对象是Java暴露给开发者的获取TSO的代理入口，如果ThreadLocal对象在程序中被GC回收掉的话，那么ThreadLocalMap、TSO对象都失去了存在的意义，因为获取这些对象的钥匙🔑——ThreadLocal已经不存在了。那么什么情况下ThreadLocal会被回收呢？看下面这段代码：</p>
+<p><img src="https://i.loli.net/2021/06/30/scPaeW3RZSFyU7K.png" alt="image-20210630214755103"></p>
+<p><code>t1()</code>方法中声明了一个线程局部变量<code>local</code>，这个变量本身是个在方法中声明的局部变量。我们知道局部变量对堆中对象的引用在方法弹栈的时候就会断掉，从而让堆中的对象失去GC ROOTs而可以被垃圾回收。所以这个<code>local</code>变量在<code>t1()</code>方法执行完，弹栈之后，它引用的<code>ThreadLocal</code>对象就会被垃圾回收。如果ThreadLocalMap持有的是强引用的ThreadLocal，那么即使<code>t1()</code>方法执行完，也仍然存在强引用链：<code>Thread -&gt; ThreadLocalMap -&gt; ThreadLocal</code>。</p>
+<p>我们知道ThreadLocalMap是与Thread一一绑定的，声明周期与Thread相同，在我们这个Demo中，Thread对象随着<code>test12()</code>方法执行完，主线程结束，Thread对象也被回收了，那么相安无事，ThreadLocal也会被回收；</p>
+<p>但是如果Thread对象生命周期很长呢？</p>
+<p>现在很多池化的技术都会将线程存起来减少创建和销毁的开销，比如数据库连接池等等。这种技术中，线程的生命周期会非常长，那么对应的ThreadLocalMap和强引用的ThreadLocal就会一直存在。但是ThreadLocal又没有人会用到它，这就导致了<strong>ThreadLocal对象的内存泄露</strong>。</p>
+<h3 id="JDK的源码"><a href="#JDK的源码" class="headerlink" title="JDK的源码"></a>JDK的源码</h3><p><img src="https://i.loli.net/2021/06/30/jWmfJn9hekgOERF.png" alt="image-20210630212321302"></p>
+<p>查看<code>java.lang.ThreadLocal.ThreadLocalMap</code>的JavaDoc，可以见到这样一句话：<code>为了帮助处理非常大和长期存在的用法，哈希表Entry使用 WeakReferences 作为键。 但是，由于不使用引用队列，因此只有在哈希表开始耗尽空间时才能保证删除陈旧条目。</code></p>
+<p>注释中提到，为了解决大对象和长期存在的线程的问题，ThreadLocalMap的key使用了弱引用。</p>
+<p>使用了弱引用之后，在只有Thread本身持有TheadLocal对象引用的情况下，ThreadLocal对象被成功回收掉了：</p>
+<p><img src="https://i.loli.net/2021/06/30/YF8DA7xTcNCf2ZH.png" alt="image-20210630214950183"></p>
+<h3 id="TSO怎么办？"><a href="#TSO怎么办？" class="headerlink" title="TSO怎么办？"></a>TSO怎么办？</h3><p>“长期存在的线程”我们已经上文已经理解了，那“大对象”又是什么意思呢？</p>
+<p>在上文中，我们通过弱引用，将ThreadLocalMap的key指向的ThreadLocal对象回收掉了，这样ThreadLocalMap中就会存在一些key=null，value=TSO的Entry键值对。</p>
+<p>在执行<code>ThreadLocal.set(T)</code>方法时，会出发扫描机制：将ThreadLocalMap中key为null的Entry删除，释放TSO对象的内存空间。</p>
+<p>假设key没有使用弱引用的话，这些不再被使用的TSO大对象也无从处理。不得不说JDK的源码还是颇为精妙的。</p>
+<h2 id="声明ThreadLocal变量"><a href="#声明ThreadLocal变量" class="headerlink" title="声明ThreadLocal变量"></a>声明ThreadLocal变量</h2><h3 id="声明为局部变量？"><a href="#声明为局部变量？" class="headerlink" title="声明为局部变量？"></a>声明为局部变量？</h3><p>ThreadLocal的使用场景：在单个线程的生命周期中，依附于线程，纵向传播TSO信息。</p>
+<p>那么如果声明一个ThreadLocal变量为某个方法的局部变量的话，就没有使用价值了，因为其他方法取不到这个ThreadLocal局部变量，也就获取不了TSO。</p>
+<h3 id="声明为对象的域field？"><a href="#声明为对象的域field？" class="headerlink" title="声明为对象的域field？"></a>声明为对象的域field？</h3><p>由于一个具有唯一用途的ThreadLocal对象在线程生命周期内具有唯一性，如果声明为对象的域field，那么每次创建这个包含threadLocal属性的对象，都会创建一个新的ThreadLocal对象出来，这样违背了具有唯一用途的ThreadLocal与Thread对象的一一对应的规则。</p>
+<p>第一容易导致错误，第二会创建多个无用的对象占用内存。</p>
+<h3 id="声明为类的静态变量？"><a href="#声明为类的静态变量？" class="headerlink" title="声明为类的静态变量？"></a>声明为类的静态变量？</h3><p>声明为静态变量可以保证在JVM中只有唯一的一份ThreadLocal对象。推荐这样使用。</p>
+<p>JavaDoc推荐：</p>
+<p><img src="https://i.loli.net/2021/07/01/UN1uw5f2Wz79OAp.png" alt="image-20210701142802327"></p>
+<blockquote>
+<p>【参考】ThreadLocal 对象使用 static 修饰，ThreadLocal 无法解决共享对象的更新问题。</p>
+<p>说明：这个变量是针对一个线程内所有操作共享的，所以设置为静态变量，所有此类实例共享此静态变 量，也就是说在类第一次被使用时装载，只分配一块存储空间，所有此类的对象(只要是这个线程内定义 的)都可以操控这个变量。</p>
+<p>——《阿里巴巴Java开发手册》</p>
+</blockquote>
+<p><strong>但是注意一点：</strong></p>
+<p><strong>类的静态变量与类Class的生命周期一致，我们知道由JVM声明的三个类加载器加载出来的类，在JVM运行期间，都是无法卸载的。所以会导致ThreadLocal也一直无法卸载。那么JDK中ThreadLocalMap精心设计的弱引用键就没用了，这意味着ThreadLocal将一直无法回收，key无法回收，那么value对应的TSO也就永远无法回收！</strong></p>
+<h2 id="ThreadLocal的内存泄露问题"><a href="#ThreadLocal的内存泄露问题" class="headerlink" title="ThreadLocal的内存泄露问题"></a>ThreadLocal的内存泄露问题</h2><h3 id="什么是内存泄露"><a href="#什么是内存泄露" class="headerlink" title="什么是内存泄露"></a>什么是内存泄露</h3><p>ThreadLocal在使用上非常简单，但是又非常容易出现<strong>内存泄露</strong>的问题，对于这种工具，我们需要理解他的原理，才能掌握好使用边界，不至于出现大问题。</p>
+<p>先来看内存泄露的定义，<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F">wiki</a>：由于疏忽或错误造成程序未能释放已经不再使用的内存。也就是说，泄露的内存在程序中再也无法访问，从而造成内存浪费。</p>
+<h3 id="Tomcat自定义类加载器导致的内存泄露"><a href="#Tomcat自定义类加载器导致的内存泄露" class="headerlink" title="Tomcat自定义类加载器导致的内存泄露"></a>Tomcat自定义类加载器导致的内存泄露</h3><p>可以看这个回答：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/35250439/answer/101676937">将ThreadLocal变量设置为private static的好处是啥？ - Viscent大千的回答 - 知乎</a></p>
+<h3 id="开发中如何避免内存泄露"><a href="#开发中如何避免内存泄露" class="headerlink" title="开发中如何避免内存泄露"></a>开发中如何避免内存泄露</h3><p>由于日常开发中，ThreadLocal将使用static修饰，所以ThreadLocalMap自带的弱引用机制基本无效了，所以要靠开发人员手动调用<code>ThreadLocal.remove()</code>方法来讲TSO的内存释放，否则如果TSO对象本身是大对象，比如List或Map等容器；再使用池化等技术延长线程的生命周期。久而久之，必然会导致TSO引起的内存溢出。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>首发地址：</strong>
+    <a href="http://klhans.com/concurrency/threadLocal.html" title="ThreadLocal一探到底">http://klhans.com/concurrency/threadLocal.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/jvm/" rel="tag"><i class="fa fa-tag"></i> jvm</a>
+              <a href="/tags/concurrency/" rel="tag"><i class="fa fa-tag"></i> concurrency</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/eureka/server-sync-up.html" rel="prev" title="Eureka源码系列 —— 10.服务同步">
+      <i class="fa fa-chevron-left"></i> Eureka源码系列 —— 10.服务同步
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/ribbon/ribbon-eureka-client.html" rel="next" title="Ribbon源码系列——4.Ribbon从EurekaClient同步注册表">
+      Ribbon源码系列——4.Ribbon从EurekaClient同步注册表 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">基本介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#API"><span class="nav-number">3.</span> <span class="nav-text">API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90ThreadLocal%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">5.</span> <span class="nav-text">分析ThreadLocal的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%87%E8%AE%BEThreadLocalMap%E7%9A%84Key%E6%98%AF%E5%BC%BA%E5%BC%95%E7%94%A8"><span class="nav-number">5.1.</span> <span class="nav-text">假设ThreadLocalMap的Key是强引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK%E7%9A%84%E6%BA%90%E7%A0%81"><span class="nav-number">5.2.</span> <span class="nav-text">JDK的源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TSO%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="nav-number">5.3.</span> <span class="nav-text">TSO怎么办？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B0%E6%98%8EThreadLocal%E5%8F%98%E9%87%8F"><span class="nav-number">6.</span> <span class="nav-text">声明ThreadLocal变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E4%B8%BA%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%EF%BC%9F"><span class="nav-number">6.1.</span> <span class="nav-text">声明为局部变量？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E4%B8%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%9F%9Ffield%EF%BC%9F"><span class="nav-number">6.2.</span> <span class="nav-text">声明为对象的域field？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E4%B8%BA%E7%B1%BB%E7%9A%84%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%EF%BC%9F"><span class="nav-number">6.3.</span> <span class="nav-text">声明为类的静态变量？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocal%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E9%97%AE%E9%A2%98"><span class="nav-number">7.</span> <span class="nav-text">ThreadLocal的内存泄露问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">7.1.</span> <span class="nav-text">什么是内存泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tomcat%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AF%BC%E8%87%B4%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">7.2.</span> <span class="nav-text">Tomcat自定义类加载器导致的内存泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E4%B8%AD%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">7.3.</span> <span class="nav-text">开发中如何避免内存泄露</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      欢迎你，第
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+      位童鞋
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uno6T8mk5eaEGYj1FKo9v206-gzGzoHsz',
+      appKey     : 'V1QGjvh9QIYlk8fJLg70puH4',
+      placeholder: "技术更新飞快，难免疏漏，欢迎批评指导",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

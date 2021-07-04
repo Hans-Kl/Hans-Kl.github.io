@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar-zfx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar-zfx.png">
+  <link rel="mask-icon" href="/images/avatar-zfx.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"klhans.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="再看@LoadBalanced注解上一篇文章中我们看到过@LoadBalanced注解的源码：  我们发现这个注解上面有一行注释，指引我们去看LoadBalancerClient类，我们就跟着这个线索去看一下 LoadBalancerClient负载均衡客户端  LoadBalancerClient接口，继承自ServiceInstanceChooser接口，ServiceInstanceChoo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ribbon源码系列——2.负载均衡类体系与拦截器">
+<meta property="og:url" content="http://klhans.com/ribbon/class-system-interceptor.html">
+<meta property="og:site_name" content="孔令翰-个人博客">
+<meta property="og:description" content="再看@LoadBalanced注解上一篇文章中我们看到过@LoadBalanced注解的源码：  我们发现这个注解上面有一行注释，指引我们去看LoadBalancerClient类，我们就跟着这个线索去看一下 LoadBalancerClient负载均衡客户端  LoadBalancerClient接口，继承自ServiceInstanceChooser接口，ServiceInstanceChoo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/07/02/fu4WDBkYLT3l7Zr.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/02/s4PrvdeaOFzuYRW.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/02/VYQtBbRy6s8zKp3.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/02/Tw6RBVc1E3We87L.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/02/xXm35N1gEWrnvK4.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/02/3qJxesdgRQbEC7Z.png">
+<meta property="article:published_time" content="2021-07-01T12:08:34.000Z">
+<meta property="article:modified_time" content="2021-07-04T14:53:34.805Z">
+<meta property="article:author" content="孔令翰">
+<meta property="article:tag" content="springcloud">
+<meta property="article:tag" content="netflix">
+<meta property="article:tag" content="ribbon">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/07/02/fu4WDBkYLT3l7Zr.png">
+
+<link rel="canonical" href="http://klhans.com/ribbon/class-system-interceptor.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Ribbon源码系列——2.负载均衡类体系与拦截器 | 孔令翰-个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">孔令翰-个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You Only Live Once</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/ribbon/class-system-interceptor.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ribbon源码系列——2.负载均衡类体系与拦截器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-01 20:08:34" itemprop="dateCreated datePublished" datetime="2021-07-01T20:08:34+08:00">2021-07-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/ribbon/" itemprop="url" rel="index"><span itemprop="name">ribbon</span></a>
+                </span>
+            </span>
+
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/ribbon/class-system-interceptor.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/ribbon/class-system-interceptor.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="再看-LoadBalanced注解"><a href="#再看-LoadBalanced注解" class="headerlink" title="再看@LoadBalanced注解"></a>再看@LoadBalanced注解</h2><p>上一篇文章中我们看到过@LoadBalanced注解的源码：</p>
+<p><img src="https://i.loli.net/2021/07/02/fu4WDBkYLT3l7Zr.png" alt="image-20210702152733813"></p>
+<p>我们发现这个注解上面有一行注释，指引我们去看<code>LoadBalancerClient</code>类，我们就跟着这个线索去看一下</p>
+<h2 id="LoadBalancerClient负载均衡客户端"><a href="#LoadBalancerClient负载均衡客户端" class="headerlink" title="LoadBalancerClient负载均衡客户端"></a>LoadBalancerClient负载均衡客户端</h2><p><img src="https://i.loli.net/2021/07/02/s4PrvdeaOFzuYRW.png" alt="image-20210702153039371"></p>
+<p><img src="https://i.loli.net/2021/07/02/VYQtBbRy6s8zKp3.png" alt="image-20210702153056852"></p>
+<p><code>LoadBalancerClient</code>接口，继承自<code>ServiceInstanceChooser</code>接口，<code>ServiceInstanceChooser</code>提供了一个方法，可以<strong>通过服务ID选择一个具体的服务实例</strong>。这，这不就是我们负载均衡的意义么，传入一个服务标识，组件帮我选择一个适当的服务实例！</p>
+<p>再来看<code>LoadBalancerClient</code>接口本身提供的方法：</p>
+<ul>
+<li>execute(String serviceId, LoadBalancerRequest<T> request)：根据传入的服务ID和请求执行类，来执行一个具体的请求，返回请求结果</li>
+<li>executeexecute(String serviceId, ServiceInstance serviceInstance, LoadBalancerRequest<T> request):：上面execute方法的重写方法，使用参数传递过来的具体服务实例来执行请求</li>
+<li>reconstructURI：根据传入的服务实例和URI，返回一个具体host:port形式的URI</li>
+</ul>
+<p>总结：<code>LoadBalancerClient</code>这个接口提供的功能与我们研究的<strong>负载均衡</strong>的功能高度契合，我们有理由相信，这个类就是Ribbon的核心类。</p>
+<h2 id="LoadBalancerAutoConfiguration自动装配"><a href="#LoadBalancerAutoConfiguration自动装配" class="headerlink" title="LoadBalancerAutoConfiguration自动装配"></a>LoadBalancerAutoConfiguration自动装配</h2><p>之前我们全局搜索<code>@LoadBalanced</code>注解的时候，注意到一个类注入了<code>@LoadBalanced</code>修饰的RestTemplate，他就是<code>LoadBalancerAutoConfiguration</code>类，我们知道在SpringBoot项目中，<code>XXXAutoConfiguration</code>一般都用来将某个组件的配置，自动装配进Spring容器，所以我们有理由相信这个类是Ribbon自动装配的配置类：</p>
+<p><img src="https://i.loli.net/2021/07/02/Tw6RBVc1E3We87L.png" alt="image-20210702162109416"></p>
+<p>我们可以看到，<code>LoadBalancerAutoConfiguration</code>配置类帮我们注册了多个Bean，包括：</p>
+<ul>
+<li>LoadBalancerRequestFactory</li>
+<li>LoadBalancerInterceptor</li>
+<li>RestTemplateCustomizer</li>
+</ul>
+<p>这个自动配置类中的Bean，大家刚接触的时候可能会直接懵掉，确实有点复杂。</p>
+<hr>
+<p>Spring体系的源码都有这个特点，即：</p>
+<ul>
+<li>类设计遵循单一职责原则</li>
+<li>大量使用继承、多态</li>
+</ul>
+<p>这样做的好处是单个类的职责非常清晰，看到接口或抽象类就基本可以理清功能。坏处是类体系复杂且庞大，对于初学者来说不太友好，遇到这种情况，笔者的经验是画类图，用自己的话来理解每个类的职责。下文会给出笔者画的图</p>
+<h2 id="整体类图梳理"><a href="#整体类图梳理" class="headerlink" title="整体类图梳理"></a>整体类图梳理</h2><p>笔者整理的<code>LoadBalancerAutoConfiguration</code>自动装配的类图如下：</p>
+<p><img src="https://i.loli.net/2021/07/02/xXm35N1gEWrnvK4.png" alt="Ribbon自动装配类图"></p>
+<p>从图中可以看出来，<strong>负载均衡拦截器</strong>最终由<strong>负载均衡客户端</strong>构造出来，理论上可以具备<strong>负载均衡客户端</strong>的功能，即选择服务实例和执行请求。Spring通过<code>RestTemplateCustomizer</code>定制器将拦截器定制到<code>RestTemplate</code>中，这样就能完成对<code>RestTemplate</code>的拦截了，我们合理猜想，负载均衡的功能就实现在拦截器中。</p>
+<h2 id="ClientHttpRequestInterceptor拦截器"><a href="#ClientHttpRequestInterceptor拦截器" class="headerlink" title="ClientHttpRequestInterceptor拦截器"></a>ClientHttpRequestInterceptor拦截器</h2><p>SpringBoot提供了<code>ClientHttpRequestInterceptor</code>拦截器接口，实现这个拦截器接口的<code>intercept</code>方法可以对通过<code>RestTemplate</code>发起的请求和响应做一些拦截性的处理。通常请求是这样被处理的：</p>
+<ol>
+<li>执行拦截器对request的拦截</li>
+<li>执行http 请求或直接返回</li>
+<li>执行拦截器对response的拦截</li>
+</ol>
+<p>我们来看一下具体的实现类<code>LoadBalancerInterceptor</code>的源码：</p>
+<p><img src="https://i.loli.net/2021/07/02/3qJxesdgRQbEC7Z.png" alt="image-20210702164044837"></p>
+<p>在红杠的部分可以看到，拦截器最后正是调用了<code>LoadBalancerClient#execute</code>完全拦截了<code>RestTemplate</code>的原有请求。</p>
+<hr>
+<p>本篇文章先到这里，总结一下：本文主要梳理了<code>LoadBalancerAutoConfiguration</code>注入到Spring容器中的类整体体系，最终发现是通过<code>LoadBalancerInterceptor</code>拦截器，调用了<code>LoadBalancerClient#execute</code>拦截了<code>RestTemplate</code>的原有请求逻辑，完成了负载均衡的功能。</p>
+<p>Over🥽</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>孔令翰
+  </li>
+  <li class="post-copyright-link">
+    <strong>首发地址：</strong>
+    <a href="http://klhans.com/ribbon/class-system-interceptor.html" title="Ribbon源码系列——2.负载均衡类体系与拦截器">http://klhans.com/ribbon/class-system-interceptor.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/springcloud/" rel="tag"><i class="fa fa-tag"></i> springcloud</a>
+              <a href="/tags/netflix/" rel="tag"><i class="fa fa-tag"></i> netflix</a>
+              <a href="/tags/ribbon/" rel="tag"><i class="fa fa-tag"></i> ribbon</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/ribbon/ribbon-ILoadBalancer.html" rel="prev" title="Ribbon源码系列——3.Ribbon实现的负载均衡器ILoadBalancer">
+      <i class="fa fa-chevron-left"></i> Ribbon源码系列——3.Ribbon实现的负载均衡器ILoadBalancer
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/ribbon/client-load-balanced.html" rel="next" title="Ribbon源码系列——1.客户端负载均衡与LoadBalanced注解">
+      Ribbon源码系列——1.客户端负载均衡与LoadBalanced注解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%8D%E7%9C%8B-LoadBalanced%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">再看@LoadBalanced注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LoadBalancerClient%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">2.</span> <span class="nav-text">LoadBalancerClient负载均衡客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LoadBalancerAutoConfiguration%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D"><span class="nav-number">3.</span> <span class="nav-text">LoadBalancerAutoConfiguration自动装配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E7%B1%BB%E5%9B%BE%E6%A2%B3%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">整体类图梳理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ClientHttpRequestInterceptor%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">ClientHttpRequestInterceptor拦截器</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="孔令翰"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">孔令翰</p>
+  <div class="site-description" itemprop="description">learner|developer|blogger|traveler</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hans-Kl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hans-Kl" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:konglinghan@klhans.com" title="E-Mail → mailto:konglinghan@klhans.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孔令翰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      欢迎你，第
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+      位童鞋
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 29622,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uno6T8mk5eaEGYj1FKo9v206-gzGzoHsz',
+      appKey     : 'V1QGjvh9QIYlk8fJLg70puH4',
+      placeholder: "技术更新飞快，难免疏漏，欢迎批评指导",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

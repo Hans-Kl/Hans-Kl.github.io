@@ -163,6 +163,532 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/valueobject.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/valueobject.html" class="post-title-link" itemprop="url">ValueObject-译文</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-28 15:19:04" itemprop="dateCreated datePublished" datetime="2021-05-28T15:19:04+08:00">2021-05-28</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/valueobject.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/valueobject.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>7.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前言：本篇探讨使用值对象的初衷和注意事项，原文地址：<a target="_blank" rel="noopener" href="https://martinfowler.com/bliki/ValueObject.html">https://martinfowler.com/bliki/ValueObject.html</a></p>
+<hr>
+<blockquote>
+<p>When programming, I often find it’s useful to represent things as a compound. A 2D coordinate consists of an x value and y value. An amount of money consists of a number and a currency. A date range consists of start and end dates, which themselves can be compounds of year, month, and day.</p>
+</blockquote>
+<p>编程时，我经常发现将一些事物作为一个整体来表示是有用的。2D坐标由x值和y值组成；金额 包括一个数字和货币；日期范围包括开始和结束日期，日期本身也由年，月和日组成。</p>
+<blockquote>
+<p>As I do this, I run into the question of whether two compound objects are the same. If I have two point objects that both represent the Cartesian coordinates of (2,3), it makes sense to treat them as equal. Objects that are equal due to the value of their properties, in this case their x and y coordinates, are called value objects.</p>
+</blockquote>
+<p>如果我这样做，我遇到了两个复合对象是否相同的问题。 如果我有两点对象，两者都代表笛卡尔坐标 （2,3），将它们视为相等是有意义的。对象相等性取决于它们属性的具体值，称为<strong>值对象</strong>，在这个 case 中，属性值指它们的x和y坐标，</p>
+<blockquote>
+<p>But unless I’m careful when programming, I may not get that behavior in my programs</p>
+</blockquote>
+<p>但除非我在编程时非常小心，否则我可能不会在程序中得到适当的行为。</p>
+<blockquote>
+<p>Say I want to represent a point in JavaScript.</p>
+</blockquote>
+<p>假设我想在javascript中代表一个点。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/valueobject.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/classpath.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/springboot/classpath.html" class="post-title-link" itemprop="url">SpringBoot项目中的classpath到底指什么?</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-28 10:33:51" itemprop="dateCreated datePublished" datetime="2021-05-28T10:33:51+08:00">2021-05-28</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/springboot/classpath.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/springboot/classpath.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近又在研究 SpringBoot 源码（研究好几次了，研究完有些用不上就忘了😅），在 SpringBoot 执行 main 方法启动过程中，会根据 classpath 下的类信息推断当前环境信息。这里 classpath 究竟是指哪呢，搜了中文语境下的技术文章，竟然没有找到想要的回答，可能是问题太简单了。本篇记录下我的看法。</p>
+<h2 id="java-最基础的-classpath"><a href="#java-最基础的-classpath" class="headerlink" title="java 最基础的 classpath"></a>java 最基础的 classpath</h2><p><strong>classpath</strong>，顾名思义，就是指 .class 文件所在的路径。.class 文件由 .java 文件编译后产生，我们用 java 命令执行.class 文件时，需要指定 jvm 去哪搜索目标 class 文件，总不能全盘扫描对吧，而<em>指定去哪搜索</em>就是 classpath 的含义，即：<br><strong><code>classpath</code>是JVM用到的一个环境变量，它用来指示JVM如何搜索<code>class</code>。</strong></p>
+<p>执行 java 命令时，通过<code>java -classpath dir</code>或者简写为 <code>java -cp dir</code>来指定，</p>
+<p>如果命令中没有显式指定，则 jvm 在当前目录中查找，即默认为：<code>java -cp .</code>。</p>
+<p>可以在命令中指定多个classpath，Linux 下用<code>：</code>分隔。jvm 会依次查找指定目录，查找到一个之后不再继续查找下一个，比如<code>java -cp .:/usr/local:/tmp/work</code>。</p>
+<h2 id="jar-包的-classpath"><a href="#jar-包的-classpath" class="headerlink" title="jar 包的 classpath"></a>jar 包的 classpath</h2><p>我们工程中一般都会有很多 .class 文件，利用 jar 包可以将他们批量管理起来，像这样<code>java -cp ./demo.jar boo.Helloworld</code>指定 jar 包为 classpath 的话，jvm 就会去这个 jar 包里面搜索需要的类。</p>
+<p>jar包还可以包含一个特殊的<code>/META-INF/MANIFEST.MF</code>文件，<code>MANIFEST.MF</code>是纯文本，可以指定<code>Main-Class</code>和其它信息。JVM会自动读取这个<code>MANIFEST.MF</code>文件，如果存在<code>Main-Class</code>，我们就不必在命令行指定启动的类名，而是用更方便的命令：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/springboot/classpath.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/dddsample-characterization.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/dddsample-characterization.html" class="post-title-link" itemprop="url">dddsample-characterization[译文]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-19 22:30:18" itemprop="dateCreated datePublished" datetime="2021-05-19T22:30:18+08:00">2021-05-19</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/dddsample-characterization.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/dddsample-characterization.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前言:此篇文章是对 cargo 项目的类归属的翻译。<br>原文链接:<a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/characterization.html">http://dddsample.sourceforge.net/characterization.html</a></p>
+<hr>
+<h2 id="Characterization类归属"><a href="#Characterization类归属" class="headerlink" title="Characterization类归属"></a>Characterization类归属</h2><blockquote>
+<p>Careful characterization of the classes is an important activity when doing Domain-Driven Design. Sometimes it is fairly obvious in what category a particular class belongs, other times it is not as easy to sort out the different <em>Building Blocks of a Model-Driven Design</em>.</p>
+</blockquote>
+<p>在进行领域驱动设计时，仔细的界定类的身份是重要的活动。有时候特定类的所属哪个类别非常明显，有时则不然。</p>
+<blockquote>
+<p>The trickiest ones to classify are typically <em>Entities</em> , <em>Aggregates</em>, <em>Value Objects</em> and <em>Domain Events</em>. When possible, we tend to favor <em>Value Objects</em> over <em>Entities</em> or <em>Domain Events</em>, because they require less attention during implementation. <em>Value Objects</em> can be created and thrown away at will, and since they are immutable we can pass them around as we wish. We must be much less cavalier with <em>Entities</em> as identity and life-cycle have to be carefully managed. Below is a short walkthrough of key classes in the application and the motivation behind their implementation choice. All but <em>Domain Event</em> are thoroughly described in <a target="_blank" rel="noopener" href="http://www.domaindrivendesign.org/books/index.html#DDD">Eric Evans’ book</a>. A short introduction to Domain Events can be found here: <a target="_blank" rel="noopener" href="http://martinfowler.com/eaaDev/DomainEvent.html">http://martinfowler.com/eaaDev/DomainEvent.html</a></p>
+</blockquote>
+<p>棘手的分类工作通常是针对实体，聚合，值对象和领域事件。可能的话，我们倾向于使用值对象而不是实体或领域事件，因为它们在实现期间需要注意的东西更少。可以任意创建值对象并将其丢弃，因为它们是不可变的；而我们必须对实体更加小心因为实体的身份和生命周期需要小心的管理。以下是一个关于关键类的简短演示，以及他们选择的实现的背后动机。除了领域事件外，都在<a target="_blank" rel="noopener" href="http://www.domaindrivendesign.org/books/index.html#DDD">Eric Evans的书</a>中有完整的描述。在此处可以找到关于领域事件的简述：<a target="_blank" rel="noopener" href="http://martinfowler.com/eaadev/domainainevent.html">http://martinfowler.com/eaadev/domainainevent.html</a></p>
+<h2 id="Entities实体"><a href="#Entities实体" class="headerlink" title="Entities实体"></a>Entities实体</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Cargo.html">Cargo</a>: Cargo has both a clear identity and a life-cycle with state transitions that we care about, so it’s an entity. Many cargo instances will exist in the system simultaneously. The different instances have the same origin and destination, they may even contain the same kind of things, but it is important for us to be able to track individual cargo instances. In our case the cargo’s identity is its tracking id. The tracking id is assigned upon creation and is never changed. This is the handle used to track the cargo’s progress, e.g. from the tracking website.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://dddsample.sourceforge.net/xref/se/citerus/dddsample/domain/model/cargo/Cargo.html">Cargo</a>(货运)：cargo具有明确的唯一标识和我们关心的有状态变化的生命周期，所以它是一个实体。许多cargo实例将同时存在于系统中。不同的实例具有相同的起源和目的地，它们甚至可能包含相同类型的东西，但是对我们来说，能够跟踪指定cargo实例很重要。在我们的case 中，cargo的唯一标识是其tracking id。tracking id在创建时分配，并且永远不会改变。这是用来跟踪cargo进行情况的handle，例如，在网上追踪。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/dddsample-characterization.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/dddsample-Architecture.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/dddsample-Architecture.html" class="post-title-link" itemprop="url">dddsample-Architecture[译文]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-19 11:59:11" itemprop="dateCreated datePublished" datetime="2021-05-19T11:59:11+08:00">2021-05-19</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/dddsample-Architecture.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/dddsample-Architecture.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前言:本系列翻译的对象是DDD 大蓝书中的示例项目 cargo 的相关文章。<br>本文原文链接：dddsample.w.net/architecture.html</p>
+<hr>
+<h2 id="Architecture架构"><a href="#Architecture架构" class="headerlink" title="Architecture架构"></a>Architecture架构</h2><blockquote>
+<p> The sample application is layered as illustrated by this picture:</p>
+</blockquote>
+<p>示例应用程序分层如图所示：</p>
+<p><img src="http://dddsample.sourceforge.net/images/layers.jpg"></p>
+<blockquote>
+<p>There are three vertical layers: Interfaces, Application and Domain, each supported by different kinds of infrastructure.</p>
+</blockquote>
+<p>有三个垂直的分层：接口层，应用层和领域层，每层由不同类型的基础架构层支持。</p>
+<h2 id="Interfaces接口层"><a href="#Interfaces接口层" class="headerlink" title="Interfaces接口层"></a>Interfaces接口层</h2><blockquote>
+<p>This layer holds everything that interacts with other systems, such as web services, RMI interfaces or web applications, and batch processing frontends. It handles interpretation, validation and translation of incoming data. It also handles serialization of outgoing data, such as HTML or XML across HTTP to web browsers or web service clients, or DTO classes and distributed facade interfaces for remote Java clients.</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/dddsample-Architecture.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/events-or-commands.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/events-or-commands.html" class="post-title-link" itemprop="url">Events or Commands[译文]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-17 16:43:36" itemprop="dateCreated datePublished" datetime="2021-05-17T16:43:36+08:00">2021-05-17</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/events-or-commands.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/events-or-commands.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>6.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前言：本篇探讨命令与事件各自优缺点和如何选择，原文地址：<a target="_blank" rel="noopener" href="https://codesimple.blog/2018/04/16/events-or-commands/">https://codesimple.blog/2018/04/16/events-or-commands/</a></p>
+<hr>
+<h2 id="事件还是命令"><a href="#事件还是命令" class="headerlink" title="事件还是命令"></a>事件还是命令</h2><p>Most of the programmers quickly agree that naming is one of the hardest things they have to do as part of their Job.大多数程序员迅速同意命名是他们作为工作的最艰难的事情之一。</p>
+<blockquote>
+<p>As Phil Karlton puts it “_There are only two hard things in Computer Science: cache invalidation and naming things._“正如菲尔卡尔顿所说的那样，“计算机科学中只有两个艰难的东西：缓存失效和命名的东西。”</p>
+</blockquote>
+<p>Naming is hard because it is important to get it right. It is one of the key UX for readers/consumers of your software components. There is plenty of material (books/blogs) written on this topic. I have also shared my thoughts in another <a target="_blank" rel="noopener" href="http://satjinder.com/2017/03/11/use-meaningful-names-in-your-code/">post</a>.命名很难，因为重要的是要正确。它是软件组件的读者/消费者的关键UX之一。有大量的材料（书籍/博客）写在这个主题上。我还在另一个帖子中分享了我的想法。</p>
+<p>Besides other challenges, developers of Event-Driven systems are suffering from this pain at another level. While building an event-driven system, generally we find it difficult to name an event. Often in this situation, if the name of the event you are raising does not resonate the business event then you should be alarmed and reassess the event.除其他挑战外，活动驱动系统的开发人员正在患有这种痛苦的痛苦。在构建事件驱动的系统时，通常我们发现难以命名事件。经常在这种情况下，如果您提出的事件的名称不会产生业务事件，那么您应该被警告并重新评估事件。</p>
+<p><a target="_blank" rel="noopener" href="https://martinfowler.com/">Martin Fowler</a> warns about the trap of <a target="_blank" rel="noopener" href="https://martinfowler.com/articles/201701-event-driven.html">Passive Aggressive Commands:</a>Martin Fowler警告了被动侵略性命令的陷阱：</p>
+<blockquote>
+<p>“This happens when the source system expects the recipient to carry out an action, and ought to use a command message to show that intention, but styles the message as an event instead.”“当源系统期望收件人执行一个动作时，会发生这种情况，并应该使用命令消息来显示该意图，但是改变为事件的消息。”</p>
+</blockquote>
+<p>Before digging deeper, lets define commands and events.在挖掘更深时，允许定义命令和事件。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/events-or-commands.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://klhans.com/Event-Driven-Architecture-Terminology.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -698,355 +1224,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/jackson.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/springboot/jackson.html" class="post-title-link" itemprop="url">SpringBoot系列之Jackson</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-01 19:40:27" itemprop="dateCreated datePublished" datetime="2020-07-01T19:40:27+08:00">2020-07-01</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a>
-                </span>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/springboot/jackson.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/springboot/jackson.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>17k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>15 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <img src="https://i.loli.net/2021/03/06/ULnx3lSv1fkXayM.jpg" style="zoom:50%;">
-
-<blockquote>
-<p>上帝知道自己不是无所不能，所以才创造了妈妈。    ——《请回答1988》</p>
-</blockquote>
-<hr>
-<p>本文探讨SpringBoot应用中的序列化和反序列化过程，主要介绍SpringBoot默认的Jackson库的注解使用和代码演示。</p>
-<p>SpringBoot还支持Gson和JSON-B库，不在本文讨论范围内。</p>
-<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>序列化是指将内存中的对象状态信息转换为可以存储或传输的形式的过程，<br>与之对应，反序列化就是存储或传输形式转为对象状态信息的过程</p>
-<p>序列化有多种方式，常用的有Java原生提供的字节格式和json格式。现在REST应用主要使用json格式传输数据。</p>
-<h3 id="Jackson序列化规则"><a href="#Jackson序列化规则" class="headerlink" title="Jackson序列化规则"></a>Jackson序列化规则</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/springboot/jackson.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/java-exception.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/java-exception.html" class="post-title-link" itemprop="url">谈谈 Java 的异常机制</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-06-07 14:22:34" itemprop="dateCreated datePublished" datetime="2020-06-07T14:22:34+08:00">2020-06-07</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
-                </span>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/java-exception.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/java-exception.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>2.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <img src="https://i.loli.net/2021/03/06/yWibGCBxu3XQUme.jpg" style="zoom:50%;">
-
-<blockquote>
-<p>お前も舞うか?    ——宇智波斑 《火影忍者》</p>
-</blockquote>
-<h2 id="为什么会有异常"><a href="#为什么会有异常" class="headerlink" title="为什么会有异常"></a>为什么会有异常</h2><p>远古时期的编程语言中是没有”异常”这个概念存在的，大家对于非正常的情况会约定一个错误标识，由下层方法返回给上层调用方法，类似ErrorCode = 400这样，但是这样做有几个明显的缺点：</p>
-<ol>
-<li>调用方需要额外编写大量检查错误标识的代码，并且这些代码与调用方本身的业务代码紧耦合在一起</li>
-<li>调用方不一定有能力处理这些异常，如果没有能力处理的话，该怎么处理错误标识就变成了一个棘手的问题，是将错误标识继续向上传递还是忽略错误码继续自己的流程呢？</li>
-<li>错误标识将处在同一个调用链上的各层方法紧耦合在了一起，比如底层方法抛出的错误标识如果有修改，上层方法全部都要兼容</li>
-</ol>
-<p>总的来说就是耦合耦合太过紧密，针对这几个问题，产生了现在语言的“异常”体系。</p>
-<p>现代的异常允许底层抛出的异常，跨越数个调用方法，一直到最顶层的方法，这样耦合性就降低了，没有能力异常的调用方不需要非得对异常进行处理，可以简单的向上抛出。</p>
-<h2 id="Java异常体系"><a href="#Java异常体系" class="headerlink" title="Java异常体系"></a>Java异常体系</h2><p>Java所有的异常都继承自<code>Exception</code>对象，<code>Exception</code>继承自<code>Throwable</code>类，同时继承自<code>Throwable</code>类的还有用于表示错误的<code>Error</code>类，他们的类图如下：</p>
-<img src="https://i.loli.net/2021/03/05/JynQBmbuGHjKEgS.png" alt="image-20210305221611195" style="zoom: 50%;">
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/java-exception.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://klhans.com/static-final-constant.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="孔令翰">
-      <meta itemprop="description" content="learner|developer|blogger|traveler">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="孔令翰-个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/static-final-constant.html" class="post-title-link" itemprop="url">常量为什么要用 static final 修饰?</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-22 17:11:57" itemprop="dateCreated datePublished" datetime="2020-05-22T17:11:57+08:00">2020-05-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
-                </span>
-            </span>
-
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/static-final-constant.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/static-final-constant.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>3.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <img src="https://i.loli.net/2021/03/07/A9QNksghw6erdqO.png" style="zoom:50%;">
-
-<blockquote>
-<p>I wish I could, but I don’t want to.    ——Phoebe 《Friends》</p>
-</blockquote>
-<hr>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Java 中，我们经常使用常量来表示一些不可变的值，他们通常写作这样</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FOO = <span class="string">&quot;i am a constant&quot;</span>;</span><br></pre></td></tr></table></figure>
-
-<p>变量使用 <code>static</code> 和 <code>final</code> 关键字来修饰，那具体为什么要用这两个关键字呢，本文我们将来探讨这个话题。</p>
-<h2 id="类的初始化"><a href="#类的初始化" class="headerlink" title="类的初始化"></a>类的初始化</h2><p>static 关键字与类的初始化过程密切相关，要理解static关键字，首先要了解类的加载流程。</p>
-<p>简单介绍一下：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/static-final-constant.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1114,20 +1295,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
