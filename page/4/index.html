@@ -163,6 +163,445 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html" class="post-title-link" itemprop="url">What do you mean by “Event-Driven”?[译文]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-14 15:36:48" itemprop="dateCreated datePublished" datetime="2021-05-14T15:36:48+08:00">2021-05-14</time>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前言：这个系列是将自己看过的一些国外大佬的文章，翻译整理一下，避免以后看的时候还得再看一遍英文。<br>本篇作为第一篇是 Martin Fowler 在博客中探讨有关EDA(事件驱动架构)的文章，原文地址：<a target="_blank" rel="noopener" href="https://martinfowler.com/articles/201701-event-driven.html">https://martinfowler.com/articles/201701-event-driven.html</a></p>
+<hr>
+<blockquote>
+<p> Towards the end of last year I attended a workshop with my colleagues in ThoughtWorks to discuss the nature of “event-driven” applications. Over the last few years we’ve been building lots of systems that make a lot of use of events, and they’ve been often praised, and often damned. Our North American office organized a summit, and ThoughtWorks senior developers from all over the world showed up to share ideas.</p>
+</blockquote>
+<p>在去年年底，我与ThoughtWorks的同事一起参加了一个研讨会 思考讨论“事件驱动”应用的本质。在最近几年里，我们一直在建立大量的系统，这些系统大量使用了事件，并且他们毁誉参半。我们的北美办公室组织了一个峰会，来自世界各地的ThoughtWorks的高级开发与会并分享想法。</p>
+<blockquote>
+<p>The biggest outcome of the summit was recognizing that when people talk about “events”, they actually mean some quite different things. So we spent a lot of time trying to tease out what some useful patterns might be. This note is a brief summary of the main ones we identified. </p>
+</blockquote>
+<p>峰会的最大结果是：我们认识到当人们谈论 “事件”，他们实际上意味着一些完全不同的东西。所以我们花了很多时间，试图整理出有用的模式可能是什么。本说明是对我们确定的主要部分的一个简短的摘要。</p>
+<h2 id="Event-Notification事件通知"><a href="#Event-Notification事件通知" class="headerlink" title="Event Notification事件通知"></a>Event Notification事件通知</h2><blockquote>
+<p>This happens when a system sends event messages to notify other systems of a change in its domain. A key element of event notification is that the source system doesn’t really care much about the response. Often it doesn’t expect any answer at all, or if there is a response that the source does care about, it’s indirect. There would be a marked separation between the logic flow that sends the event and any logic flow that responds to some reaction to that event.</p>
+</blockquote>
+<p>“事件通知”发生在：一个系统发出事件消息以通知其他系统他自己的领域内发生了某种变化。事件通知的一个关键元素是 源系统对响应并不关心。通常源系统根本不期望任何响应，或者即使源系统确实关心响应，但响应是间接的。在发送事件的逻辑流程和任何对该事件作出反应的响应之间，应该是标记分离的。</p>
+<blockquote>
+<p> Event notification is nice because it implies a low level of coupling, and is pretty simple to set up. It can become problematic, however, if there really is a logical flow that runs over various event notifications. The problem is that it can be hard to see such a flow as it’s not explicit in any program text. Often the only way to figure out this flow is from monitoring a live system. This can make it hard to debug and modify such a flow. The danger is that it’s very easy to make nicely decoupled systems with event notification, without realizing that you’re losing sight of that larger-scale flow, and thus set yourself up for trouble in future years. The pattern is still very useful, but you have to be careful of the trap.</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/What-do-you-mean-by-%E2%80%9CEvent-Driven%E2%80%9D.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/bookislife.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/bookislife.html" class="post-title-link" itemprop="url">BookIsLife 读书清单</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-10 10:01:21" itemprop="dateCreated datePublished" datetime="2021-03-10T10:01:21+08:00">2021-03-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6/" itemprop="url" rel="index"><span itemprop="name">读书</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/bookislife.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/bookislife.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>整理一些经典书籍，包括但不仅限于技术类，持续更新中📚…</p>
+<p>资源都是能找到的最好的版本，省的大家去找啦，加油各位ヾ(◍°∇°◍)ﾉﾞ。</p>
+<p><strong>另外电子书仅供参考，以纸质书为准。写书传播知识不易，希望大家多多支持纸质书。</strong></p>
+<hr>
+<p>链接失效或者损害到您的利益，请通过<a href="mailto:&#107;&#111;&#x6e;&#x67;&#108;&#x69;&#x6e;&#103;&#x68;&#x61;&#x6e;&#64;&#x6b;&#108;&#x68;&#97;&#x6e;&#x73;&#46;&#x63;&#111;&#x6d;">&#107;&#111;&#x6e;&#x67;&#108;&#x69;&#x6e;&#103;&#x68;&#x61;&#x6e;&#64;&#x6b;&#108;&#x68;&#97;&#x6e;&#x73;&#46;&#x63;&#111;&#x6d;</a>联系我</p>
+<h2 id="Java语言"><a href="#Java语言" class="headerlink" title="Java语言"></a>Java语言</h2><h4 id="Java-编程思想第四版"><a href="#Java-编程思想第四版" class="headerlink" title="Java 编程思想第四版"></a>Java 编程思想第四版</h4><p><a target="_blank" rel="noopener" href="https://wws.lanzous.com/illsHmqqi0h">https://wws.lanzous.com/illsHmqqi0h</a><br>密码:e93n </p>
+<h4 id="Java-8-in-action"><a href="#Java-8-in-action" class="headerlink" title="Java 8 in action"></a>Java 8 in action</h4><p><a target="_blank" rel="noopener" href="https://wws.lanzous.com/iUA7Cmqqipc">https://wws.lanzous.com/iUA7Cmqqipc</a><br>密码:34fi</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/bookislife.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/design-patterns-observer.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/design-patterns-observer.html" class="post-title-link" itemprop="url">简单好用的观察者模式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-09 20:44:59" itemprop="dateCreated datePublished" datetime="2021-03-09T20:44:59+08:00">2021-03-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/design-patterns-observer.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/design-patterns-observer.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>204</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="https://i.loli.net/2021/03/09/mdFIsoAhYG5RDPS.jpg"></p>
+<blockquote>
+<p>谁能凭爱意要富士山私有    ——林夕 《富士山下》</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>观察者模式</strong>和<strong>策略模式</strong>使我们在编写业务代码时最常用的两种模式，真真的简单又好用。（策略模式以后单独写篇文章分析）</p>
+<p>本篇文章主要介绍观察者模式的作用和实现，分别用手写、Guava、SpringBoot 来实现同一套观察者模式，比较他们的使用区别，最后会深入源码层面分析一下 Guava 和 SpringBoot 给我们封装好的观察者模式。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>观察者模式是一种常用的行为设计模式，</p>
+
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/design-patterns-observer.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://klhans.com/linux-profile.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="孔令翰">
+      <meta itemprop="description" content="learner|developer|blogger|traveler">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孔令翰-个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/linux-profile.html" class="post-title-link" itemprop="url">linux设置环境变量</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-24 15:17:34" itemprop="dateCreated datePublished" datetime="2020-12-24T15:17:34+08:00">2020-12-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/linux-profile.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/linux-profile.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <img src="https://i.loli.net/2021/03/06/28ykBcl3IezKZRf.png" style="zoom:50%;">
+
+<blockquote>
+<p>我今日就要带佢走，我睇下边个够胆拦我。    ——伍六七 《刺客伍六七》</p>
+</blockquote>
+<hr>
+<p>本文介绍Linux/Unix操作系统下，如何设置变量，以及如何将变量升级为环境变量。</p>
+<h2 id="操作变量的命令"><a href="#操作变量的命令" class="headerlink" title="操作变量的命令"></a>操作变量的命令</h2><h3 id="查询变量值"><a href="#查询变量值" class="headerlink" title="查询变量值"></a>查询变量值</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo $PATH ;</span><br><span class="line">echo $&#123;PATH&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置变量值"><a href="#设置变量值" class="headerlink" title="设置变量值"></a>设置变量值</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">foo=bianliang;</span><br></pre></td></tr></table></figure>
+
+<h4 id="等号两边不能有空格，比如下面这样会报错："><a href="#等号两边不能有空格，比如下面这样会报错：" class="headerlink" title="等号两边不能有空格，比如下面这样会报错："></a>等号两边不能有空格，比如下面这样会报错：</h4>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/linux-profile.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://klhans.com/springboot/jackson.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -575,20 +1014,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
